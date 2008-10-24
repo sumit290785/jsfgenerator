@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         id="jsfgenerator.popupmenu"
+         point="org.eclipse.ui.popupMenus">
+          <objectContribution
+                id="jsfgenerator.ui.actions.singleentitygenerationaction"
+                nameFilter="*.java"
+                objectClass="org.eclipse.core.resources.IFile">
+	    <action id="jsfgenerator.ui.generationaction"
+	       label="Single entity generation"
+	       class="jsfgenerator.ui.actions.SingleEntityGenerationAction"	
+           definitionId="jsfgenerator.ui.singleentitygenerationaction"
+	       enablesFor="1">
+	    </action>
+	 </objectContribution>
+          
+   </extension>
+
+</plugin>

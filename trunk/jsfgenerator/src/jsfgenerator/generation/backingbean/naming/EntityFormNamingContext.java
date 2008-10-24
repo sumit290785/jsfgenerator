@@ -1,6 +1,6 @@
 package jsfgenerator.generation.backingbean.naming;
 
-import jsfgenerator.generation.utilities.EntityField;
+import jsfgenerator.inspector.entitymodel.forms.EntityField;
 import jsfgenerator.inspector.entitymodel.forms.EntityForm;
 
 /**
