@@ -1,6 +1,8 @@
 package jsfgenerator.inspector.entitymodel.forms;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jsfgenerator.inspector.entitymodel.IEntityHandler;
@@ -19,14 +21,19 @@ import jsfgenerator.inspector.entitymodel.IEntityHandler;
  * 
  */
 public abstract class EntityForm implements IEntityHandler {
+	
+	private String entityName;
+	
+	private List<EntityField> fields = new ArrayList<EntityField>();
+	
+	public EntityForm(String entityName, List<EntityField> fields) {
+		this.entityName = entityName;
+		this.fields = fields;
+	}
 
 	// commands of the particular form
 	private Set<Command> commands = new HashSet<Command>();
-	private Class<?> entityClass;
 
-	public EntityForm(Class<?> entityClass) {
-		this.entityClass = entityClass;
-	}
 
 	public void setCommands(Set<Command> commands) {
 		this.commands = commands;
@@ -45,11 +52,13 @@ public abstract class EntityForm implements IEntityHandler {
 	public void addCommand(Command command) {
 		commands.add(command);
 	}
-
-	/**
-	 * The class managed by the entity form!
-	 */
-	public Class<?> getEntityClass() {
-		return entityClass;
+	
+	public String getEntityName() {
+		return entityName;
 	}
+
+	public List<EntityField> getFields() {
+		return fields;
+	}
+
 }

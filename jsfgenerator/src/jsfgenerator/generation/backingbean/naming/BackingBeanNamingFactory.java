@@ -1,6 +1,6 @@
 package jsfgenerator.generation.backingbean.naming;
 
-import jsfgenerator.generation.utilities.EntityField;
+import jsfgenerator.inspector.entitymodel.forms.EntityField;
 import jsfgenerator.inspector.entitymodel.forms.EntityForm;
 import jsfgenerator.inspector.entitymodel.pages.EntityPageModel;
 import jsfgenerator.inspector.entitymodel.pages.PageModel;
@@ -65,12 +65,7 @@ public class BackingBeanNamingFactory {
 			throw new IllegalArgumentException("Field parameter cannot be null!");
 		}
 
-		Class<?> entityClass = form.getEntityClass();
-		if (entityClass == null) {
-			throw new IllegalArgumentException("Entity class of the form is null!");
-		}
-
-		String className = entityClass.getSimpleName();
+		String className = form.getEntityName();
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(className.toLowerCase());
 		buffer.append(EDIT_HELPER);

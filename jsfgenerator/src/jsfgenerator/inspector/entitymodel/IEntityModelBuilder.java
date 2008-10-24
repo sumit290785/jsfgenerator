@@ -1,6 +1,5 @@
 package jsfgenerator.inspector.entitymodel;
 
-
 /**
  * MVC design pattern's model element can be defined in many different ways! A
  * set of classes, an uml class diagram, an ecore model defined by eclipse
@@ -13,17 +12,25 @@ package jsfgenerator.inspector.entitymodel;
  * metamodel of the application model!
  * 
  * To handle different models an interface is required! This IEntityModelEngine
- * interface is to build this bridge between the generator and real application model!
+ * interface is to build this bridge between the generator and real application
+ * model!
  * 
  * @author zoltan verebes
  * 
  */
-public interface IEntityModelEngine {
+public interface IEntityModelBuilder {
 
 	/**
 	 * 
 	 * @return metamodel of the application model
 	 */
-	public EntityModel getEntityModel();
+	public EntityModel createEntityModel();
+
+	/**
+	 * clears the model
+	 */
+	public void clearModel();
+	
+	public void addEntity(Object entity);
 
 }

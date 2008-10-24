@@ -9,6 +9,7 @@ import jsfgenerator.generation.tagmodel.ProxyTag.ProxyTagType;
 import jsfgenerator.generation.tagmodel.parameters.TagParameter;
 import jsfgenerator.generation.tagmodel.parameters.TemplateParameter;
 import jsfgenerator.generation.tagmodel.parameters.XMLNamespaceParameter;
+import jsfgenerator.inspector.entitymodel.forms.EntityFieldType;
 
 /**
  * Dummy implementation of TagFactory
@@ -45,7 +46,8 @@ public class DummyTagFactory implements ITagFactory {
 		return tag;
 	}
 
-	public StaticTag getInputTag(Class<?> type, NamingContext namingContext) {
+	public StaticTag getInputTag(EntityFieldType type, NamingContext namingContext) {
+		
 		if (String.class.equals(type)) {
 			StaticTag tag = new StaticTag("h:inputText");
 			tag.addParameter(new TagParameter("value", namingContext.getEL("value")));
