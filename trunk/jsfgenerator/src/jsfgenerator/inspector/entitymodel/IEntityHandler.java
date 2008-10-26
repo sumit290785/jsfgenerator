@@ -2,7 +2,7 @@ package jsfgenerator.inspector.entitymodel;
 
 import java.util.List;
 
-import jsfgenerator.inspector.entitymodel.forms.EntityField;
+import jsfgenerator.inspector.entitymodel.fields.EntityField;
 
 /**
  * Interface to information about a single entity

@@ -9,7 +9,8 @@ import jsfgenerator.generation.tagmodel.ProxyTag.ProxyTagType;
 import jsfgenerator.generation.tagmodel.parameters.TagParameter;
 import jsfgenerator.generation.tagmodel.parameters.TemplateParameter;
 import jsfgenerator.generation.tagmodel.parameters.XMLNamespaceParameter;
-import jsfgenerator.inspector.entitymodel.forms.EntityFieldType;
+import jsfgenerator.inspector.entitymodel.fields.EntityFieldType;
+import jsfgenerator.inspector.entitymodel.fields.TextFieldType;
 
 /**
  * Dummy implementation of TagFactory
@@ -48,11 +49,29 @@ public class DummyTagFactory implements ITagFactory {
 
 	public StaticTag getInputTag(EntityFieldType type, NamingContext namingContext) {
 		
-		if (String.class.equals(type)) {
-			StaticTag tag = new StaticTag("h:inputText");
-			tag.addParameter(new TagParameter("value", namingContext.getEL("value")));
-			return tag;
+		if (type == null) {
+			throw new IllegalArgumentException("Type parameter cannot be null!");
 		}
+		
+		if (namingContext == null) {
+			throw new IllegalArgumentException("Naming context parameter cannot be null!");
+		}
+		
+		if (type instanceof TextFieldType) {
+			TextFieldType textType = (TextFieldType) type;
+			if (textType.isMultiline()) {
+				StaticTag tag = new StaticTag("h:inputTextArea");
+				tag.addParameter(new TagParameter("value", namingContext.getEL("value")));
+				tag.addParameter(new TagParameter("cols", "4"));
+				return tag;
+			} else {
+				StaticTag tag = new StaticTag("h:inputText");
+				tag.addParameter(new TagParameter("value", namingContext.getEL("value")));
+				return tag;
+			}
+		}
+		
+		
 		return null;
 	}
 

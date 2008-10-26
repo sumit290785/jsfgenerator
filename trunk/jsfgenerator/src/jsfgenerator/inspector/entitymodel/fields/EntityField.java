@@ -1,4 +1,4 @@
-package jsfgenerator.inspector.entitymodel.forms;
+package jsfgenerator.inspector.entitymodel.fields;
 
 /**
  * Represents a field of an entity in the entity model! It has a name and a type!

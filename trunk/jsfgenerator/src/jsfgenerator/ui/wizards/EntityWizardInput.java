@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.dom.Type;
 public class EntityWizardInput {
 
 	public class EntityFieldInput {
+		
 		private EntityWizardInput parent;
 
 		private String fieldName;

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import jsfgenerator.inspector.entitymodel.IEntityHandler;
+import jsfgenerator.inspector.entitymodel.fields.EntityField;
 
 /**
  * Abstract super class of a simple entity form or an entity list which contains

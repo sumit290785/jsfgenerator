@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jsfgenerator.inspector.entitymodel.IEntityHandler;
-import jsfgenerator.inspector.entitymodel.forms.EntityField;
+import jsfgenerator.inspector.entitymodel.fields.EntityField;
 
 /**
  * 
@@ -23,12 +23,19 @@ public class EntityListPageModel extends PageModel implements IEntityHandler {
 	public List<EntityPageModel> getEntityPages() {
 		return entityPages;
 	}
+	
+	public void addEntityPage(EntityPageModel page) {
+		entityPages.add(page);
+	}
 
 	public String getEntityName() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/**
+	 * fields to be displayed in the list! fields must be defined in the entity page models
+	 */
 	public List<EntityField> getFields() {
 		// TODO Auto-generated method stub
 		return null;

@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import jsfgenerator.ui.wizards.EntityWizardInput.EntityFieldInput;
 
-
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
