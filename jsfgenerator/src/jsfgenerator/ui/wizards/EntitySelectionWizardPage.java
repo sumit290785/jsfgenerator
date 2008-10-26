@@ -66,6 +66,7 @@ public class EntitySelectionWizardPage extends WizardPage {
 		for (Object obj : treeViewer.getCheckedElements()) {
 			if (obj instanceof EntityWizardInput) {
 				EntityWizardInput input = new EntityWizardInput();
+				input.setName(((EntityWizardInput)obj).getName());
 
 				for (Object element : treeViewer.getCheckedElements()) {
 					if (element instanceof EntityFieldInput && ((EntityFieldInput) element).getParent().equals(obj)) {

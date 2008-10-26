@@ -1,16 +1,21 @@
 package jsfgenerator.ui.wizards;
 
+import java.io.OutputStream;
 import java.util.List;
 
-import jsfgenerator.inspector.entitymodel.IEntityModelBuilder;
-import jsfgenerator.inspector.entitymodel.impl.JavaClassEntityModelBuilder;
+import jsfgenerator.generation.core.ViewEngine;
+import jsfgenerator.generation.tagmodel.ITagFactory;
+import jsfgenerator.generation.tagmodel.impl.DummyTagFactory;
+import jsfgenerator.inspector.entitymodel.AbstractEntityModelBuilder;
+import jsfgenerator.inspector.entitymodel.EntityModel;
+import jsfgenerator.inspector.entitymodel.impl.ASTEntityModelBuilder;
 
 import org.eclipse.jface.wizard.Wizard;
 
 public class EntityWizard extends Wizard {
 
 	private List<EntityWizardInput> entities;
-	
+
 	private EntitySelectionWizardPage entitySelectionWizardPage;
 
 	public EntityWizard(List<EntityWizardInput> entities) {
@@ -18,11 +23,10 @@ public class EntityWizard extends Wizard {
 		this.entities = entities;
 		setWindowTitle("Entity wizard");
 	}
-	
-	
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.wizard.Wizard#addPages()
 	 */
 	@Override
@@ -34,17 +38,33 @@ public class EntityWizard extends Wizard {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.wizard.Wizard#performFinish()
 	 */
 	@Override
 	public boolean performFinish() {
-		IEntityModelBuilder builder = new JavaClassEntityModelBuilder();
-		
+		AbstractEntityModelBuilder<EntityWizardInput> builder = new ASTEntityModelBuilder();
+
 		for (EntityWizardInput entity : entitySelectionWizardPage.getSelectedEntities()) {
 			builder.addEntity(entity);
+			String viewId = entity.getName();
+			if (!builder.isViewSpecified(viewId)) {
+				builder.createEntityPageModel(viewId);
+			}
+
+			builder.addSimpleEntityForm(entity, viewId);
 		}
+
+		EntityModel entityModel = builder.createEntityModel();
+		ITagFactory tagFactory = new DummyTagFactory();
+
+		ViewEngine engine = ViewEngine.getInstance();
+		engine.generateViews(entityModel, tagFactory);
 		
-		// TODO: create a tag factory and call viewEngine to generate views!
+		for (OutputStream os : engine.getStreams()) {
+			System.out.println(os);
+		}
+
 		return true;
 	}
 

@@ -1,7 +1,7 @@
 package jsfgenerator.generation.tagmodel;
 
 import jsfgenerator.generation.backingbean.naming.NamingContext;
-import jsfgenerator.inspector.entitymodel.forms.EntityFieldType;
+import jsfgenerator.inspector.entitymodel.fields.EntityFieldType;
 
 
 /**

@@ -12,13 +12,13 @@ import jsfgenerator.generation.tagmodel.ProxyTag;
 import jsfgenerator.generation.tagmodel.StaticTag;
 import jsfgenerator.generation.tagmodel.Tag;
 import jsfgenerator.generation.tagmodel.ProxyTag.ProxyTagType;
-import jsfgenerator.generation.tagmodel.impl.DummyTagFactory;
 import jsfgenerator.generation.tagmodel.parameters.TagParameter;
 import jsfgenerator.generation.utilities.Tags;
 import jsfgenerator.inspector.entitymodel.EntityModel;
-import jsfgenerator.inspector.entitymodel.forms.EntityField;
+import jsfgenerator.inspector.entitymodel.fields.EntityField;
+import jsfgenerator.inspector.entitymodel.forms.ComplexEntityFormList;
 import jsfgenerator.inspector.entitymodel.forms.EntityForm;
-import jsfgenerator.inspector.entitymodel.impl.DummyModelEngine;
+import jsfgenerator.inspector.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.inspector.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.inspector.entitymodel.pages.EntityPageModel;
 import jsfgenerator.inspector.entitymodel.pages.PageModel;
@@ -155,18 +155,25 @@ public class ViewEngine {
 		}
 
 		BackingBeanNamingFactory namingFactory = BackingBeanNamingFactory.getInstance();
-		
-		for (EntityForm form : pageModel.getForms()) {
-			Tag formTag = tagFactory.getSimpleFormTagTree();
-			formProxyTag.addChild(formTag);
 
-			Tag inputProxyTag = Tags.getProxyTagByType(formTag, ProxyTagType.INPUT);
-			//List<EntityField> entityFields = Entities.getEntityFields(form.getEntityClass());
-			for (EntityField entityField : form.getFields()) {
-				StaticTag inputTag = tagFactory.getInputTag(entityField.getType(), namingFactory.getEntityFormNamingContext(pageModel, form, entityField));
-				if (inputTag != null) {
-					inputProxyTag.addChild(inputTag);
+		for (EntityForm form : pageModel.getForms()) {
+
+			if (form instanceof SimpleEntityForm) {
+
+				Tag formTag = tagFactory.getSimpleFormTagTree();
+				formProxyTag.addChild(formTag);
+
+				Tag inputProxyTag = Tags.getProxyTagByType(formTag, ProxyTagType.INPUT);
+
+				for (EntityField entityField : form.getFields()) {
+					StaticTag inputTag = tagFactory.getInputTag(entityField.getType(), namingFactory
+							.getEntityFormNamingContext(pageModel, form, entityField));
+					if (inputTag != null) {
+						inputProxyTag.addChild(inputTag);
+					}
 				}
+			} else if (form instanceof ComplexEntityFormList) {
+				throw new UnsupportedOperationException("Complex forms are not supported, yet");
 			}
 		}
 
@@ -210,16 +217,15 @@ public class ViewEngine {
 		return streams;
 	}
 
-	public static void main(String[] args) {
-		EntityModel entityModel = (new DummyModelEngine()).createEntityModel();
-		ITagFactory tagFactory = new DummyTagFactory();
-
-		ViewEngine engine = ViewEngine.getInstance();
-		engine.generateViews(entityModel, tagFactory);
-
-		for (OutputStream os : engine.getStreams()) {
-			System.out.println(os);
-		}
-	}
-
+	/*
+	 * public static void main(String[] args) { 
+	 * EntityModel entityModel = (new
+	 * DummyModelEngine()).createEntityModel(); ITagFactory tagFactory = new
+	 * DummyTagFactory();
+	 * 
+	 * ViewEngine engine = ViewEngine.getInstance();
+	 * engine.generateViews(entityModel, tagFactory);
+	 * 
+	 * for (OutputStream os : engine.getStreams()) { System.out.println(os); } }
+	 */
 }
