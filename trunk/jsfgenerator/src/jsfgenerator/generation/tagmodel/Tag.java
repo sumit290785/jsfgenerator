@@ -1,6 +1,7 @@
 package jsfgenerator.generation.tagmodel;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,7 +52,11 @@ public abstract class Tag {
 	}
 
 	public void addChild(Tag childTag) {
-		children.add(childTag);
+		this.children.add(childTag);
+	}
+	
+	public void addAllChildren(Collection<Tag> children) {
+		this.children.addAll(children);
 	}
 
 	/**

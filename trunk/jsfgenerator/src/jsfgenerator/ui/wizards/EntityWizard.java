@@ -4,7 +4,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 import jsfgenerator.generation.core.ViewEngine;
-import jsfgenerator.generation.tagmodel.ITagFactory;
+import jsfgenerator.generation.tagmodel.ITagTreeProvider;
 import jsfgenerator.generation.tagmodel.impl.DummyTagFactory;
 import jsfgenerator.inspector.entitymodel.AbstractEntityModelBuilder;
 import jsfgenerator.inspector.entitymodel.EntityModel;
@@ -56,7 +56,7 @@ public class EntityWizard extends Wizard {
 		}
 
 		EntityModel entityModel = builder.createEntityModel();
-		ITagFactory tagFactory = new DummyTagFactory();
+		ITagTreeProvider tagFactory = new DummyTagFactory();
 
 		ViewEngine engine = ViewEngine.getInstance();
 		engine.generateViews(entityModel, tagFactory);

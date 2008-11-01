@@ -44,5 +44,10 @@
 			<type>2</type>
 			<location>/home/zoli/dev/np/tools/eclipsesrc/jdtcoresrc</location>
 		</link>
+		<link>
+			<name>source</name>
+			<type>2</type>
+			<location>/home/zoli/dev/tools/source</location>
+		</link>
 	</linkedResources>
 </projectDescription>

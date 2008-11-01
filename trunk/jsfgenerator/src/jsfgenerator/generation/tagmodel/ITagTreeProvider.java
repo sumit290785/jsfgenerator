@@ -22,17 +22,17 @@ import jsfgenerator.inspector.entitymodel.fields.EntityFieldType;
  * @author zoltan verebes
  * 
  */
-public interface ITagFactory {
+public interface ITagTreeProvider {
 
 	/**
 	 * 
 	 * @return tag tree of an entity page
 	 */
-	public Tag getEntityPageTagTree();
+	public TagTree getEntityPageTagTree();
 
-	public Tag getListPageTagTree();
+	public TagTree getListPageTagTree();
 
-	public Tag getSimpleFormTagTree();
+	public TagTree getSimpleFormTagTree();
 
 	public StaticTag getInputTag(EntityFieldType type, NamingContext namingContext);
 

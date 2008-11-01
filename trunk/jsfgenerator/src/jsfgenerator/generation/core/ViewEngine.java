@@ -1,18 +1,17 @@
 package jsfgenerator.generation.core;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import jsfgenerator.generation.backingbean.naming.BackingBeanNamingFactory;
-import jsfgenerator.generation.tagmodel.ITagFactory;
-import jsfgenerator.generation.tagmodel.ProxyTag;
+import jsfgenerator.generation.tagmodel.ITagTreeProvider;
 import jsfgenerator.generation.tagmodel.StaticTag;
 import jsfgenerator.generation.tagmodel.Tag;
+import jsfgenerator.generation.tagmodel.TagTree;
+import jsfgenerator.generation.tagmodel.WriterTagVisitor;
 import jsfgenerator.generation.tagmodel.ProxyTag.ProxyTagType;
-import jsfgenerator.generation.tagmodel.parameters.TagParameter;
 import jsfgenerator.generation.utilities.Tags;
 import jsfgenerator.inspector.entitymodel.EntityModel;
 import jsfgenerator.inspector.entitymodel.fields.EntityField;
@@ -35,9 +34,6 @@ import jsfgenerator.inspector.entitymodel.pages.PageModel;
  * 
  */
 public class ViewEngine {
-
-	private static final String TAB = "\t";
-	private static final String NEWLINE = "\n";
 
 	private List<OutputStream> streams = new ArrayList<OutputStream>();
 
@@ -70,73 +66,7 @@ public class ViewEngine {
 		return new ByteArrayOutputStream();
 	}
 
-	private void appendTabs(StringBuffer buffer, int depth) {
-		for (int i = 0; i < depth; i++) {
-			buffer.append(TAB);
-		}
-	}
-
-	private String getTagAsString(StaticTag tag) {
-		StringBuffer buffer = new StringBuffer();
-		buffer.append(tag.getName());
-		for (TagParameter parameter : tag.getParameters()) {
-			buffer.append(" ");
-			buffer.append(parameter.getName());
-			buffer.append("=\"");
-			buffer.append(parameter.getValue());
-			buffer.append("\"");
-			// TODO: change expressions
-		}
-
-		return buffer.toString();
-	}
-
-	private void writeTag(Tag tag, OutputStream os, int depth) throws IOException {
-
-		if (tag instanceof ProxyTag) {
-			for (Tag child : tag.getChildren()) {
-				writeTag(child, os, depth);
-			}
-			return;
-		}
-
-		StaticTag staticTag = (StaticTag) tag;
-
-		if (staticTag.isLeaf()) {
-			StringBuffer buffer = new StringBuffer();
-			appendTabs(buffer, depth);
-			buffer.append("<");
-			buffer.append(getTagAsString(staticTag));
-			buffer.append(" />");
-			buffer.append(NEWLINE);
-			os.write(buffer.toString().getBytes());
-		} else {
-			StringBuffer buffer = new StringBuffer();
-			appendTabs(buffer, depth);
-			buffer.append("<");
-			buffer.append(getTagAsString(staticTag));
-			buffer.append(">");
-			buffer.append(NEWLINE);
-
-			os.write(buffer.toString().getBytes());
-
-			for (Tag child : tag.getChildren()) {
-				writeTag(child, os, depth + 1);
-			}
-
-			buffer = new StringBuffer();
-
-			appendTabs(buffer, depth);
-			buffer.append("</");
-			buffer.append(staticTag.getName());
-			buffer.append(">");
-			buffer.append(NEWLINE);
-
-			os.write(buffer.toString().getBytes());
-		}
-	}
-
-	protected OutputStream generateEntityPage(EntityPageModel pageModel, ITagFactory tagFactory) {
+	protected OutputStream generateEntityPage(EntityPageModel pageModel, ITagTreeProvider tagFactory) {
 
 		if (pageModel == null) {
 			throw new IllegalArgumentException("Page model cannot be null!");
@@ -144,10 +74,10 @@ public class ViewEngine {
 
 		OutputStream os = createOutputStream(pageModel.getViewId());
 
-		Tag tag = tagFactory.getEntityPageTagTree();
+		TagTree tagTree = tagFactory.getEntityPageTagTree();
 
 		// replace proxy tags - forms
-		Tag formProxyTag = Tags.getProxyTagByType(tag, ProxyTagType.FORM);
+		Tag formProxyTag = Tags.getProxyTagByType(tagTree, ProxyTagType.FORM);
 
 		if (formProxyTag == null) {
 			throw new NullPointerException(
@@ -160,10 +90,15 @@ public class ViewEngine {
 
 			if (form instanceof SimpleEntityForm) {
 
-				Tag formTag = tagFactory.getSimpleFormTagTree();
-				formProxyTag.addChild(formTag);
+				TagTree formTagTree = tagFactory.getSimpleFormTagTree();
+				formProxyTag.addAllChildren(formTagTree.getTags());	
 
-				Tag inputProxyTag = Tags.getProxyTagByType(formTag, ProxyTagType.INPUT);
+				Tag inputProxyTag = Tags.getProxyTagByType(formTagTree, ProxyTagType.INPUT);
+				
+				if (inputProxyTag == null) {
+					throw new NullPointerException(
+							"INPUT proxy tag is not found in the form tag tree! Inputs cannot be inserted!");
+				}
 
 				for (EntityField entityField : form.getFields()) {
 					StaticTag inputTag = tagFactory.getInputTag(entityField.getType(), namingFactory
@@ -177,16 +112,12 @@ public class ViewEngine {
 			}
 		}
 
-		try {
-			writeTag(tag, os, 0);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return os;
+		WriterTagVisitor visitor = new WriterTagVisitor(os);
+		tagTree.apply(visitor);
+		return visitor.getOutputStream();
 	}
 
-	public void generateViews(EntityModel model, ITagFactory tagFactory) {
+	public void generateViews(EntityModel model, ITagTreeProvider tagFactory) {
 
 		if (model == null) {
 			throw new IllegalArgumentException("Model parameter cannot be null!");
@@ -206,6 +137,12 @@ public class ViewEngine {
 			} else if (pageModel instanceof EntityListPageModel) {
 				// TODO
 			}
+		}
+		
+		
+		// test
+		for (OutputStream os : streams) {
+			System.out.println(os.toString());
 		}
 	}
 
