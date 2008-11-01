@@ -17,5 +17,16 @@
 	 </objectContribution>
           
    </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+         <editor
+         		class=""
+         		contributorClass=""
+         		default="true"
+         		icon=""
+         		id=""
+         		name="TagFactoryEditor">
+         </editor>
+   </extension>
 
 </plugin>
