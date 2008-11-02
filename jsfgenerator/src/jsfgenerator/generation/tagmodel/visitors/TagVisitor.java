@@ -1,4 +1,6 @@
-package jsfgenerator.generation.tagmodel;
+package jsfgenerator.generation.tagmodel.visitors;
+
+import jsfgenerator.generation.tagmodel.Tag;
 
 /**
  * Abstract visitor class for tag trees!

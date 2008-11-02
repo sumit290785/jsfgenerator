@@ -1,9 +1,12 @@
-package jsfgenerator.generation.tagmodel;
+package jsfgenerator.generation.tagmodel.visitors;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-import jsfgenerator.generation.tagmodel.parameters.TagParameter;
+import jsfgenerator.generation.tagmodel.ProxyTag;
+import jsfgenerator.generation.tagmodel.StaticTag;
+import jsfgenerator.generation.tagmodel.Tag;
+import jsfgenerator.generation.tagmodel.parameters.TagAttribute;
 
 /**
  * 
@@ -102,11 +105,11 @@ public class WriterTagVisitor extends TagVisitor {
 	private String getTagAsString(StaticTag tag) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(tag.getName());
-		for (TagParameter parameter : tag.getParameters()) {
+		for (TagAttribute attribute : tag.getAttributes()) {
 			buffer.append(" ");
-			buffer.append(parameter.getName());
+			buffer.append(attribute.getName());
 			buffer.append("=\"");
-			buffer.append(parameter.getValue());
+			buffer.append(attribute.getValue());
 			buffer.append("\"");
 			// TODO: change expressions
 		}

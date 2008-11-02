@@ -1,5 +1,7 @@
-package jsfgenerator.generation.tagmodel;
+package jsfgenerator.generation.tagmodel.visitors;
 
+import jsfgenerator.generation.tagmodel.ProxyTag;
+import jsfgenerator.generation.tagmodel.Tag;
 import jsfgenerator.generation.tagmodel.ProxyTag.ProxyTagType;
 
 public class ProxyTagVisitor extends TagVisitor {
