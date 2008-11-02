@@ -1,5 +1,6 @@
 package jsfgenerator.ui.wizards;
 
+import java.io.File;
 import java.util.Arrays;
 
 import org.eclipse.core.resources.IContainer;
@@ -90,7 +91,7 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 				} catch (CoreException e) {
 					e.printStackTrace();
 				}
-				
+
 				return members;
 			}
 
@@ -128,8 +129,10 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 	}
 
 	protected FilteredTree filteredTree;
-	
+
 	protected Text selectedFileText;
+
+	protected IFile selectedFile;
 
 	protected TagDescriptorSelectionWizardPage() {
 		super("TagDescriptorSelectionWizardPage");
@@ -139,7 +142,10 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+	 * 
+	 * @see
+	 * org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets
+	 * .Composite)
 	 */
 	public void createControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
@@ -161,9 +167,9 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 				}
 				return 0;
 			}
-			
+
 		});
-		
+
 		ViewerFilter filter = new ViewerFilter() {
 
 			@Override
@@ -171,7 +177,7 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 				if (element instanceof IContainer) {
 					return true;
 				}
-				
+
 				if (element instanceof IFile) {
 					IFile file = (IFile) element;
 					// is Xml file
@@ -179,49 +185,52 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 						return true;
 					}
 				}
-				
+
 				return false;
 			}
-			
+
 		};
-		
+
 		viewer.setFilters(Arrays.asList(filter).toArray(new ViewerFilter[0]));
-		
+
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		filteredTree.getViewer().setInput(root);
-		
+
 		final Label label = new Label(composite, SWT.NONE);
 		label.setText("Selected file: ");
 		selectedFileText = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
 		selectedFileText.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-		
+
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
 			public void selectionChanged(SelectionChangedEvent event) {
-				TreeSelection selection = (TreeSelection)event.getSelection();
+				TreeSelection selection = (TreeSelection) event.getSelection();
 				if (selection.getFirstElement() instanceof IFile) {
 					IFile file = (IFile) selection.getFirstElement();
+					selectedFile = file;
 					selectedFileText.setText(file.getFullPath().toPortableString());
 				} else {
+					selectedFile = null;
 					selectedFileText.setText("");
 				}
-				
+
 				validate();
 			}
-			
+
 		});
 		validate();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.wizard.WizardPage#canFlipToNextPage()
 	 */
 	@Override
 	public boolean canFlipToNextPage() {
 		return getErrorMessage() == null;
 	}
-	
+
 	protected void validate() {
 		if (selectedFileText.getText() == null || selectedFileText.getText().equals("")) {
 			setErrorMessage("Please, select a file");
@@ -229,6 +238,13 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 			setErrorMessage(null);
 		}
 	}
-	
-	
+
+	public File getSelectedFile() {
+		if (selectedFile == null) {
+			return null;
+		}
+
+		return selectedFile.getLocation().toFile();
+	}
+
 }

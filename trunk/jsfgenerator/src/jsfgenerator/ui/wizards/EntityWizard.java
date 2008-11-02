@@ -66,11 +66,10 @@ public class EntityWizard extends Wizard {
 
 		EntityModel entityModel = builder.createEntityModel();
 		
-		// TODO: change static file 
-		String filename = "/home/zoli/dev/np/tagtrees.xml";
 		InputStream is = null;
+		File file = tagDescriptionSelectionWizardPage.getSelectedFile();
 		try {
-			is = new FileInputStream(new File(filename));
+			is = new FileInputStream(file);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
