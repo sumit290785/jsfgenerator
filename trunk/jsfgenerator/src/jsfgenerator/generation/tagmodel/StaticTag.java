@@ -5,19 +5,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jsfgenerator.generation.tagmodel.parameters.TagParameter;
-import jsfgenerator.generation.tagmodel.parameters.XMLNamespaceParameter;
+import jsfgenerator.generation.tagmodel.parameters.TagAttribute;
+import jsfgenerator.generation.tagmodel.parameters.XMLNamespaceAttribute;
 
 public class StaticTag extends Tag {
 
-	// name of the tag
+	// name of the tagí
 	private String name;
 	
 	// parameters of the tag
-	private List<TagParameter> parameters = new ArrayList<TagParameter>();
+	private List<TagAttribute> attributess = new ArrayList<TagAttribute>();
 
 	// required namespaces for this tag
-	private Set<XMLNamespaceParameter> xmlNamespaces = new HashSet<XMLNamespaceParameter>();
+	private Set<XMLNamespaceAttribute> xmlNamespaces = new HashSet<XMLNamespaceAttribute>();
 
 	public StaticTag(String name) {
 		if (name == null) {
@@ -48,19 +48,19 @@ public class StaticTag extends Tag {
 		return name;
 	}
 
-	public Set<XMLNamespaceParameter> getXmlNamespaces() {
+	public Set<XMLNamespaceAttribute> getXmlNamespaces() {
 		return xmlNamespaces;
 	}
 
-	public void setParameters(List<TagParameter> parameters) {
-		this.parameters = parameters;
+	public void setAttributes(List<TagAttribute> parameters) {
+		this.attributess = parameters;
 	}
 
-	public List<TagParameter> getParameters() {
-		return parameters;
+	public List<TagAttribute> getAttributes() {
+		return attributess;
 	}
 
-	public void addParameter(TagParameter tagParameter) {
-		parameters.add(tagParameter);
+	public void addAttribute(TagAttribute tagAttribute) {
+		attributess.add(tagAttribute);
 	}
 }

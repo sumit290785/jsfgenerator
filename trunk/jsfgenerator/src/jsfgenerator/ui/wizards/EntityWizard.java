@@ -1,11 +1,15 @@
 package jsfgenerator.ui.wizards;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
 import jsfgenerator.generation.core.ViewEngine;
 import jsfgenerator.generation.tagmodel.ITagTreeProvider;
-import jsfgenerator.generation.tagmodel.impl.DummyTagFactory;
+import jsfgenerator.generation.tagmodel.impl.TagTreeParser;
 import jsfgenerator.inspector.entitymodel.AbstractEntityModelBuilder;
 import jsfgenerator.inspector.entitymodel.EntityModel;
 import jsfgenerator.inspector.entitymodel.impl.ASTEntityModelBuilder;
@@ -17,6 +21,8 @@ public class EntityWizard extends Wizard {
 	private List<EntityWizardInput> entities;
 
 	private EntitySelectionWizardPage entitySelectionWizardPage;
+	
+	private TagDescriptorSelectionWizardPage tagDescriptionSelectionWizardPage;
 
 	public EntityWizard(List<EntityWizardInput> entities) {
 		super();
@@ -32,7 +38,10 @@ public class EntityWizard extends Wizard {
 	@Override
 	public void addPages() {
 		entitySelectionWizardPage = new EntitySelectionWizardPage(entities);
+		tagDescriptionSelectionWizardPage = new TagDescriptorSelectionWizardPage();
+		
 		addPage(entitySelectionWizardPage);
+		addPage(tagDescriptionSelectionWizardPage);
 		super.addPages();
 	}
 
@@ -56,7 +65,18 @@ public class EntityWizard extends Wizard {
 		}
 
 		EntityModel entityModel = builder.createEntityModel();
-		ITagTreeProvider tagFactory = new DummyTagFactory();
+		
+		// TODO: change static file 
+		String filename = "/home/zoli/dev/np/tagtrees.xml";
+		InputStream is = null;
+		try {
+			is = new FileInputStream(new File(filename));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		ITagTreeProvider tagFactory = new TagTreeParser(is);
 
 		ViewEngine engine = ViewEngine.getInstance();
 		engine.generateViews(entityModel, tagFactory);

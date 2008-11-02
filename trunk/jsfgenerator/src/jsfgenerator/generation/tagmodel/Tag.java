@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jsfgenerator.generation.tagmodel.parameters.XMLNamespaceParameter;
+import jsfgenerator.generation.tagmodel.parameters.XMLNamespaceAttribute;
 
 /**
  * Models the information about a tag in the view! A tag has a name, some
@@ -22,15 +22,15 @@ public abstract class Tag {
 	protected List<Tag> children = new ArrayList<Tag>();
 	
 	// required xml namespaces of the tag
-	protected abstract Set<XMLNamespaceParameter> getXmlNamespaces();
+	protected abstract Set<XMLNamespaceAttribute> getXmlNamespaces();
 
 	/**
 	 * Collects required namespaces recursively in the tree
 	 * 
 	 * @return required namespace parameters for this tag and its children
 	 */
-	public Set<XMLNamespaceParameter> getRequiredNamespaces() {
-		Set<XMLNamespaceParameter> requiredNamespaces = new HashSet<XMLNamespaceParameter>();
+	public Set<XMLNamespaceAttribute> getRequiredNamespaces() {
+		Set<XMLNamespaceAttribute> requiredNamespaces = new HashSet<XMLNamespaceAttribute>();
 
 		for (Tag child : getChildren()) {
 			requiredNamespaces.addAll(child.getRequiredNamespaces());

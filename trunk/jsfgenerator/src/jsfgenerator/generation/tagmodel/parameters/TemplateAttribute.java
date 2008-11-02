@@ -7,11 +7,11 @@ package jsfgenerator.generation.tagmodel.parameters;
  * @author zoltan verebes
  * 
  */
-public class TemplateParameter extends TagParameter {
+public class TemplateAttribute extends TagAttribute {
 	
 	private static final String TEMPLATE = "template";
 
-	public TemplateParameter(String template) {
+	public TemplateAttribute(String template) {
 		super(TEMPLATE, template);
 	}
 

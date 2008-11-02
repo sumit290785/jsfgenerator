@@ -1,9 +1,11 @@
 package jsfgenerator.inspector.entitymodel.fields;
 
 /**
- * Type of entity field! Subclasses of this marker interface are associated with
+ * Type of entity field! Subclasses of this abstract class are associated with
  * output tags which are converted into JSF files! Association is known by the
- * implementation of ITagFactory!
+ * implementation of ITagTreeProvider!
+ * 
+ * Binary representation style supported by style field!
  * 
  * Subclasses are singletons!
  * 
@@ -21,7 +23,7 @@ public abstract class EntityFieldType {
 	}
 	
 	public EntityFieldType() {
-		this.style = 0;
+		this.style = NONE;
 	}
 
 	public void setStyle(int style) {
@@ -40,4 +42,10 @@ public abstract class EntityFieldType {
 		
 		return binaryString.charAt(place) == '1' ? 1 : 0;
 	}
+	
+	/**
+	 * 
+	 * @return style settings of the entity field type
+	 */
+	public abstract String[] getStyles();
 }

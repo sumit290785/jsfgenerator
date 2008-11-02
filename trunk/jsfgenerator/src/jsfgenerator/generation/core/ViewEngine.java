@@ -10,8 +10,8 @@ import jsfgenerator.generation.tagmodel.ITagTreeProvider;
 import jsfgenerator.generation.tagmodel.StaticTag;
 import jsfgenerator.generation.tagmodel.Tag;
 import jsfgenerator.generation.tagmodel.TagTree;
-import jsfgenerator.generation.tagmodel.WriterTagVisitor;
 import jsfgenerator.generation.tagmodel.ProxyTag.ProxyTagType;
+import jsfgenerator.generation.tagmodel.visitors.WriterTagVisitor;
 import jsfgenerator.generation.utilities.Tags;
 import jsfgenerator.inspector.entitymodel.EntityModel;
 import jsfgenerator.inspector.entitymodel.fields.EntityField;
@@ -91,10 +91,10 @@ public class ViewEngine {
 			if (form instanceof SimpleEntityForm) {
 
 				TagTree formTagTree = tagFactory.getSimpleFormTagTree();
-				formProxyTag.addAllChildren(formTagTree.getTags());	
+				formProxyTag.addAllChildren(formTagTree.getTags());
 
 				Tag inputProxyTag = Tags.getProxyTagByType(formTagTree, ProxyTagType.INPUT);
-				
+
 				if (inputProxyTag == null) {
 					throw new NullPointerException(
 							"INPUT proxy tag is not found in the form tag tree! Inputs cannot be inserted!");
@@ -138,8 +138,7 @@ public class ViewEngine {
 				// TODO
 			}
 		}
-		
-		
+
 		// test
 		for (OutputStream os : streams) {
 			System.out.println(os.toString());
@@ -154,15 +153,4 @@ public class ViewEngine {
 		return streams;
 	}
 
-	/*
-	 * public static void main(String[] args) { 
-	 * EntityModel entityModel = (new
-	 * DummyModelEngine()).createEntityModel(); ITagFactory tagFactory = new
-	 * DummyTagFactory();
-	 * 
-	 * ViewEngine engine = ViewEngine.getInstance();
-	 * engine.generateViews(entityModel, tagFactory);
-	 * 
-	 * for (OutputStream os : engine.getStreams()) { System.out.println(os); } }
-	 */
 }
