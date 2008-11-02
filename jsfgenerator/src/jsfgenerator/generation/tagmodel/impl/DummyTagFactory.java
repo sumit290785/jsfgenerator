@@ -7,9 +7,9 @@ import jsfgenerator.generation.tagmodel.StaticTag;
 import jsfgenerator.generation.tagmodel.Tag;
 import jsfgenerator.generation.tagmodel.TagTree;
 import jsfgenerator.generation.tagmodel.ProxyTag.ProxyTagType;
-import jsfgenerator.generation.tagmodel.parameters.TagParameter;
-import jsfgenerator.generation.tagmodel.parameters.TemplateParameter;
-import jsfgenerator.generation.tagmodel.parameters.XMLNamespaceParameter;
+import jsfgenerator.generation.tagmodel.parameters.TagAttribute;
+import jsfgenerator.generation.tagmodel.parameters.TemplateAttribute;
+import jsfgenerator.generation.tagmodel.parameters.XMLNamespaceAttribute;
 import jsfgenerator.inspector.entitymodel.fields.EntityFieldType;
 import jsfgenerator.inspector.entitymodel.fields.TextFieldType;
 
@@ -24,12 +24,12 @@ public class DummyTagFactory implements ITagTreeProvider {
 		
 		StaticTag tag = new StaticTag("ui:composition");
 		
-		tag.addParameter(new XMLNamespaceParameter("h", "http://java.sun.com/jsf/html"));
-		tag.addParameter(new XMLNamespaceParameter("ui", "http://java.sun.com/jsf/facelets"));
-		tag.addParameter(new TemplateParameter("template.xhtml"));
+		tag.addAttribute(new XMLNamespaceAttribute("h", "http://java.sun.com/jsf/html"));
+		tag.addAttribute(new XMLNamespaceAttribute("ui", "http://java.sun.com/jsf/facelets"));
+		tag.addAttribute(new TemplateAttribute("template.xhtml"));
 		
 		StaticTag child = new StaticTag("h:outputText");
-		child.addParameter(new TagParameter("value", "something"));
+		child.addAttribute(new TagAttribute("value", "something"));
 		tag.addChild(child);
 		
 		Tag proxyTag = new ProxyTag(ProxyTagType.FORM);
@@ -69,12 +69,12 @@ public class DummyTagFactory implements ITagTreeProvider {
 			TextFieldType textType = (TextFieldType) type;
 			if (textType.isMultiline()) {
 				StaticTag tag = new StaticTag("h:inputTextArea");
-				tag.addParameter(new TagParameter("value", namingContext.getEL("value")));
-				tag.addParameter(new TagParameter("cols", "4"));
+				tag.addAttribute(new TagAttribute("value", namingContext.getEL("value")));
+				tag.addAttribute(new TagAttribute("cols", "4"));
 				return tag;
 			} else {
 				StaticTag tag = new StaticTag("h:inputText");
-				tag.addParameter(new TagParameter("value", namingContext.getEL("value")));
+				tag.addAttribute(new TagAttribute("value", namingContext.getEL("value")));
 				return tag;
 			}
 		}

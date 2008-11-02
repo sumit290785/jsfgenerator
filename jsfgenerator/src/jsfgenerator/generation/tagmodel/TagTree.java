@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import jsfgenerator.generation.tagmodel.visitors.TagVisitor;
+
 /**
  * represents a tag tree! Visitors can be accepted on every element of the tree
  * 

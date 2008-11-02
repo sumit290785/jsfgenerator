@@ -7,7 +7,7 @@ package jsfgenerator.generation.tagmodel.parameters;
  * @author zoltan verebes
  * 
  */
-public class TagParameter {
+public class TagAttribute {
 
 	/**
 	 * A tag parameter either a static parameter or an expression! Expressions
@@ -17,7 +17,7 @@ public class TagParameter {
 		STATIC, EXPRESSION
 	}
 	
-	public TagParameter(String name, String value) {
+	public TagAttribute(String name, String value) {
 		this.name = name;
 		this.value = value;
 	}

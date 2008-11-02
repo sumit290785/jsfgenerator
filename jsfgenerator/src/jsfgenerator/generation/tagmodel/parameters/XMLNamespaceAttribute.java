@@ -8,13 +8,13 @@ package jsfgenerator.generation.tagmodel.parameters;
  * @author zoltan verebes
  * 
  */
-public class XMLNamespaceParameter extends TagParameter {
+public class XMLNamespaceAttribute extends TagAttribute {
 
 	private static final String NAME = "xmlns";
 
 	private String prefix;
 
-	public XMLNamespaceParameter(String prefix, String value) {
+	public XMLNamespaceAttribute(String prefix, String value) {
 		super(NAME + ":" + prefix, value);
 		this.prefix = prefix;
 	}

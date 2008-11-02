@@ -19,7 +19,7 @@ public class EntitySelectionWizardPage extends WizardPage {
 	private List<EntityWizardInput> entities;
 
 	private CheckboxTreeViewer treeViewer;
-
+	
 	protected EntitySelectionWizardPage(List<EntityWizardInput> entities) {
 		super("SingleEntityWizardPage");
 		setTitle("Single entity page");
@@ -58,7 +58,6 @@ public class EntitySelectionWizardPage extends WizardPage {
 		for (EntityWizardInput input : entities) {
 			treeViewer.setSubtreeChecked(input, true);
 		}
-		
 	}
 
 	public List<EntityWizardInput> getSelectedEntities() {

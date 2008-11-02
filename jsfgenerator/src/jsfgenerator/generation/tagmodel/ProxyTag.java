@@ -2,7 +2,7 @@ package jsfgenerator.generation.tagmodel;
 
 import java.util.Set;
 
-import jsfgenerator.generation.tagmodel.parameters.XMLNamespaceParameter;
+import jsfgenerator.generation.tagmodel.parameters.XMLNamespaceAttribute;
 
 /**
  * It is a special tag in the tag tree of an element! At generation time other
@@ -33,7 +33,7 @@ public class ProxyTag extends Tag {
 	 * @see jsfgenerator.generation.tagmodel.Tag#getXmlNamespaces()
 	 */
 	@Override
-	protected Set<XMLNamespaceParameter> getXmlNamespaces() {
+	protected Set<XMLNamespaceAttribute> getXmlNamespaces() {
 		return null;
 	}
 
