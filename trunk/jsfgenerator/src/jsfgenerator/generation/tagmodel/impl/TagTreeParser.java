@@ -16,7 +16,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import jsfgenerator.generation.backingbean.naming.NamingContext;
 import jsfgenerator.generation.tagmodel.ITagTreeProvider;
 import jsfgenerator.generation.tagmodel.ProxyTag;
 import jsfgenerator.generation.tagmodel.StaticTag;
@@ -26,6 +25,7 @@ import jsfgenerator.generation.tagmodel.ProxyTag.ProxyTagType;
 import jsfgenerator.generation.tagmodel.parameters.TagAttribute;
 import jsfgenerator.generation.tagmodel.parameters.TemplateAttribute;
 import jsfgenerator.generation.tagmodel.parameters.XMLNamespaceAttribute;
+import jsfgenerator.generation.tagmodel.parameters.TagAttribute.TagParameterType;
 import jsfgenerator.inspector.entitymodel.fields.EntityFieldType;
 
 import org.w3c.dom.Document;
@@ -87,12 +87,12 @@ public class TagTreeParser implements ITagTreeProvider {
 
 		doc = builder.parse(is);
 	}
-	
+
 	private boolean stylesMatch(Node node, String[] styles) {
 		if (styles == null) {
 			return true;
 		}
-		
+
 		Node styleNode = node.getAttributes().getNamedItem("styles");
 		String styleText;
 		if (styleNode == null) {
@@ -100,13 +100,13 @@ public class TagTreeParser implements ITagTreeProvider {
 		} else {
 			styleText = styleNode.getNodeValue();
 		}
-		
+
 		String[] filters = styleText.split(",");
 		List<String> f = Arrays.asList(filters);
 
 		return f.containsAll(Arrays.asList(styles));
 	}
-	
+
 	protected StaticTag parseStaticTag(Node rootNode) throws ParserException {
 		return parseStaticTag(rootNode, null);
 	}
@@ -172,8 +172,8 @@ public class TagTreeParser implements ITagTreeProvider {
 
 		String text = typeNode.getTextContent();
 		TagAttribute attribute = null;
-		if (text.equalsIgnoreCase("normal")) {
-			attribute = new TagAttribute(keyNode.getTextContent(), valueNode.getTextContent());
+		if (text.equalsIgnoreCase("static") || text.equalsIgnoreCase("expression")) {
+			attribute = new TagAttribute(keyNode.getTextContent(), valueNode.getTextContent(), TagParameterType.valueOf(typeNode.getTextContent().toUpperCase()));
 		} else if (text.equalsIgnoreCase("xmlnamespace")) {
 			String valueText = valueNode.getTextContent();
 			int delimiterIndex = valueText.indexOf(":");
@@ -248,7 +248,7 @@ public class TagTreeParser implements ITagTreeProvider {
 		return tagTree;
 	}
 
-	protected StaticTag getInputTag(String className, String[] styles) throws ParserException  {
+	protected StaticTag getInputTag(String className, String[] styles) throws ParserException {
 		if (className == null || className.equals("")) {
 			throw new IllegalArgumentException("Class name parameter must not be null!");
 		}
@@ -282,7 +282,7 @@ public class TagTreeParser implements ITagTreeProvider {
 		} catch (ParserException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
@@ -308,7 +308,7 @@ public class TagTreeParser implements ITagTreeProvider {
 		} catch (ParserException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
@@ -317,16 +317,11 @@ public class TagTreeParser implements ITagTreeProvider {
 	 * 
 	 * @see
 	 * jsfgenerator.generation.tagmodel.ITagTreeProvider#getInputTag(jsfgenerator
-	 * .inspector.entitymodel.fields.EntityFieldType,
-	 * jsfgenerator.generation.backingbean.naming.NamingContext)
+	 * .inspector.entitymodel.fields.EntityFieldType)
 	 */
-	public StaticTag getInputTag(EntityFieldType type, NamingContext namingContext) {
+	public StaticTag getInputTag(EntityFieldType type) {
 		if (type == null) {
 			throw new IllegalArgumentException("Type parameter cannot be null!");
-		}
-
-		if (namingContext == null) {
-			throw new IllegalArgumentException("Naming context parameter cannot be null!");
 		}
 
 		StaticTag tag = null;

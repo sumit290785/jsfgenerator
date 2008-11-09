@@ -1,5 +1,7 @@
 package jsfgenerator.inspector.entitymodel.pages;
 
+import jsfgenerator.inspector.entitymodel.INamingContext;
+
 
 /**
  * Represents a page which is either a list page or a page managing a particular entity.
@@ -7,7 +9,7 @@ package jsfgenerator.inspector.entitymodel.pages;
  * 
  * @author zoltan verebes
  */
-public abstract class PageModel {
+public abstract class PageModel implements INamingContext {
 	
 	// view id is used to generate the name of the view file
 	private String viewId;
@@ -16,7 +18,7 @@ public abstract class PageModel {
 		this.viewId = viewId;
 	}
 
-	public String getViewId() {
+	public String getName() {
 		return viewId;
 	}
 

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import jsfgenerator.inspector.entitymodel.IEntityHandler;
+import jsfgenerator.inspector.entitymodel.INamingContext;
 import jsfgenerator.inspector.entitymodel.fields.EntityField;
 
 /**
@@ -21,7 +22,7 @@ import jsfgenerator.inspector.entitymodel.fields.EntityField;
  * @author zoltan verebes
  * 
  */
-public abstract class EntityForm implements IEntityHandler {
+public abstract class EntityForm implements IEntityHandler, INamingContext {
 	
 	private String entityName;
 	
@@ -54,9 +55,18 @@ public abstract class EntityForm implements IEntityHandler {
 		commands.add(command);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see jsfgenerator.inspector.entitymodel.INamingContext#getName()
+	 */
+	public String getName() {
+		return entityName;
+	}
+	
 	public String getEntityName() {
 		return entityName;
 	}
+
 
 	public List<EntityField> getFields() {
 		return fields;

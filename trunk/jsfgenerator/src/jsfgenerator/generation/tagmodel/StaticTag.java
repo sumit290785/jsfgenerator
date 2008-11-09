@@ -10,7 +10,7 @@ import jsfgenerator.generation.tagmodel.parameters.XMLNamespaceAttribute;
 
 public class StaticTag extends Tag {
 
-	// name of the tagí
+	// name of the tag
 	private String name;
 	
 	// parameters of the tag

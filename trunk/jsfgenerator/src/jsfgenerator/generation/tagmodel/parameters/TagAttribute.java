@@ -17,9 +17,10 @@ public class TagAttribute {
 		STATIC, EXPRESSION
 	}
 	
-	public TagAttribute(String name, String value) {
+	public TagAttribute(String name, String value, TagParameterType type) {
 		this.name = name;
 		this.value = value;
+		this.type = type;
 	}
 
 	// left value of the parameter

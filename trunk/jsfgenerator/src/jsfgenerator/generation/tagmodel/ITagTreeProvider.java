@@ -1,6 +1,5 @@
 package jsfgenerator.generation.tagmodel;
 
-import jsfgenerator.generation.backingbean.naming.NamingContext;
 import jsfgenerator.inspector.entitymodel.fields.EntityFieldType;
 
 
@@ -34,6 +33,6 @@ public interface ITagTreeProvider {
 
 	public TagTree getSimpleFormTagTree();
 
-	public StaticTag getInputTag(EntityFieldType type, NamingContext namingContext);
+	public StaticTag getInputTag(EntityFieldType type);
 
 }

@@ -18,6 +18,8 @@ import jsfgenerator.generation.tagmodel.parameters.XMLNamespaceAttribute;
  */
 public abstract class Tag {
 
+	private String referenceName;
+
 	// tag children of tag
 	protected List<Tag> children = new ArrayList<Tag>();
 	
@@ -37,7 +39,7 @@ public abstract class Tag {
 		}
 
 		if (getXmlNamespaces() != null) {
-			requiredNamespaces.addAll(getXmlNamespaces());	
+			requiredNamespaces.addAll(getXmlNamespaces());
 		}
 
 		return requiredNamespaces;
@@ -54,7 +56,7 @@ public abstract class Tag {
 	public void addChild(Tag childTag) {
 		this.children.add(childTag);
 	}
-	
+
 	public void addAllChildren(Collection<Tag> children) {
 		this.children.addAll(children);
 	}
@@ -66,6 +68,14 @@ public abstract class Tag {
 	 */
 	public boolean isLeaf() {
 		return children.size() == 0;
+	}
+
+	public void setReferenceName(String referenceName) {
+		this.referenceName = referenceName;
+	}
+
+	public String getReferenceName() {
+		return referenceName;
 	}
 
 }

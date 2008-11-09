@@ -5,12 +5,12 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import jsfgenerator.generation.backingbean.naming.BackingBeanNamingFactory;
 import jsfgenerator.generation.tagmodel.ITagTreeProvider;
 import jsfgenerator.generation.tagmodel.StaticTag;
 import jsfgenerator.generation.tagmodel.Tag;
 import jsfgenerator.generation.tagmodel.TagTree;
 import jsfgenerator.generation.tagmodel.ProxyTag.ProxyTagType;
+import jsfgenerator.generation.tagmodel.visitors.ExpressionEvaluationTagVisitor;
 import jsfgenerator.generation.tagmodel.visitors.WriterTagVisitor;
 import jsfgenerator.generation.utilities.Tags;
 import jsfgenerator.inspector.entitymodel.EntityModel;
@@ -27,8 +27,6 @@ import jsfgenerator.inspector.entitymodel.pages.PageModel;
  * to get the right tag information for the entity model elements.
  * 
  * It is a singleton class!
- * 
- * TODO: replace expression parameters to backing bean EL expression
  * 
  * @author zoltan verebes
  * 
@@ -72,25 +70,26 @@ public class ViewEngine {
 			throw new IllegalArgumentException("Page model cannot be null!");
 		}
 
-		OutputStream os = createOutputStream(pageModel.getViewId());
+		OutputStream os = createOutputStream(pageModel.getName());
 
 		TagTree tagTree = tagFactory.getEntityPageTagTree();
+		tagTree.applyReferenceName(pageModel.getName());
 
 		// replace proxy tags - forms
 		Tag formProxyTag = Tags.getProxyTagByType(tagTree, ProxyTagType.FORM);
 
 		if (formProxyTag == null) {
 			throw new NullPointerException(
-					"FORM proxy tag is not found in the page tag tree! Forms cannot be inserted!");
+					"FORM proxy tag is not found in the page tag tree! Forms ProxyTagType.cannot be inserted!");
 		}
-
-		BackingBeanNamingFactory namingFactory = BackingBeanNamingFactory.getInstance();
 
 		for (EntityForm form : pageModel.getForms()) {
 
 			if (form instanceof SimpleEntityForm) {
-
+				
 				TagTree formTagTree = tagFactory.getSimpleFormTagTree();
+				formTagTree.applyReferenceName(form.getName());
+
 				formProxyTag.addAllChildren(formTagTree.getTags());
 
 				Tag inputProxyTag = Tags.getProxyTagByType(formTagTree, ProxyTagType.INPUT);
@@ -101,8 +100,8 @@ public class ViewEngine {
 				}
 
 				for (EntityField entityField : form.getFields()) {
-					StaticTag inputTag = tagFactory.getInputTag(entityField.getType(), namingFactory
-							.getEntityFormNamingContext(pageModel, form, entityField));
+					StaticTag inputTag = tagFactory.getInputTag(entityField.getType());
+					inputTag.setReferenceName(entityField.getName());
 					if (inputTag != null) {
 						inputProxyTag.addChild(inputTag);
 					}
@@ -111,7 +110,16 @@ public class ViewEngine {
 				throw new UnsupportedOperationException("Complex forms are not supported, yet");
 			}
 		}
+		
+		/*
+		 * evaluation of expression attributes
+		 */
+		ExpressionEvaluationTagVisitor expVisitor = new ExpressionEvaluationTagVisitor();
+		tagTree.apply(expVisitor);
 
+		/*
+		 * tag tree is ready to write it out to an outputstream
+		 */
 		WriterTagVisitor visitor = new WriterTagVisitor(os);
 		tagTree.apply(visitor);
 		return visitor.getOutputStream();
@@ -139,10 +147,6 @@ public class ViewEngine {
 			}
 		}
 
-		// test
-		for (OutputStream os : streams) {
-			System.out.println(os.toString());
-		}
 	}
 
 	public void setStreams(List<OutputStream> streams) {

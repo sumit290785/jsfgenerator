@@ -7,7 +7,7 @@ import jsfgenerator.ui.providers.ProjectElementLabelProvider;
 import jsfgenerator.ui.providers.ResourceSelectionContentProvider;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeSelection;
@@ -17,28 +17,27 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
-public class TagDescriptorSelectionWizardPage extends WizardPage {
+/**
+ * Wizard page implementation for selecting the target folder which is used to
+ * generate the view files into.
+ * 
+ * @author zoltan verebes
+ * 
+ */
+public class ViewFolderSelectionWizardPage extends WizardPage {
 
 	/**
-	 * Filters all of the non container and non xml file type elements of the
-	 * tree viewer content
+	 * Filters out all of the non-container (folder and project) type elements
+	 * of the tree viewer content
 	 * 
 	 * @author zoltan verebes
 	 * 
 	 */
-	public static class XMLViewerFilter extends ViewerFilter {
+	public static class FolderViewerFilter extends ViewerFilter {
 		@Override
 		public boolean select(Viewer viewer, Object parentElement, Object element) {
 			if (element instanceof IContainer) {
 				return true;
-			}
-
-			if (element instanceof IFile) {
-				IFile file = (IFile) element;
-				// is Xml file
-				if (file.getFileExtension().equalsIgnoreCase("xml")) {
-					return true;
-				}
 			}
 
 			return false;
@@ -48,12 +47,12 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 
 	protected ResourceSelectionComposite resourceComposite;
 
-	protected IFile selectedFile;
+	protected IFolder selectedFolder;
 
-	protected TagDescriptorSelectionWizardPage() {
-		super("TagDescriptorSelectionWizardPage");
-		setTitle("Tag description page");
-		setDescription("This is a single page for selecting an xml file");
+	protected ViewFolderSelectionWizardPage() {
+		super("ViewFolderSelectionWizardPage");
+		setTitle("View folder page");
+		setDescription("This is a single page for selecting the target folder of the view files");
 	}
 
 	/*
@@ -65,19 +64,19 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 	 */
 	public void createControl(Composite parent) {
 		resourceComposite = new ResourceSelectionComposite(parent, SWT.NONE, new ProjectElementLabelProvider(),
-				new ResourceSelectionContentProvider(), new XMLViewerFilter());
+				new ResourceSelectionContentProvider(), new FolderViewerFilter());
 		setControl(resourceComposite);
 
 		resourceComposite.getFilteredTree().getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
 
 			public void selectionChanged(SelectionChangedEvent event) {
 				TreeSelection selection = (TreeSelection) event.getSelection();
-				if (selection.getFirstElement() instanceof IFile) {
-					IFile file = (IFile) selection.getFirstElement();
-					selectedFile = file;
-					resourceComposite.getSelectionText().setText(file.getFullPath().toPortableString());
+				if (selection.getFirstElement() instanceof IFolder) {
+					IFolder folder = (IFolder) selection.getFirstElement();
+					selectedFolder = folder;
+					resourceComposite.getSelectionText().setText(folder.getFullPath().toPortableString());
 				} else {
-					selectedFile = null;
+					selectedFolder = null;
 					resourceComposite.getSelectionText().setText("");
 				}
 
@@ -87,11 +86,11 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 		});
 		validate();
 	}
-	
+
 	protected void validate() {
 		if (resourceComposite.getSelectionText().getText() == null
 				|| resourceComposite.getSelectionText().getText().equals("")) {
-			setErrorMessage("Please, select a file");
+			setErrorMessage("Please, select a folder");
 		} else {
 			setErrorMessage(null);
 		}
@@ -100,11 +99,11 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 	}
 
 	public File getSelectedFile() {
-		if (selectedFile == null) {
+		if (selectedFolder == null) {
 			return null;
 		}
-
-		return selectedFile.getLocation().toFile();
+		
+		return selectedFolder.getLocation().toFile();
 	}
 
 }
