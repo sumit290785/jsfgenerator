@@ -23,6 +23,8 @@ public class EntityWizard extends Wizard {
 	private EntitySelectionWizardPage entitySelectionWizardPage;
 	
 	private TagDescriptorSelectionWizardPage tagDescriptionSelectionWizardPage;
+	
+	private ViewFolderSelectionWizardPage viewFolderSelectionWizardPage;
 
 	public EntityWizard(List<EntityWizardInput> entities) {
 		super();
@@ -39,9 +41,11 @@ public class EntityWizard extends Wizard {
 	public void addPages() {
 		entitySelectionWizardPage = new EntitySelectionWizardPage(entities);
 		tagDescriptionSelectionWizardPage = new TagDescriptorSelectionWizardPage();
+		viewFolderSelectionWizardPage = new ViewFolderSelectionWizardPage();
 		
 		addPage(entitySelectionWizardPage);
 		addPage(tagDescriptionSelectionWizardPage);
+		addPage(viewFolderSelectionWizardPage);
 		super.addPages();
 	}
 
@@ -79,12 +83,16 @@ public class EntityWizard extends Wizard {
 
 		ViewEngine engine = ViewEngine.getInstance();
 		engine.generateViews(entityModel, tagFactory);
-		
-		for (OutputStream os : engine.getStreams()) {
-			System.out.println(os);
-		}
 
+		saveView(engine.getStreams());
 		return true;
+	}
+	
+	private void saveView(List<OutputStream> streams) {
+		
+		for (OutputStream os : streams) {
+			System.out.println(os);
+		}		
 	}
 
 }

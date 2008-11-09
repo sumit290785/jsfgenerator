@@ -41,7 +41,7 @@ public class BackingBeanNamingFactory {
 	public String getPageModelBackingBeanName(PageModel pageModel) {
 		if (pageModel instanceof EntityPageModel) {
 			StringBuffer buffer = new StringBuffer();
-			buffer.append(pageModel.getViewId().toLowerCase());
+			buffer.append(pageModel.getName().toLowerCase());
 			buffer.append(HOME);
 			return buffer.toString();
 		}
