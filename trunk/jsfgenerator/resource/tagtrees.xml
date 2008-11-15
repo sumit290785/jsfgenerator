@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tagprovider>
+	<tagtree id="entitypage">
+		<statictag name="ui:composition">
+			<statictag name="h:inputText">
+				<attribute type="normal" key="value" value="akarmi" />
+			</statictag>
+			<proxytag type="FORM" />
+			
+			<attribute type="xmlnamespace" value="h:http://java.sun.com/jsf/html" />
+			<attribute type="xmlnamespace" value="ui:http://java.sun.com/jsf/facelets" />
+			<attribute type="template" value="template.xhtml" />
+		</statictag>
+	</tagtree>
+	
+	<tagtree id="simpleform">
+		<statictag name="table">
+			<proxytag type="INPUT" />
+		</statictag>
+	</tagtree>
+	
+	<inputtag class="jsfgenerator.inspector.entitymodel.fields.TextFieldType">
+		<statictag name="h:inputText" styles="NONE">
+			<attribute type="normal" key="value" value="EXPRESSION"/>
+		</statictag>
+		
+		<statictag name="h:inputTextArea" styles="MULTILINE">
+			<attribute type="normal" key="value" value="EXPRESSION"/>
+			<attribute type="normal" key="cols" value="10"/>
+		</statictag>
+	
+	</inputtag>
+	
+	<inputtag class="jsfgenerator.inspector.entitymodel.fields.NumberFieldType">
+		<statictag name="h:inputText" styles="NONE,INTEGER">
+			<attribute type="normal" key="value" value="EXPRESSION"/>
+		</statictag>
+	</inputtag>
+	
+</tagprovider>

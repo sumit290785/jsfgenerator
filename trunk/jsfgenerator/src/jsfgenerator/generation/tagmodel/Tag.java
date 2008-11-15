@@ -18,6 +18,8 @@ import jsfgenerator.generation.tagmodel.parameters.XMLNamespaceAttribute;
  */
 public abstract class Tag {
 
+	private Tag parent;
+	
 	private String referenceName;
 
 	// tag children of tag
@@ -34,7 +36,7 @@ public abstract class Tag {
 	public Set<XMLNamespaceAttribute> getRequiredNamespaces() {
 		Set<XMLNamespaceAttribute> requiredNamespaces = new HashSet<XMLNamespaceAttribute>();
 
-		for (Tag child : getChildren()) {
+		for (Tag child : children) {
 			requiredNamespaces.addAll(child.getRequiredNamespaces());
 		}
 
@@ -54,11 +56,14 @@ public abstract class Tag {
 	}
 
 	public void addChild(Tag childTag) {
+		childTag.setParent(this);
 		this.children.add(childTag);
 	}
 
 	public void addAllChildren(Collection<Tag> children) {
-		this.children.addAll(children);
+		for (Tag tag : children) {
+			this.addChild(tag);
+		}
 	}
 
 	/**
@@ -76,6 +81,14 @@ public abstract class Tag {
 
 	public String getReferenceName() {
 		return referenceName;
+	}
+
+	public void setParent(Tag parent) {
+		this.parent = parent;
+	}
+
+	public Tag getParent() {
+		return parent;
 	}
 
 }

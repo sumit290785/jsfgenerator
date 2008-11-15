@@ -33,6 +33,26 @@ public class TagTree {
 	}
 
 	/**
+	 * Visitor visits all of the parents of the tag from the tag up to the root
+	 * element of the tree or until visitor's visit function's result is true.
+	 * First it visits the closer tags above itself. If vistor returns with
+	 * false it stops
+	 * 
+	 * @param visitor
+	 * @param tag
+	 */
+	public void applyParents(Tag tag, TagVisitor visitor) {
+		Tag parent = tag.getParent();
+		if (parent == null) {
+			return;
+		}
+		
+		if (visitor.visit(parent)) {
+			applyParents(parent, visitor);
+		}
+	}
+
+	/**
 	 * reference name is applied for all of the top level tags of the tag tree
 	 * 
 	 * @param referenceName
