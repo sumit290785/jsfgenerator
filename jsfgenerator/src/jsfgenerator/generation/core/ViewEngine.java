@@ -64,7 +64,7 @@ public class ViewEngine {
 		return new ByteArrayOutputStream();
 	}
 
-	protected OutputStream generateEntityPage(EntityPageModel pageModel, ITagTreeProvider tagFactory) {
+	protected OutputStream generateEntityPage(EntityPageModel pageModel, ITagTreeProvider tagTreeProvider) {
 
 		if (pageModel == null) {
 			throw new IllegalArgumentException("Page model cannot be null!");
@@ -72,7 +72,7 @@ public class ViewEngine {
 
 		OutputStream os = createOutputStream(pageModel.getName());
 
-		TagTree tagTree = tagFactory.getEntityPageTagTree();
+		TagTree tagTree = tagTreeProvider.getEntityPageTagTree();
 		tagTree.applyReferenceName(pageModel.getName());
 
 		// replace proxy tags - forms
@@ -86,8 +86,8 @@ public class ViewEngine {
 		for (EntityForm form : pageModel.getForms()) {
 
 			if (form instanceof SimpleEntityForm) {
-				
-				TagTree formTagTree = tagFactory.getSimpleFormTagTree();
+
+				TagTree formTagTree = tagTreeProvider.getSimpleFormTagTree();
 				formTagTree.applyReferenceName(form.getName());
 
 				formProxyTag.addAllChildren(formTagTree.getTags());
@@ -100,7 +100,7 @@ public class ViewEngine {
 				}
 
 				for (EntityField entityField : form.getFields()) {
-					StaticTag inputTag = tagFactory.getInputTag(entityField.getType());
+					StaticTag inputTag = tagTreeProvider.getInputTag(entityField.getType());
 					inputTag.setReferenceName(entityField.getName());
 					if (inputTag != null) {
 						inputProxyTag.addChild(inputTag);
@@ -110,36 +110,36 @@ public class ViewEngine {
 				throw new UnsupportedOperationException("Complex forms are not supported, yet");
 			}
 		}
-		
+
 		/*
 		 * evaluation of expression attributes
 		 */
-		ExpressionEvaluationTagVisitor expVisitor = new ExpressionEvaluationTagVisitor();
+		ExpressionEvaluationTagVisitor expVisitor = new ExpressionEvaluationTagVisitor(tagTree);
 		tagTree.apply(expVisitor);
 
 		/*
-		 * tag tree is ready to write it out to an outputstream
+		 * tag tree is ready to write it out into the output
 		 */
 		WriterTagVisitor visitor = new WriterTagVisitor(os);
 		tagTree.apply(visitor);
 		return visitor.getOutputStream();
 	}
 
-	public void generateViews(EntityModel model, ITagTreeProvider tagFactory) {
+	public void generateViews(EntityModel model, ITagTreeProvider tagTreeProvider) {
 
 		if (model == null) {
 			throw new IllegalArgumentException("Model parameter cannot be null!");
 		}
 
-		if (tagFactory == null) {
-			throw new IllegalArgumentException("tag factory parameter cannot be null");
+		if (tagTreeProvider == null) {
+			throw new IllegalArgumentException("tag tree provider parameter cannot be null");
 		}
 
 		getStreams().clear();
 		for (PageModel pageModel : model.getPageModels()) {
 			if (pageModel instanceof EntityPageModel) {
 
-				OutputStream view = generateEntityPage((EntityPageModel) pageModel, tagFactory);
+				OutputStream view = generateEntityPage((EntityPageModel) pageModel, tagTreeProvider);
 				getStreams().add(view);
 
 			} else if (pageModel instanceof EntityListPageModel) {
