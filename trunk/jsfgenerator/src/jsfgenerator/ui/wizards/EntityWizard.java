@@ -8,12 +8,16 @@ import java.io.OutputStream;
 import java.util.List;
 
 import jsfgenerator.generation.common.ViewEngine;
+import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
+import jsfgenerator.generation.controller.nodes.IControllerNodeProvider;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.impl.TagTreeParser;
 import jsfgenerator.inspector.entitymodel.AbstractEntityModelBuilder;
 import jsfgenerator.inspector.entitymodel.EntityModel;
 import jsfgenerator.inspector.entitymodel.impl.ASTEntityModelBuilder;
+import jsfgenerator.inspector.entitymodel.pages.PageModel;
 
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jface.wizard.Wizard;
 
 public class EntityWizard extends Wizard {
@@ -75,24 +79,29 @@ public class EntityWizard extends Wizard {
 		try {
 			is = new FileInputStream(file);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
 		ITagTreeProvider tagFactory = new TagTreeParser(is);
+		//TODO
+		IControllerNodeProvider controllerNodeProvider = new ControllerNodeFactory("selected.pkg");
 
 		ViewEngine engine = ViewEngine.getInstance();
-		engine.generateViews(entityModel, tagFactory);
+		engine.generateViewsAndControllers(entityModel, tagFactory, controllerNodeProvider);
 
-		saveView(engine.getStreams());
+		for (PageModel pageModel : entityModel.getPageModels()) {
+			saveView(pageModel.getName(), engine.getView(pageModel.getName()));
+			saveController(pageModel.getName(), engine.getController(pageModel.getName()));
+		}
+		
 		return true;
 	}
 	
-	private void saveView(List<OutputStream> streams) {
-		
-		for (OutputStream os : streams) {
-			System.out.println(os);
-		}		
+	private void saveController(String name, CompilationUnit controller) {
+		//TODO
+	}
+
+	private void saveView(String viewId, OutputStream stream) {
+		//TODO
 	}
 
 }

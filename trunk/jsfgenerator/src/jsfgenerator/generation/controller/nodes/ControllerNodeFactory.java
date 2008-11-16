@@ -1,0 +1,38 @@
+package jsfgenerator.generation.controller.nodes;
+
+import jsfgenerator.generation.controller.utilities.ControllerNodeUtils;
+import jsfgenerator.inspector.entitymodel.forms.SimpleEntityForm;
+
+public class ControllerNodeFactory implements IControllerNodeProvider {
+
+	// entity page controller super class
+	// TODO: may be moved to external definition file with its generic
+	// parameters
+	private static final String SUPER_CLASS_NAME = null;
+
+	private static final String SIMPLE_FORM_FIELD_CLASS = "jsfgenerator.xxx.EditHelper";
+
+	private String packageName;
+
+	public ControllerNodeFactory(String packageName) {
+		this.packageName = packageName;
+	}
+
+	public ClassControllerNode createEntityPageClassNode(String viewId) {
+		return new ClassControllerNode(packageName, viewId + "Page", SUPER_CLASS_NAME);
+	}
+
+	public FieldControllerNode createSimpleFormControllerNode(SimpleEntityForm form) {
+		String fieldType = ControllerNodeUtils.addGenericParameter(SIMPLE_FORM_FIELD_CLASS, form.getEntityName());
+		return new FieldControllerNode(form.getName() + "Editor", fieldType, fieldType);
+	}
+
+	public FunctionControllerNode createSimpleFormGetterNode(SimpleEntityForm form) {
+		return null;
+	}
+
+	public String getPackageName() {
+		return packageName;
+	}
+
+}
