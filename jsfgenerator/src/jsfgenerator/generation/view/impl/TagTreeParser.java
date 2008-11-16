@@ -173,7 +173,8 @@ public class TagTreeParser implements ITagTreeProvider {
 		String text = typeNode.getTextContent();
 		TagAttribute attribute = null;
 		if (text.equalsIgnoreCase("static") || text.equalsIgnoreCase("expression")) {
-			attribute = new TagAttribute(keyNode.getTextContent(), valueNode.getTextContent(), TagParameterType.valueOf(typeNode.getTextContent().toUpperCase()));
+			attribute = new TagAttribute(keyNode.getTextContent(), valueNode.getTextContent(), TagParameterType
+					.valueOf(typeNode.getTextContent().toUpperCase()));
 		} else if (text.equalsIgnoreCase("xmlnamespace")) {
 			String valueText = valueNode.getTextContent();
 			int delimiterIndex = valueText.indexOf(":");
