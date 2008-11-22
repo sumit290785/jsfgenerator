@@ -11,10 +11,10 @@ import java.util.List;
 import jsfgenerator.entitymodel.AbstractEntityModelBuilder;
 import jsfgenerator.entitymodel.EntityModel;
 import jsfgenerator.entitymodel.impl.ASTEntityModelBuilder;
-import jsfgenerator.entitymodel.pages.PageModel;
+import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.generation.common.ViewEngine;
+import jsfgenerator.generation.controller.IControllerNodeProvider;
 import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
-import jsfgenerator.generation.controller.nodes.IControllerNodeProvider;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.impl.TagTreeParser;
 
@@ -98,9 +98,9 @@ public class EntityWizard extends Wizard {
 		ViewEngine engine = ViewEngine.getInstance();
 		engine.generateViewsAndControllers(entityModel, tagFactory, controllerNodeProvider);
 
-		for (PageModel pageModel : entityModel.getPageModels()) {
-			saveView(pageModel.getName(), engine.getView(pageModel.getName()));
-			saveController(pageModel.getName(), engine.getController(pageModel.getName()));
+		for (AbstractPageModel pageModel : entityModel.getPageModels()) {
+			saveView(pageModel.getViewId(), engine.getView(pageModel.getViewId()));
+			saveController(pageModel.getViewId(), engine.getController(pageModel.getViewId()));
 		}
 		
 		return true;

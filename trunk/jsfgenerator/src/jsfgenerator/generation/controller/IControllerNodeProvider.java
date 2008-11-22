@@ -1,6 +1,9 @@
-package jsfgenerator.generation.controller.nodes;
+package jsfgenerator.generation.controller;
 
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
+import jsfgenerator.generation.controller.nodes.ClassControllerNode;
+import jsfgenerator.generation.controller.nodes.FieldControllerNode;
+import jsfgenerator.generation.controller.nodes.FunctionControllerNode;
 
 public interface IControllerNodeProvider {
 

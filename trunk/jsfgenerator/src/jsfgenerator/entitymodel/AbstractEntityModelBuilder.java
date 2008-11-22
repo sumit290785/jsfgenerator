@@ -7,7 +7,7 @@ import java.util.Map;
 
 import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
-import jsfgenerator.entitymodel.pages.PageModel;
+import jsfgenerator.entitymodel.pages.AbstractPageModel;
 
 /**
  * MVC design pattern's model element can be defined in many different ways! A
@@ -35,7 +35,7 @@ public abstract class AbstractEntityModelBuilder<T> {
 
 	protected EntityModel entityModel;
 	
-	protected Map<String, PageModel> pages;
+	protected Map<String, AbstractPageModel> pages;
 
 	/**
 	 * calls the clear method of the class to have an empty model
@@ -49,7 +49,7 @@ public abstract class AbstractEntityModelBuilder<T> {
 	 * @return metamodel of the application model
 	 */
 	public EntityModel createEntityModel() {
-		for (PageModel view : pages.values()) {
+		for (AbstractPageModel view : pages.values()) {
 			entityModel.addPageModel(view);	
 		}
 		
@@ -62,7 +62,7 @@ public abstract class AbstractEntityModelBuilder<T> {
 	public void clear() {
 		entityModel = new EntityModel();
 		entities = new ArrayList<T>();
-		pages = new HashMap<String, PageModel>();
+		pages = new HashMap<String, AbstractPageModel>();
 	}
 
 	/**
@@ -76,7 +76,7 @@ public abstract class AbstractEntityModelBuilder<T> {
 			throw new IllegalArgumentException("View already in the model: " + viewId);
 		}
 		
-		PageModel page = new EntityPageModel();
+		AbstractPageModel page = new EntityPageModel();
 		page.setViewId(viewId);
 		pages.put(viewId, page);
 	}
@@ -91,7 +91,7 @@ public abstract class AbstractEntityModelBuilder<T> {
 			throw new IllegalArgumentException("View already in the model: " + viewId);
 		}
 		
-		PageModel page = new EntityListPageModel();
+		AbstractPageModel page = new EntityListPageModel();
 		page.setViewId(viewId);
 		pages.put(viewId, page);
 	}
@@ -116,7 +116,7 @@ public abstract class AbstractEntityModelBuilder<T> {
 			throw new IllegalArgumentException("Entity page parameter cannot be null!");
 		}
 		
-		PageModel page = pages.get(viewId);
+		AbstractPageModel page = pages.get(viewId);
 		if (page == null) {
 			throw new IllegalArgumentException("View is not in the model: " + viewId);
 		}
@@ -153,7 +153,7 @@ public abstract class AbstractEntityModelBuilder<T> {
 	 * @param viewId
 	 * @return
 	 */
-	protected PageModel getView(String viewId) {
+	protected AbstractPageModel getView(String viewId) {
 		return pages.get(viewId);
 	}
 	

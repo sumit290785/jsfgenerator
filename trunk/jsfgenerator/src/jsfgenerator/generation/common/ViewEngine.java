@@ -10,13 +10,13 @@ import jsfgenerator.entitymodel.forms.EntityForm;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
-import jsfgenerator.entitymodel.pages.PageModel;
+import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.generation.common.treebuilders.EntityPageTreeBuilder;
 import jsfgenerator.generation.common.visitors.ControllerTreeVisitor;
 import jsfgenerator.generation.common.visitors.ExpressionEvaluationTagVisitor;
 import jsfgenerator.generation.common.visitors.WriterTagVisitor;
 import jsfgenerator.generation.controller.ControllerTree;
-import jsfgenerator.generation.controller.nodes.IControllerNodeProvider;
+import jsfgenerator.generation.controller.IControllerNodeProvider;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.TagTree;
 
@@ -63,7 +63,7 @@ public class ViewEngine {
 		}
 
 		init();
-		for (PageModel pageModel : model.getPageModels()) {
+		for (AbstractPageModel pageModel : model.getPageModels()) {
 			if (pageModel instanceof EntityPageModel) {
 				generateEntityPageViewAndController((EntityPageModel) pageModel, tagTreeProvider,
 						controllerNodeProvider);
@@ -118,7 +118,7 @@ public class ViewEngine {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 
 		// TODO
-		EntityPageTreeBuilder treeBuilder = new EntityPageTreeBuilder(pageModel.getName(), tagTreeProvider,
+		EntityPageTreeBuilder treeBuilder = new EntityPageTreeBuilder(pageModel.getViewId(), tagTreeProvider,
 				controllerNodeProvider);
 
 		for (EntityForm form : pageModel.getForms()) {
@@ -152,8 +152,8 @@ public class ViewEngine {
 		WriterTagVisitor visitor = new WriterTagVisitor(os);
 		tagTree.apply(visitor);
 
-		views.put(pageModel.getName(), visitor.getOutputStream());
-		controllers.put(pageModel.getName(), treeVisitor.getCompilationUnit());
+		views.put(pageModel.getViewId(), visitor.getOutputStream());
+		controllers.put(pageModel.getViewId(), treeVisitor.getCompilationUnit());
 	}
 
 }

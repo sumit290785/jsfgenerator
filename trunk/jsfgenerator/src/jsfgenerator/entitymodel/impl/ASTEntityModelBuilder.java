@@ -10,7 +10,7 @@ import jsfgenerator.entitymodel.fields.NumberFieldType;
 import jsfgenerator.entitymodel.fields.TextFieldType;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
-import jsfgenerator.entitymodel.pages.PageModel;
+import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.ui.wizards.EntityWizardInput;
 import jsfgenerator.ui.wizards.EntityWizardInput.EntityFieldInput;
 
@@ -34,7 +34,7 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityWiza
 	 */
 	@Override
 	public void addComplexEntityFormList(EntityWizardInput entity, String viewId) {
-		PageModel view = getView(viewId);
+		AbstractPageModel view = getView(viewId);
 		
 		// TODO
 	}
@@ -47,7 +47,7 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityWiza
 	 */
 	@Override
 	public void addSimpleEntityForm(EntityWizardInput entity, String viewId) {
-		PageModel view = getView(viewId);
+		AbstractPageModel view = getView(viewId);
 
 		if (!(view instanceof EntityPageModel)) {
 			throw new IllegalArgumentException("Simple entity form is applicable only for entity page models!");

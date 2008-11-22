@@ -6,8 +6,8 @@ import jsfgenerator.entitymodel.fields.EntityField;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.generation.common.utilities.Tags;
 import jsfgenerator.generation.controller.ControllerTree;
+import jsfgenerator.generation.controller.IControllerNodeProvider;
 import jsfgenerator.generation.controller.nodes.ControllerNode;
-import jsfgenerator.generation.controller.nodes.IControllerNodeProvider;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.ProxyTag;
 import jsfgenerator.generation.view.StaticTag;
@@ -68,7 +68,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		 * add the info to the tag tree for the view
 		 */
 		TagTree simpleFormTagTree = tagTreeProvider.getSimpleFormTagTree();
-		simpleFormTagTree.applyReferenceName(form.getName());
+		simpleFormTagTree.applyReferenceName(form.getFormName());
 		getFormProxyTag().addAllChildren(simpleFormTagTree.getNodes());
 
 		/*
@@ -82,16 +82,16 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	}
 
 	public void addInputField(SimpleEntityForm form, EntityField field) {
-		TagNode inputProxyTag = Tags.getProxyTagByType(getFormTagByName(form.getName()), ProxyTagType.INPUT);
+		TagNode inputProxyTag = Tags.getProxyTagByType(getFormTagByName(form.getFormName()), ProxyTagType.INPUT);
 
 		if (inputProxyTag == null) {
 			throw new IllegalArgumentException(
 					"INPUT Proxy tag node is not found on the form passed to the function! Form name: "
-							+ form.getName());
+							+ form.getFormName());
 		}
 
 		StaticTag inputTag = tagTreeProvider.getInputTag(field.getType());
-		inputTag.setReferenceName(field.getName());
+		inputTag.setReferenceName(field.getFieldName());
 		if (inputTag != null) {
 			inputProxyTag.addChild(inputTag);
 		}

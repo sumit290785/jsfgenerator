@@ -3,7 +3,7 @@ package jsfgenerator.entitymodel;
 import java.util.HashSet;
 import java.util.Set;
 
-import jsfgenerator.entitymodel.pages.PageModel;
+import jsfgenerator.entitymodel.pages.AbstractPageModel;
 
 /**
  * JSF generator project is to generate the view and the controller elements of
@@ -27,17 +27,17 @@ import jsfgenerator.entitymodel.pages.PageModel;
  */
 public class EntityModel {
 
-	private Set<PageModel> pageModels = new HashSet<PageModel>();
+	private Set<AbstractPageModel> pageModels = new HashSet<AbstractPageModel>();
 
-	public void setPageModels(Set<PageModel> pageModels) {
+	public void setPageModels(Set<AbstractPageModel> pageModels) {
 		this.pageModels = pageModels;
 	}
 
-	public Set<PageModel> getPageModels() {
+	public Set<AbstractPageModel> getPageModels() {
 		return pageModels;
 	}
 	
-	public void addPageModel(PageModel pageModel) {
+	public void addPageModel(AbstractPageModel pageModel) {
 		pageModels.add(pageModel);
 	}
 
