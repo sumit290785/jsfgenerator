@@ -1,7 +1,7 @@
 package jsfgenerator.generation.common.treebuilders;
 
 import jsfgenerator.generation.controller.ControllerTree;
-import jsfgenerator.generation.controller.nodes.IControllerNodeProvider;
+import jsfgenerator.generation.controller.IControllerNodeProvider;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.TagTree;
 

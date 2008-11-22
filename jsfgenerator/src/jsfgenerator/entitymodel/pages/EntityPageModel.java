@@ -12,7 +12,7 @@ import jsfgenerator.entitymodel.forms.EntityForm;
  * 
  * @author zoltan verebes
  */
-public class EntityPageModel extends PageModel {
+public class EntityPageModel extends AbstractPageModel {
 
 	// forms of the entity page. they are not necessarily EntityForm of T
 	private List<EntityForm> forms = new ArrayList<EntityForm>();

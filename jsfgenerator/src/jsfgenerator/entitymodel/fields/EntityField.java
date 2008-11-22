@@ -1,19 +1,19 @@
 package jsfgenerator.entitymodel.fields;
 
-import jsfgenerator.entitymodel.INamingContext;
 
 /**
- * Represents a field of an entity in the entity model! It has a name and a type!
+ * Represents a field of an entity in the entity model! It has a name and a
+ * type!
  * 
  * @author zoltan verebes
- *
+ * 
  */
-public class EntityField implements INamingContext {
-	
+public class EntityField {
+
 	private String name;
-	
+
 	private EntityFieldType type;
-	
+
 	public EntityField(String name, EntityFieldType type) {
 		super();
 		this.name = name;
@@ -34,9 +34,10 @@ public class EntityField implements INamingContext {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see jsfgenerator.inspector.entitymodel.INamingContext#getName()
 	 */
-	public String getName() {
+	public String getFieldName() {
 		return name;
 	}
 

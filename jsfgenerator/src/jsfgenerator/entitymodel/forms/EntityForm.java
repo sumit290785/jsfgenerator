@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jsfgenerator.entitymodel.IEntityHandler;
-import jsfgenerator.entitymodel.INamingContext;
 import jsfgenerator.entitymodel.fields.EntityField;
 
 /**
@@ -22,12 +20,12 @@ import jsfgenerator.entitymodel.fields.EntityField;
  * @author zoltan verebes
  * 
  */
-public abstract class EntityForm implements IEntityHandler, INamingContext {
-	
+public abstract class EntityForm {
+
 	private String entityName;
-	
+
 	private List<EntityField> fields = new ArrayList<EntityField>();
-	
+
 	public EntityForm(String entityName, List<EntityField> fields) {
 		this.entityName = entityName;
 		this.fields = fields;
@@ -35,7 +33,6 @@ public abstract class EntityForm implements IEntityHandler, INamingContext {
 
 	// commands of the particular form
 	private Set<Command> commands = new HashSet<Command>();
-
 
 	public void setCommands(Set<Command> commands) {
 		this.commands = commands;
@@ -54,19 +51,15 @@ public abstract class EntityForm implements IEntityHandler, INamingContext {
 	public void addCommand(Command command) {
 		commands.add(command);
 	}
-	
+
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see jsfgenerator.inspector.entitymodel.INamingContext#getName()
 	 */
-	public String getName() {
+	public String getFormName() {
 		return entityName;
 	}
-	
-	public String getEntityName() {
-		return entityName;
-	}
-
 
 	public List<EntityField> getFields() {
 		return fields;

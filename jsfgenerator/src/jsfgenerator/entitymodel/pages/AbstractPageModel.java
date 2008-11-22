@@ -1,6 +1,5 @@
 package jsfgenerator.entitymodel.pages;
 
-import jsfgenerator.entitymodel.INamingContext;
 
 
 /**
@@ -9,7 +8,7 @@ import jsfgenerator.entitymodel.INamingContext;
  * 
  * @author zoltan verebes
  */
-public abstract class PageModel implements INamingContext {
+public abstract class AbstractPageModel {
 	
 	// view id is used to generate the name of the view file
 	private String viewId;
@@ -18,7 +17,7 @@ public abstract class PageModel implements INamingContext {
 		this.viewId = viewId;
 	}
 
-	public String getName() {
+	public String getViewId() {
 		return viewId;
 	}
 

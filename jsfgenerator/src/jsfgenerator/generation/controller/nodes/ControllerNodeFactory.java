@@ -1,6 +1,7 @@
 package jsfgenerator.generation.controller.nodes;
 
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
+import jsfgenerator.generation.controller.IControllerNodeProvider;
 import jsfgenerator.generation.controller.utilities.ControllerNodeUtils;
 
 public class ControllerNodeFactory implements IControllerNodeProvider {
@@ -23,8 +24,8 @@ public class ControllerNodeFactory implements IControllerNodeProvider {
 	}
 
 	public FieldControllerNode createSimpleFormControllerNode(SimpleEntityForm form) {
-		String fieldType = ControllerNodeUtils.addGenericParameter(SIMPLE_FORM_FIELD_CLASS, form.getEntityName());
-		return new FieldControllerNode(form.getName() + "Editor", fieldType, fieldType);
+		String fieldType = ControllerNodeUtils.addGenericParameter(SIMPLE_FORM_FIELD_CLASS, form.getFormName());
+		return new FieldControllerNode(form.getFormName() + "Editor", fieldType, fieldType);
 	}
 
 	public FunctionControllerNode createSimpleFormGetterNode(SimpleEntityForm form) {

@@ -13,7 +13,7 @@ import org.eclipse.jdt.core.dom.Type;
  */
 public class EntityWizardInput {
 
-	public class EntityFieldInput {
+	public static class EntityFieldInput {
 		
 		private EntityWizardInput parent;
 
