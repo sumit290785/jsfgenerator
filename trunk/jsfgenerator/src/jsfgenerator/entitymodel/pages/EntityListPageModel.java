@@ -1,10 +1,10 @@
-package jsfgenerator.inspector.entitymodel.pages;
+package jsfgenerator.entitymodel.pages;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import jsfgenerator.inspector.entitymodel.IEntityHandler;
-import jsfgenerator.inspector.entitymodel.fields.EntityField;
+import jsfgenerator.entitymodel.IEntityHandler;
+import jsfgenerator.entitymodel.fields.EntityField;
 
 /**
  * 

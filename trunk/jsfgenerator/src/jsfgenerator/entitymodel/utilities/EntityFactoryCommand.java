@@ -1,4 +1,4 @@
-package jsfgenerator.inspector.entitymodel.utilities;
+package jsfgenerator.entitymodel.utilities;
 
 import java.util.Arrays;
 import java.util.HashMap;

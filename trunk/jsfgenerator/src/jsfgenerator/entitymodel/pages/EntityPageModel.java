@@ -1,9 +1,9 @@
-package jsfgenerator.inspector.entitymodel.pages;
+package jsfgenerator.entitymodel.pages;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import jsfgenerator.inspector.entitymodel.forms.EntityForm;
+import jsfgenerator.entitymodel.forms.EntityForm;
 
 /**
  * It describes a page of a single entity type. Entity is a domain entity, which

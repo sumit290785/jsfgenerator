@@ -1,13 +1,13 @@
-package jsfgenerator.inspector.entitymodel.forms;
+package jsfgenerator.entitymodel.forms;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jsfgenerator.inspector.entitymodel.IEntityHandler;
-import jsfgenerator.inspector.entitymodel.INamingContext;
-import jsfgenerator.inspector.entitymodel.fields.EntityField;
+import jsfgenerator.entitymodel.IEntityHandler;
+import jsfgenerator.entitymodel.INamingContext;
+import jsfgenerator.entitymodel.fields.EntityField;
 
 /**
  * Abstract super class of a simple entity form or an entity list which contains

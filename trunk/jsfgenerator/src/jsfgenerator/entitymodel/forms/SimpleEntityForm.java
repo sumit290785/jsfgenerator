@@ -1,8 +1,8 @@
-package jsfgenerator.inspector.entitymodel.forms;
+package jsfgenerator.entitymodel.forms;
 
 import java.util.List;
 
-import jsfgenerator.inspector.entitymodel.fields.EntityField;
+import jsfgenerator.entitymodel.fields.EntityField;
 
 /**
  * A simple entity form describes the simple and embedded fields of an entity

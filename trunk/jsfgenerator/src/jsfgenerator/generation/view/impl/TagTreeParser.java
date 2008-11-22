@@ -16,6 +16,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import jsfgenerator.entitymodel.fields.EntityFieldType;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.ProxyTag;
 import jsfgenerator.generation.view.StaticTag;
@@ -26,7 +27,6 @@ import jsfgenerator.generation.view.parameters.TagAttribute;
 import jsfgenerator.generation.view.parameters.TemplateAttribute;
 import jsfgenerator.generation.view.parameters.XMLNamespaceAttribute;
 import jsfgenerator.generation.view.parameters.TagAttribute.TagParameterType;
-import jsfgenerator.inspector.entitymodel.fields.EntityFieldType;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

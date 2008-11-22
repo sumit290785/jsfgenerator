@@ -1,4 +1,4 @@
-package jsfgenerator.inspector.entitymodel.fields;
+package jsfgenerator.entitymodel.fields;
 
 import java.util.ArrayList;
 import java.util.List;

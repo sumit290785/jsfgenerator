@@ -8,15 +8,15 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
+import jsfgenerator.entitymodel.AbstractEntityModelBuilder;
+import jsfgenerator.entitymodel.EntityModel;
+import jsfgenerator.entitymodel.impl.ASTEntityModelBuilder;
+import jsfgenerator.entitymodel.pages.PageModel;
 import jsfgenerator.generation.common.ViewEngine;
 import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
 import jsfgenerator.generation.controller.nodes.IControllerNodeProvider;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.impl.TagTreeParser;
-import jsfgenerator.inspector.entitymodel.AbstractEntityModelBuilder;
-import jsfgenerator.inspector.entitymodel.EntityModel;
-import jsfgenerator.inspector.entitymodel.impl.ASTEntityModelBuilder;
-import jsfgenerator.inspector.entitymodel.pages.PageModel;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;

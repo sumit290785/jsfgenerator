@@ -1,4 +1,4 @@
-package jsfgenerator.inspector.entitymodel.fields;
+package jsfgenerator.entitymodel.fields;
 
 /**
  * Type of entity field! Subclasses of this abstract class are associated with

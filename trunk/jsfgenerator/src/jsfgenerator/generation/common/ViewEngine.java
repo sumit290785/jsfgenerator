@@ -4,6 +4,13 @@ import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import jsfgenerator.entitymodel.EntityModel;
+import jsfgenerator.entitymodel.fields.EntityField;
+import jsfgenerator.entitymodel.forms.EntityForm;
+import jsfgenerator.entitymodel.forms.SimpleEntityForm;
+import jsfgenerator.entitymodel.pages.EntityListPageModel;
+import jsfgenerator.entitymodel.pages.EntityPageModel;
+import jsfgenerator.entitymodel.pages.PageModel;
 import jsfgenerator.generation.common.treebuilders.EntityPageTreeBuilder;
 import jsfgenerator.generation.common.visitors.ControllerTreeVisitor;
 import jsfgenerator.generation.common.visitors.ExpressionEvaluationTagVisitor;
@@ -12,13 +19,6 @@ import jsfgenerator.generation.controller.ControllerTree;
 import jsfgenerator.generation.controller.nodes.IControllerNodeProvider;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.TagTree;
-import jsfgenerator.inspector.entitymodel.EntityModel;
-import jsfgenerator.inspector.entitymodel.fields.EntityField;
-import jsfgenerator.inspector.entitymodel.forms.EntityForm;
-import jsfgenerator.inspector.entitymodel.forms.SimpleEntityForm;
-import jsfgenerator.inspector.entitymodel.pages.EntityListPageModel;
-import jsfgenerator.inspector.entitymodel.pages.EntityPageModel;
-import jsfgenerator.inspector.entitymodel.pages.PageModel;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
 

@@ -19,7 +19,7 @@
 		</statictag>
 	</tagtree>
 	
-	<inputtag class="jsfgenerator.inspector.entitymodel.fields.TextFieldType">
+	<inputtag class="jsfgenerator.entitymodel.fields.TextFieldType">
 		<statictag name="h:inputText" styles="NONE">
 			<attribute type="normal" key="value" value="EXPRESSION"/>
 		</statictag>
@@ -31,7 +31,7 @@
 	
 	</inputtag>
 	
-	<inputtag class="jsfgenerator.inspector.entitymodel.fields.NumberFieldType">
+	<inputtag class="jsfgenerator.entitymodel.fields.NumberFieldType">
 		<statictag name="h:inputText" styles="NONE,INTEGER">
 			<attribute type="normal" key="value" value="EXPRESSION"/>
 		</statictag>

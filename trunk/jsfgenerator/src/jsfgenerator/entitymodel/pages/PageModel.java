@@ -1,6 +1,6 @@
-package jsfgenerator.inspector.entitymodel.pages;
+package jsfgenerator.entitymodel.pages;
 
-import jsfgenerator.inspector.entitymodel.INamingContext;
+import jsfgenerator.entitymodel.INamingContext;
 
 
 /**

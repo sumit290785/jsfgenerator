@@ -1,6 +1,6 @@
 package jsfgenerator.generation.view;
 
-import jsfgenerator.inspector.entitymodel.fields.EntityFieldType;
+import jsfgenerator.entitymodel.fields.EntityFieldType;
 
 
 /**
