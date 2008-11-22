@@ -1,6 +1,6 @@
-package jsfgenerator.inspector.entitymodel.fields;
+package jsfgenerator.entitymodel.fields;
 
-import jsfgenerator.inspector.entitymodel.INamingContext;
+import jsfgenerator.entitymodel.INamingContext;
 
 /**
  * Represents a field of an entity in the entity model! It has a name and a type!

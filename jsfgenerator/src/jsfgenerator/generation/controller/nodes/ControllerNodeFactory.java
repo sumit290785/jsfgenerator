@@ -1,7 +1,7 @@
 package jsfgenerator.generation.controller.nodes;
 
+import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.generation.controller.utilities.ControllerNodeUtils;
-import jsfgenerator.inspector.entitymodel.forms.SimpleEntityForm;
 
 public class ControllerNodeFactory implements IControllerNodeProvider {
 

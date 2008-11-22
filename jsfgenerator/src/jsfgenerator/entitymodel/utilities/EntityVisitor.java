@@ -1,4 +1,4 @@
-package jsfgenerator.inspector.entitymodel.utilities;
+package jsfgenerator.entitymodel.utilities;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.FieldDeclaration;

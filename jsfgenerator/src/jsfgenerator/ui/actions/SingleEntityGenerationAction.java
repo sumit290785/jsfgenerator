@@ -2,7 +2,7 @@ package jsfgenerator.ui.actions;
 
 import java.util.List;
 
-import jsfgenerator.inspector.entitymodel.utilities.EntityParser;
+import jsfgenerator.entitymodel.utilities.EntityParser;
 import jsfgenerator.ui.wizards.EntityWizard;
 import jsfgenerator.ui.wizards.EntityWizardInput;
 

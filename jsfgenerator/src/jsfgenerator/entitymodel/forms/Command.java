@@ -1,4 +1,4 @@
-package jsfgenerator.inspector.entitymodel.forms;
+package jsfgenerator.entitymodel.forms;
 
 /**
  * Enumeration of possible commands of a form.

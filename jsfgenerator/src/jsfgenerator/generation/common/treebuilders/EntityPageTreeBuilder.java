@@ -2,6 +2,8 @@ package jsfgenerator.generation.common.treebuilders;
 
 import java.util.Iterator;
 
+import jsfgenerator.entitymodel.fields.EntityField;
+import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.generation.common.utilities.Tags;
 import jsfgenerator.generation.controller.ControllerTree;
 import jsfgenerator.generation.controller.nodes.ControllerNode;
@@ -12,8 +14,6 @@ import jsfgenerator.generation.view.StaticTag;
 import jsfgenerator.generation.view.TagNode;
 import jsfgenerator.generation.view.TagTree;
 import jsfgenerator.generation.view.ProxyTag.ProxyTagType;
-import jsfgenerator.inspector.entitymodel.fields.EntityField;
-import jsfgenerator.inspector.entitymodel.forms.SimpleEntityForm;
 
 /**
  * 

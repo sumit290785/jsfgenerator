@@ -1,16 +1,16 @@
-package jsfgenerator.inspector.entitymodel.impl;
+package jsfgenerator.entitymodel.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import jsfgenerator.inspector.entitymodel.AbstractEntityModelBuilder;
-import jsfgenerator.inspector.entitymodel.fields.EntityField;
-import jsfgenerator.inspector.entitymodel.fields.EntityFieldType;
-import jsfgenerator.inspector.entitymodel.fields.NumberFieldType;
-import jsfgenerator.inspector.entitymodel.fields.TextFieldType;
-import jsfgenerator.inspector.entitymodel.forms.SimpleEntityForm;
-import jsfgenerator.inspector.entitymodel.pages.EntityPageModel;
-import jsfgenerator.inspector.entitymodel.pages.PageModel;
+import jsfgenerator.entitymodel.AbstractEntityModelBuilder;
+import jsfgenerator.entitymodel.fields.EntityField;
+import jsfgenerator.entitymodel.fields.EntityFieldType;
+import jsfgenerator.entitymodel.fields.NumberFieldType;
+import jsfgenerator.entitymodel.fields.TextFieldType;
+import jsfgenerator.entitymodel.forms.SimpleEntityForm;
+import jsfgenerator.entitymodel.pages.EntityPageModel;
+import jsfgenerator.entitymodel.pages.PageModel;
 import jsfgenerator.ui.wizards.EntityWizardInput;
 import jsfgenerator.ui.wizards.EntityWizardInput.EntityFieldInput;
 
