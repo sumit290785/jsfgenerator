@@ -1,7 +1,6 @@
 package jsfgenerator.generation.common;
 
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +33,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
  */
 public class ViewEngine {
 
-	private Map<String, OutputStream> views;
+	private Map<String, ByteArrayOutputStream> views;
 	private Map<String, CompilationUnit> controllers;
 
 	private static ViewEngine instance;
@@ -80,14 +79,14 @@ public class ViewEngine {
 	 * @param viewId
 	 * @return
 	 */
-	public OutputStream getView(String viewId) {
+	public ByteArrayOutputStream getView(String viewId) {
 		if (viewId == null || viewId.equals("")) {
 			throw new IllegalArgumentException("View id parameter cannot be null!");
 		}
-		
+
 		return views.get(viewId);
 	}
-	
+
 	/**
 	 * 
 	 * @param viewId
@@ -97,7 +96,7 @@ public class ViewEngine {
 		if (viewId == null || viewId.equals("")) {
 			throw new IllegalArgumentException("View id parameter cannot be null!");
 		}
-		
+
 		return controllers.get(viewId);
 	}
 
@@ -105,18 +104,8 @@ public class ViewEngine {
 	}
 
 	protected void init() {
-		views = new HashMap<String, OutputStream>();
+		views = new HashMap<String, ByteArrayOutputStream>();
 		controllers = new HashMap<String, CompilationUnit>();
-	}
-
-	/**
-	 * TODO: check if the file exists
-	 * 
-	 * @param viewId
-	 * @return
-	 */
-	protected OutputStream createOutputStream(String viewId) {
-		return new ByteArrayOutputStream();
 	}
 
 	protected void generateEntityPageViewAndController(EntityPageModel pageModel, ITagTreeProvider tagTreeProvider,
@@ -126,7 +115,7 @@ public class ViewEngine {
 			throw new IllegalArgumentException("Page model cannot be null!");
 		}
 
-		OutputStream os = createOutputStream(pageModel.getName());
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
 
 		// TODO
 		EntityPageTreeBuilder treeBuilder = new EntityPageTreeBuilder(pageModel.getName(), tagTreeProvider,

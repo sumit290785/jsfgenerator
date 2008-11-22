@@ -1,7 +1,7 @@
 package jsfgenerator.generation.common.visitors;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import jsfgenerator.generation.view.ProxyTag;
 import jsfgenerator.generation.view.StaticTag;
@@ -18,11 +18,11 @@ public class WriterTagVisitor extends AbstractVisitor<TagNode> {
 	private static final String TAB = "\t";
 	private static final String NEWLINE = "\n";
 	
-	private OutputStream os;
+	private ByteArrayOutputStream os;
 	
 	private int depth = 0;
 	
-	public WriterTagVisitor(OutputStream os) {
+	public WriterTagVisitor(ByteArrayOutputStream os) {
 		this.os = os;
 	}
 
@@ -92,7 +92,7 @@ public class WriterTagVisitor extends AbstractVisitor<TagNode> {
 		}
 	}
 	
-	public OutputStream getOutputStream() {
+	public ByteArrayOutputStream getOutputStream() {
 		return os;
 	}
 	

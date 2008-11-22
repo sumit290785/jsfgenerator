@@ -1,7 +1,5 @@
 package jsfgenerator.ui.wizards;
 
-import java.io.File;
-
 import jsfgenerator.ui.composites.ResourceSelectionComposite;
 import jsfgenerator.ui.providers.ProjectElementLabelProvider;
 import jsfgenerator.ui.providers.ResourceSelectionContentProvider;
@@ -66,7 +64,7 @@ public class ViewFolderSelectionWizardPage extends WizardPage {
 		resourceComposite = new ResourceSelectionComposite(parent, SWT.NONE, new ProjectElementLabelProvider(),
 				new ResourceSelectionContentProvider(), new FolderViewerFilter());
 		setControl(resourceComposite);
-
+		
 		resourceComposite.getFilteredTree().getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
 
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -98,12 +96,8 @@ public class ViewFolderSelectionWizardPage extends WizardPage {
 		setPageComplete(getErrorMessage() == null);
 	}
 
-	public File getSelectedFile() {
-		if (selectedFolder == null) {
-			return null;
-		}
-		
-		return selectedFolder.getLocation().toFile();
+	public IFolder getSelectedFolder() {
+		return selectedFolder;
 	}
 
 }
