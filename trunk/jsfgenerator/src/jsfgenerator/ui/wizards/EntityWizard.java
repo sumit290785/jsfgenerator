@@ -12,10 +12,11 @@ import jsfgenerator.entitymodel.AbstractEntityModelBuilder;
 import jsfgenerator.entitymodel.EntityModel;
 import jsfgenerator.entitymodel.impl.ASTEntityModelBuilder;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
-import jsfgenerator.generation.controller.IControllerNodeProvider;
+import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.impl.TagTreeParser;
+import jsfgenerator.generation.common.ViewAndControllerDTO;
 import jsfgenerator.generation.common.ViewAndControllerEngine;
 
 import org.eclipse.core.resources.IFile;
@@ -93,20 +94,21 @@ public class EntityWizard extends Wizard {
 
 		ITagTreeProvider tagFactory = new TagTreeParser(is);
 		// TODO
-		IControllerNodeProvider controllerNodeProvider = new ControllerNodeFactory("selected.pkg");
+		AbstractControllerNodeProvider controllerNodeProvider = new ControllerNodeFactory("pkg.generated");
 
 		ViewAndControllerEngine engine = ViewAndControllerEngine.getInstance();
 		engine.generateViewsAndControllers(entityModel, tagFactory, controllerNodeProvider);
 
 		for (AbstractPageModel pageModel : entityModel.getPageModels()) {
-			saveView(pageModel.getViewId(), engine.getView(pageModel.getViewId()));
-			saveController(pageModel.getViewId(), engine.getController(pageModel.getViewId()));
+			ViewAndControllerDTO viewDTO = engine.getViewAndControllerDTo(pageModel.getViewId());
+			saveView(viewDTO.getViewName(), viewDTO.getViewStream());
+			saveController(viewDTO.getControllerClassName(), viewDTO.getViewClass());
 		}
 
 		return true;
 	}
 
-	private void saveController(String name, CompilationUnit controller) {
+	private void saveController(String className, CompilationUnit controller) {
 		IFolder folder = viewFolderSelectionWizardPage.getSelectedFolder();
 		IJavaProject project = JavaCore.create(folder.getProject());
 
@@ -120,7 +122,7 @@ public class EntityWizard extends Wizard {
 
 		ICompilationUnit cu = null;
 		try {
-			cu = fragment.createCompilationUnit(name + ".java", controller.toString(), false, null);
+			cu = fragment.createCompilationUnit(className + ".java", controller.toString(), false, null);
 			cu.becomeWorkingCopy(null);
 		} catch (JavaModelException e) {
 			e.printStackTrace();

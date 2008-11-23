@@ -14,32 +14,60 @@ import jsfgenerator.generation.controller.nodes.FunctionControllerNode;
 import jsfgenerator.generation.controller.utilities.ControllerNodeUtils;
 
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
+import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.PrimitiveType;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.TagElement;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.TypeParameter;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.Modifier.ModifierKeyword;
 
+/**
+ * Visits the elements of the controller tree and creates classes, fields and
+ * functions. It uses eclipse specific AST to do its job
+ * 
+ * @author zoltan verebes
+ * 
+ */
 public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 
-	private static class ImportDeclarationVisitor extends AbstractVisitor<ControllerNode> {
+	/**
+	 * Visits all of the nodes in the controller tree and gather all of the
+	 * required import declarations.
+	 * 
+	 * @author zoltan verebes
+	 * 
+	 */
+	protected static class ImportDeclarationVisitor extends AbstractVisitor<ControllerNode> {
 
 		private Set<String> imports = new HashSet<String>();
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @seejsfgenerator.generation.common.visitors.AbstractVisitor#visit(
+		 * jsfgenerator.generation.common.Node)
+		 */
 		@Override
 		public boolean visit(ControllerNode node) {
 			imports.addAll(node.getRequiredImports());
 			return true;
 		}
 
+		/**
+		 * 
+		 * @return collection of imports required by the elements of the
+		 *         controller tree. list is sorted by alphabetical order
+		 */
 		public List<String> getSortedImports() {
 			List<String> sortedImports = Arrays.asList(imports.toArray(new String[0]));
 			Collections.sort(sortedImports);
@@ -51,6 +79,7 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 	private AST ast;
 	private CompilationUnit unit;
 	private TypeDeclaration rootType;
+	private String rootName;
 
 	public ControllerTreeVisitor(ControllerTree tree) {
 		ast = AST.newAST(AST.JLS3);
@@ -85,6 +114,15 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		return unit;
 	}
 
+	/**
+	 * domain class name in the compilation unit.
+	 * 
+	 * @return
+	 */
+	public String getRootClassName() {
+		return rootName;
+	}
+
 	@SuppressWarnings("unchecked")
 	private void addFunctionDeclaration(FunctionControllerNode node) {
 		MethodDeclaration methodDeclaration = ast.newMethodDeclaration();
@@ -96,15 +134,23 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 				.newSimpleType(ast.newSimpleName(ControllerNodeUtils.getSimpleClassName(node.getReturnType())));
 		methodDeclaration.setReturnType2(returnType);
 
-		for (String parameterName : node.getParameters()) {
+		for (String parameterName : node.getParameterNames()) {
 			String type = node.getType(parameterName);
-			TypeParameter typeParameter = ast.newTypeParameter();
-			typeParameter.setName(ast.newSimpleName(ControllerNodeUtils.getSimpleClassName(type)));
-			methodDeclaration.parameters().add(typeParameter);
+			SingleVariableDeclaration singleVariableDecl = ast.newSingleVariableDeclaration();
+			singleVariableDecl.setType(ast
+					.newSimpleType(getQualifiedName(ControllerNodeUtils.getSimpleClassName(type))));
+			singleVariableDecl.setName(ast.newSimpleName(parameterName));
+
+			methodDeclaration.parameters().add(singleVariableDecl);
 		}
 
-		rootType.bodyDeclarations().add(methodDeclaration);
+		/*
+		 * add body
+		 */
+		Block block = ast.newBlock();
+		methodDeclaration.setBody(block);
 
+		rootType.bodyDeclarations().add(methodDeclaration);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -134,13 +180,43 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 
 		rootType = ast.newTypeDeclaration();
 
+		/*
+		 * add comment
+		 */
+		Javadoc doc = ast.newJavadoc();
+		TagElement comment = ast.newTagElement();
+		comment.setTagName("Generated code:  Controller class for view: TODO");
+		doc.tags().add(comment);
+		rootType.setJavadoc(doc);
+
 		// TODO: add interfaces
+
+		// it sets the flag if the compilation unit is an interface or a class
 		rootType.setInterface(false);
-		rootType.modifiers().add(ast.newModifier(ModifierKeyword.PRIVATE_KEYWORD));
+		// class is public
+		rootType.modifiers().add(ast.newModifier(ModifierKeyword.PUBLIC_KEYWORD));
 		rootType.setName(ast.newSimpleName(ControllerNodeUtils.getSimpleClassName(node.getClassName())));
+		rootName = ControllerNodeUtils.getSimpleClassName(node.getClassName());
+
+		/*
+		 * set its superclass
+		 */
+		if (node.getSuperClassName() != null || !node.getSuperClassName().equals("")) {
+			Type superClassType = ast.newSimpleType(getQualifiedName(ControllerNodeUtils.getSimpleClassName(node
+					.getSuperClassName())));
+			rootType.setSuperclassType(superClassType);
+		}
+
+		/*
+		 * add the interfaces to the class declaration
+		 */
+		for (String interfaceName : node.getInterfaces()) {
+			Type interfaceType = ast.newSimpleType(getQualifiedName(ControllerNodeUtils
+					.getSimpleClassName(interfaceName)));
+			rootType.superInterfaceTypes().add(interfaceType);
+		}
 
 		unit.types().add(rootType);
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -148,7 +224,6 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		for (String imp : sortedImports) {
 			ImportDeclaration importDeclaration = ast.newImportDeclaration();
 			importDeclaration.setName(getQualifiedName(imp));
-			importDeclaration.setOnDemand(true);
 			unit.imports().add(importDeclaration);
 		}
 	}

@@ -62,10 +62,10 @@ public class FieldControllerNode extends ControllerNode {
 	@Override
 	public Set<String> getRequiredImports() {
 		Set<String> imports = new HashSet<String>();
-		imports.add(ControllerNodeUtils.getPackageName(className));
+		imports.add(ControllerNodeUtils.removeGenericParameters(className));
 		
 		if (concreteClassName != null) {
-			imports.add(ControllerNodeUtils.getPackageName(concreteClassName));
+			imports.add(ControllerNodeUtils.removeGenericParameters(concreteClassName));
 		}
 		
 		return imports;

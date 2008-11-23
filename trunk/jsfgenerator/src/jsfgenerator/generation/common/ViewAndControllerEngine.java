@@ -8,22 +8,22 @@ import jsfgenerator.entitymodel.EntityModel;
 import jsfgenerator.entitymodel.fields.EntityField;
 import jsfgenerator.entitymodel.forms.EntityForm;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
+import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
-import jsfgenerator.entitymodel.pages.AbstractPageModel;
+import jsfgenerator.generation.common.treebuilders.EntityPageTreeBuilder;
 import jsfgenerator.generation.common.visitors.ControllerTreeVisitor;
 import jsfgenerator.generation.common.visitors.ExpressionEvaluationTagVisitor;
 import jsfgenerator.generation.common.visitors.WriterTagVisitor;
+import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.ControllerTree;
-import jsfgenerator.generation.controller.IControllerNodeProvider;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.TagTree;
 
-import org.eclipse.jdt.core.dom.CompilationUnit;
-
 /**
- * Generates views by iterating throw the entity model and using the tag model
- * to get the right tag information for the entity model elements.
+ * Singleton class that generates views and controllers by iterating through the
+ * entity model and using the tag model to get the right tag information for the
+ * entity model elements.
  * 
  * It is a singleton class!
  * 
@@ -32,8 +32,8 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
  */
 public class ViewAndControllerEngine {
 
-	private Map<String, ByteArrayOutputStream> views;
-	private Map<String, CompilationUnit> controllers;
+	// contains the views and controllers by view id
+	private Map<String, ViewAndControllerDTO> views;
 
 	private static ViewAndControllerEngine instance;
 
@@ -51,7 +51,7 @@ public class ViewAndControllerEngine {
 	}
 
 	public void generateViewsAndControllers(EntityModel model, ITagTreeProvider tagTreeProvider,
-			IControllerNodeProvider controllerNodeProvider) {
+			AbstractControllerNodeProvider controllerNodeProvider) {
 
 		if (model == null) {
 			throw new IllegalArgumentException("Model parameter cannot be null!");
@@ -60,7 +60,7 @@ public class ViewAndControllerEngine {
 		if (tagTreeProvider == null) {
 			throw new IllegalArgumentException("tag tree provider parameter cannot be null");
 		}
-		
+
 		if (controllerNodeProvider == null) {
 			throw new IllegalArgumentException("controller node provider parameter cannot be null");
 		}
@@ -77,42 +77,23 @@ public class ViewAndControllerEngine {
 
 	}
 
-	/**
-	 * 
-	 * @param viewId
-	 * @return
-	 */
-	public ByteArrayOutputStream getView(String viewId) {
+	public ViewAndControllerDTO getViewAndControllerDTo(String viewId) {
 		if (viewId == null || viewId.equals("")) {
 			throw new IllegalArgumentException("View id parameter cannot be null!");
 		}
 
 		return views.get(viewId);
-	}
-
-	/**
-	 * 
-	 * @param viewId
-	 * @return
-	 */
-	public CompilationUnit getController(String viewId) {
-		if (viewId == null || viewId.equals("")) {
-			throw new IllegalArgumentException("View id parameter cannot be null!");
-		}
-
-		return controllers.get(viewId);
-	}
+	} 
 
 	protected ViewAndControllerEngine() {
 	}
 
 	protected void init() {
-		views = new HashMap<String, ByteArrayOutputStream>();
-		controllers = new HashMap<String, CompilationUnit>();
+		views = new HashMap<String, ViewAndControllerDTO>();
 	}
 
 	protected void generateEntityPageViewAndController(EntityPageModel pageModel, ITagTreeProvider tagTreeProvider,
-			IControllerNodeProvider controllerNodeProvider) {
+			AbstractControllerNodeProvider controllerNodeProvider) {
 
 		if (pageModel == null) {
 			throw new IllegalArgumentException("Page model cannot be null!");
@@ -120,7 +101,6 @@ public class ViewAndControllerEngine {
 
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-		// TODO
 		EntityPageTreeBuilder treeBuilder = new EntityPageTreeBuilder(pageModel.getViewId(), tagTreeProvider,
 				controllerNodeProvider);
 
@@ -152,11 +132,15 @@ public class ViewAndControllerEngine {
 		/*
 		 * tag tree is ready to write it out into the output
 		 */
-		WriterTagVisitor visitor = new WriterTagVisitor(os);
-		tagTree.apply(visitor);
+		WriterTagVisitor streamWriterVisitor = new WriterTagVisitor(os);
+		tagTree.apply(streamWriterVisitor);
 
-		views.put(pageModel.getViewId(), visitor.getOutputStream());
-		controllers.put(pageModel.getViewId(), treeVisitor.getCompilationUnit());
+		ViewAndControllerDTO viewDTO = new ViewAndControllerDTO(pageModel.getViewId());
+		viewDTO.setViewStream(streamWriterVisitor.getOutputStream());
+		viewDTO.setViewClass(treeVisitor.getCompilationUnit());
+		viewDTO.setControllerClassName(treeVisitor.getRootClassName());
+		viewDTO.setViewName(pageModel.getViewId());
+		
+		views.put(viewDTO.getViewId(), viewDTO);
 	}
-
 }

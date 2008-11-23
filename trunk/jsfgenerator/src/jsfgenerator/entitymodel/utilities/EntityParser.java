@@ -22,7 +22,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
  * @author zoltan verebes
  * 
  */
-public class EntityParser {
+public final class EntityParser {
 
 	/**
 	 * parses a compilation unit! It can contain multiple classes, so it returns

@@ -1,7 +1,14 @@
 package jsfgenerator.generation.controller.utilities;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class ControllerNodeUtils {
+
+	// regular expression for parsing a fully qualified java class name with
+	// generic parameters
+	private static Pattern fullyQualifiedPatttern = Pattern
+			.compile("^((?:[A-Za-z0-9_]+\\.)*)([A-Za-z0-9]+)($|<(?:([^>,]+),?)+>)");
 
 	public static String getPackageName(String fullyQualifiedName) {
 		int index = fullyQualifiedName.lastIndexOf(".");
@@ -11,13 +18,35 @@ public final class ControllerNodeUtils {
 	public static String getSimpleClassName(String fullyQualifiedName) {
 		int index = fullyQualifiedName.lastIndexOf(".");
 		String simpleName = (index == -1) ? fullyQualifiedName : fullyQualifiedName.substring(index + 1);
-		
+
 		/*
 		 * remove generic parameters
 		 */
 		int beginIndex = simpleName.indexOf("<");
-		
-		return (beginIndex == -1)  ? simpleName : simpleName.substring(0, beginIndex);
+
+		return (beginIndex == -1) ? simpleName : simpleName.substring(0, beginIndex);
+	}
+
+	/**
+	 * Removes generic parameters from the end of the class name if there is
+	 * any. It can be used as import for example
+	 * 
+	 * @param className
+	 *            with or without generic parameter definitions
+	 * @return fully qualified class name without generic parameters
+	 */
+	public static String removeGenericParameters(String className) {
+		if (className == null || className.equals("")) {
+			throw new IllegalArgumentException("Class name parameter cannot be null!");
+		}
+
+		Matcher matcher = fullyQualifiedPatttern.matcher(className);
+
+		if (!matcher.matches()) {
+			throw new IllegalArgumentException("Invalid class name!");
+		}
+
+		return matcher.group(1) + matcher.group(2);
 	}
 
 	public static String addGenericParameter(String className, String param) {
@@ -40,5 +69,9 @@ public final class ControllerNodeUtils {
 
 		return buffer.toString();
 	}
-	
+
+	public static void main(String... args) {
+		System.err.println(removeGenericParameters("xxx<A,B>"));
+	}
+
 }
