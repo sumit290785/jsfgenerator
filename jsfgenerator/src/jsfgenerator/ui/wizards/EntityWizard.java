@@ -12,11 +12,11 @@ import jsfgenerator.entitymodel.AbstractEntityModelBuilder;
 import jsfgenerator.entitymodel.EntityModel;
 import jsfgenerator.entitymodel.impl.ASTEntityModelBuilder;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
-import jsfgenerator.generation.common.ViewEngine;
 import jsfgenerator.generation.controller.IControllerNodeProvider;
 import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.impl.TagTreeParser;
+import jsfgenerator.generation.common.ViewAndControllerEngine;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -35,9 +35,9 @@ public class EntityWizard extends Wizard {
 	private List<EntityWizardInput> entities;
 
 	private EntitySelectionWizardPage entitySelectionWizardPage;
-	
+
 	private TagDescriptorSelectionWizardPage tagDescriptionSelectionWizardPage;
-	
+
 	private ViewFolderSelectionWizardPage viewFolderSelectionWizardPage;
 
 	public EntityWizard(List<EntityWizardInput> entities) {
@@ -56,7 +56,7 @@ public class EntityWizard extends Wizard {
 		entitySelectionWizardPage = new EntitySelectionWizardPage(entities);
 		tagDescriptionSelectionWizardPage = new TagDescriptorSelectionWizardPage();
 		viewFolderSelectionWizardPage = new ViewFolderSelectionWizardPage();
-		
+
 		addPage(entitySelectionWizardPage);
 		addPage(tagDescriptionSelectionWizardPage);
 		addPage(viewFolderSelectionWizardPage);
@@ -83,33 +83,33 @@ public class EntityWizard extends Wizard {
 		}
 
 		EntityModel entityModel = builder.createEntityModel();
-		
+
 		InputStream is = null;
 		File file = tagDescriptionSelectionWizardPage.getSelectedFile();
 		try {
 			is = new FileInputStream(file);
 		} catch (FileNotFoundException e) {
 		}
-		
+
 		ITagTreeProvider tagFactory = new TagTreeParser(is);
-		//TODO
+		// TODO
 		IControllerNodeProvider controllerNodeProvider = new ControllerNodeFactory("selected.pkg");
 
-		ViewEngine engine = ViewEngine.getInstance();
+		ViewAndControllerEngine engine = ViewAndControllerEngine.getInstance();
 		engine.generateViewsAndControllers(entityModel, tagFactory, controllerNodeProvider);
 
 		for (AbstractPageModel pageModel : entityModel.getPageModels()) {
 			saveView(pageModel.getViewId(), engine.getView(pageModel.getViewId()));
 			saveController(pageModel.getViewId(), engine.getController(pageModel.getViewId()));
 		}
-		
+
 		return true;
 	}
-	
+
 	private void saveController(String name, CompilationUnit controller) {
 		IFolder folder = viewFolderSelectionWizardPage.getSelectedFolder();
 		IJavaProject project = JavaCore.create(folder.getProject());
-		
+
 		IPackageFragment fragment = null;
 		try {
 			fragment = (project.getAllPackageFragmentRoots()[0]).getPackageFragment("pkg.generated");
@@ -117,7 +117,7 @@ public class EntityWizard extends Wizard {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		ICompilationUnit cu = null;
 		try {
 			cu = fragment.createCompilationUnit(name + ".java", controller.toString(), false, null);
@@ -125,7 +125,7 @@ public class EntityWizard extends Wizard {
 		} catch (JavaModelException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private void saveView(String viewId, ByteArrayOutputStream stream) {
@@ -133,11 +133,11 @@ public class EntityWizard extends Wizard {
 		if (folder == null) {
 			throw new NullPointerException("Target folder is not selected");
 		}
-		
+
 		if (!folder.exists()) {
 			throw new NullPointerException("Target folder does not exist!");
 		}
-		
+
 		String fileName = viewId + ".xhtml";
 		IFile file = folder.getFile(fileName);
 		if (file.exists()) {
@@ -148,7 +148,7 @@ public class EntityWizard extends Wizard {
 				e.printStackTrace();
 			}
 		}
-		
+
 		InputStream is = new ByteArrayInputStream(stream.toByteArray());
 		try {
 			file.create(is, IResource.FORCE, null);
@@ -156,7 +156,7 @@ public class EntityWizard extends Wizard {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 }
