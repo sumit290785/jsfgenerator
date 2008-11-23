@@ -146,7 +146,8 @@ public class EntityParser {
 			return false;
 		}
 
-		// has one formal parameter and its type is the same as the type parameter
+		// has one formal parameter and its type is the same as the type
+		// parameter
 		if (method.parameters().size() != 1 && !method.parameters().get(0).equals(type)) {
 			return false;
 		}
@@ -158,12 +159,10 @@ public class EntityParser {
 		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 
 		// use ASTVisitor to find the entity classes in the tree of java model
-		EntityFactoryCommand command = new EntityFactoryCommand();
 		EntityVisitor visitor = new EntityVisitor();
-		visitor.setCommand(command);
 		cu.accept(visitor);
 
-		return command.getEntities();
+		return visitor.getEntityWizardInputs();
 	}
 
 	protected static String capitalFieldName(String name) {

@@ -1,5 +1,12 @@
 package jsfgenerator.entitymodel.utilities;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import jsfgenerator.ui.wizards.EntityWizardInput;
+
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -15,7 +22,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
  */
 public class EntityVisitor extends ASTVisitor {
 	
-	private EntityFactoryCommand command;
+	private Map<String, EntityWizardInput> entities = new HashMap<String, EntityWizardInput>();
 	
 	/*
 	 * (non-Javadoc)
@@ -28,10 +35,6 @@ public class EntityVisitor extends ASTVisitor {
 
 		if (isEntity(node)) {
 			
-			if (command == null) {
-				throw new NullPointerException("Please, add a command to the visitor!");
-			}
-			
 			for (FieldDeclaration field : node.getFields()) {
 				for (Object obj : field.fragments()) {
 					if (obj instanceof VariableDeclarationFragment) {
@@ -41,9 +44,7 @@ public class EntityVisitor extends ASTVisitor {
 						// check if the field has getter and setter and create EntityField
 						if (containsGetter(node.getMethods(), fragment, field.getType())
 								&& containsSetter(node.getMethods(), fragment, field.getType())) {
-							command.setEntityName(node.getName().getFullyQualifiedName());
-							command.setField(fragment.getName().getFullyQualifiedName(), field.getType());
-							command.execute();
+							createEntityWizardInput(node.getName().getFullyQualifiedName(), fragment.getName().getFullyQualifiedName(), field.getType());
 						}
 					}
 				}
@@ -83,8 +84,19 @@ public class EntityVisitor extends ASTVisitor {
 		return false;
 	}
 	
+	protected void createEntityWizardInput(String entityName, String fieldName, Type type) {
+		EntityWizardInput entity = entities.get(entityName);
+		if (entity == null) {
+			entity = new EntityWizardInput();
+			entity.setName(entityName);
+		}
+
+		entity.addField(fieldName, type);
+		entities.put(entityName, entity);
+	}
 	
-	public void setCommand(EntityFactoryCommand command) {
-		this.command = command;
+	
+	public List<EntityWizardInput> getEntityWizardInputs() {
+		return Arrays.asList(entities.values().toArray(new EntityWizardInput[0]));
 	}
 }
