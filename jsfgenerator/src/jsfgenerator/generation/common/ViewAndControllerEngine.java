@@ -11,7 +11,6 @@ import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
-import jsfgenerator.generation.common.treebuilders.EntityPageTreeBuilder;
 import jsfgenerator.generation.common.visitors.ControllerTreeVisitor;
 import jsfgenerator.generation.common.visitors.ExpressionEvaluationTagVisitor;
 import jsfgenerator.generation.common.visitors.WriterTagVisitor;
@@ -31,21 +30,21 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
  * @author zoltan verebes
  * 
  */
-public class ViewEngine {
+public class ViewAndControllerEngine {
 
 	private Map<String, ByteArrayOutputStream> views;
 	private Map<String, CompilationUnit> controllers;
 
-	private static ViewEngine instance;
+	private static ViewAndControllerEngine instance;
 
 	/**
 	 * Singleton instance getter
 	 * 
 	 * @return the only instance of this class
 	 */
-	public static ViewEngine getInstance() {
+	public static ViewAndControllerEngine getInstance() {
 		if (instance == null) {
-			instance = new ViewEngine();
+			instance = new ViewAndControllerEngine();
 		}
 
 		return instance;
@@ -60,6 +59,10 @@ public class ViewEngine {
 
 		if (tagTreeProvider == null) {
 			throw new IllegalArgumentException("tag tree provider parameter cannot be null");
+		}
+		
+		if (controllerNodeProvider == null) {
+			throw new IllegalArgumentException("controller node provider parameter cannot be null");
 		}
 
 		init();
@@ -100,7 +103,7 @@ public class ViewEngine {
 		return controllers.get(viewId);
 	}
 
-	protected ViewEngine() {
+	protected ViewAndControllerEngine() {
 	}
 
 	protected void init() {
