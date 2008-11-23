@@ -6,7 +6,7 @@ import jsfgenerator.entitymodel.fields.EntityField;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.generation.common.utilities.Tags;
 import jsfgenerator.generation.controller.ControllerTree;
-import jsfgenerator.generation.controller.IControllerNodeProvider;
+import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.nodes.ControllerNode;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.ProxyTag;
@@ -38,7 +38,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	private ProxyTag formProxyTag;
 
 	public EntityPageTreeBuilder(String viewId, ITagTreeProvider tagTreeProvider,
-			IControllerNodeProvider controllerNodeProvider) {
+			AbstractControllerNodeProvider controllerNodeProvider) {
 		super(tagTreeProvider, controllerNodeProvider);
 		this.viewId = viewId;
 		init();
@@ -74,7 +74,8 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		/*
 		 * add the info to the controller tree for the backing bean
 		 */
-		classNode.addChild(controllerNodeProvider.createSimpleFormControllerNode(form));
+		classNode.addAllChildren(controllerNodeProvider.createSimpleFormControllerNodes(form,
+				AbstractControllerNodeProvider.GETTER | AbstractControllerNodeProvider.SETTER));
 
 		/*
 		 * add getter function node for the field

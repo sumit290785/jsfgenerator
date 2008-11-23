@@ -55,8 +55,8 @@ public class FunctionControllerNode extends ControllerNode {
 		parameters.put(name, type);
 	}
 
-	public List<String> getParameters() {
-		return Arrays.asList(parameters.values().toArray(new String[0]));
+	public List<String> getParameterNames() {
+		return Arrays.asList(parameters.keySet().toArray(new String[0]));
 
 	}
 

@@ -1,7 +1,7 @@
 package jsfgenerator.generation.common.treebuilders;
 
 import jsfgenerator.generation.controller.ControllerTree;
-import jsfgenerator.generation.controller.IControllerNodeProvider;
+import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.TagTree;
 
@@ -14,9 +14,9 @@ public abstract class AbstractTreeBuilder {
 	
 	protected ITagTreeProvider tagTreeProvider;
 	
-	protected IControllerNodeProvider controllerNodeProvider;
+	protected AbstractControllerNodeProvider controllerNodeProvider;
 	
-	public AbstractTreeBuilder(ITagTreeProvider tagTreeProvider, IControllerNodeProvider controllerNodeProvider) {
+	public AbstractTreeBuilder(ITagTreeProvider tagTreeProvider, AbstractControllerNodeProvider controllerNodeProvider) {
 		this.tagTreeProvider = tagTreeProvider;
 		this.controllerNodeProvider = controllerNodeProvider;
 	}

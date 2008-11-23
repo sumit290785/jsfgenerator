@@ -63,8 +63,18 @@ public class ClassControllerNode extends ControllerNode {
 	public Set<String> getRequiredImports() {
 		Set<String> imports = new HashSet<String>();
 		
+		/*
+		 * superclass import
+		 */
 		if (superClassName != null) {
-			imports.add(ControllerNodeUtils.getPackageName(superClassName));
+			imports.add(ControllerNodeUtils.removeGenericParameters(superClassName));
+		}
+		
+		/*
+		 * interface imports
+		 */
+		for (String interfaceName : getInterfaces()) {
+			imports.add(ControllerNodeUtils.removeGenericParameters(interfaceName));
 		}
 		
 		return imports;
