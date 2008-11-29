@@ -23,6 +23,9 @@ public class ClassControllerNode extends ControllerNode {
 
 	// set of fully qualified names of the interfaces implemented by the controller
 	private Set<String> interfaces = new HashSet<String>();
+	
+	// there will be an annotated extra field after generation if it is required. Its type is EntityManager and name is 'em'.
+	private boolean persistenceContextRequired = false;
 
 	public ClassControllerNode(String packageName, String className) {
 		this.className = className;
@@ -78,5 +81,13 @@ public class ClassControllerNode extends ControllerNode {
 		}
 		
 		return imports;
+	}
+
+	public void setPersistenceContextRequired(boolean persistenceContextRequired) {
+		this.persistenceContextRequired = persistenceContextRequired;
+	}
+
+	public boolean isPersistenceContextRequired() {
+		return persistenceContextRequired;
 	}
 }

@@ -1,6 +1,5 @@
 package jsfgenerator.generation.view;
 
-import jsfgenerator.entitymodel.fields.EntityFieldType;
 
 
 /**
@@ -33,6 +32,6 @@ public interface ITagTreeProvider {
 
 	public TagTree getSimpleFormTagTree();
 
-	public StaticTag getInputTag(EntityFieldType type);
+	public StaticTag getInputTag(String inputTagId);
 
 }

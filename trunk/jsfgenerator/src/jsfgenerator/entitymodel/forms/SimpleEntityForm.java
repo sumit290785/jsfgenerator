@@ -2,7 +2,6 @@ package jsfgenerator.entitymodel.forms;
 
 import java.util.List;
 
-import jsfgenerator.entitymodel.fields.EntityField;
 
 /**
  * A simple entity form describes the simple and embedded fields of an entity

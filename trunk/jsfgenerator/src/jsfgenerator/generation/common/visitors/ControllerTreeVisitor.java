@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import jsfgenerator.generation.controller.ControllerTree;
+import jsfgenerator.generation.controller.nodes.BlockImplementationFactory;
 import jsfgenerator.generation.controller.nodes.ClassControllerNode;
 import jsfgenerator.generation.controller.nodes.ControllerNode;
 import jsfgenerator.generation.controller.nodes.FieldControllerNode;
@@ -14,7 +15,6 @@ import jsfgenerator.generation.controller.nodes.FunctionControllerNode;
 import jsfgenerator.generation.controller.utilities.ControllerNodeUtils;
 
 import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
@@ -130,25 +130,21 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		methodDeclaration.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));
 		methodDeclaration.setName(ast.newSimpleName(ControllerNodeUtils.getSimpleClassName(node.getFunctionName())));
 
-		Type returnType = (node.getReturnType() == null) ? ast.newPrimitiveType(PrimitiveType.VOID) : ast
-				.newSimpleType(ast.newSimpleName(ControllerNodeUtils.getSimpleClassName(node.getReturnType())));
+		Type returnType = (node.getReturnType() == null) ? ast.newPrimitiveType(PrimitiveType.VOID) : ast.newSimpleType(ast
+				.newSimpleName(ControllerNodeUtils.getSimpleClassName(node.getReturnType())));
 		methodDeclaration.setReturnType2(returnType);
 
 		for (String parameterName : node.getParameterNames()) {
 			String type = node.getType(parameterName);
 			SingleVariableDeclaration singleVariableDecl = ast.newSingleVariableDeclaration();
-			singleVariableDecl.setType(ast
-					.newSimpleType(getQualifiedName(ControllerNodeUtils.getSimpleClassName(type))));
+			singleVariableDecl.setType(ast.newSimpleType(getQualifiedName(ControllerNodeUtils.getSimpleClassName(type))));
 			singleVariableDecl.setName(ast.newSimpleName(parameterName));
 
 			methodDeclaration.parameters().add(singleVariableDecl);
 		}
 
-		/*
-		 * add body
-		 */
-		Block block = ast.newBlock();
-		methodDeclaration.setBody(block);
+		// body implementation
+		methodDeclaration.setBody(BlockImplementationFactory.createBlock(ast, node.getType(), node.getArguments()));
 
 		rootType.bodyDeclarations().add(methodDeclaration);
 	}
@@ -202,8 +198,7 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		 * set its superclass
 		 */
 		if (node.getSuperClassName() != null || !node.getSuperClassName().equals("")) {
-			Type superClassType = ast.newSimpleType(getQualifiedName(ControllerNodeUtils.getSimpleClassName(node
-					.getSuperClassName())));
+			Type superClassType = ast.newSimpleType(getQualifiedName(ControllerNodeUtils.getSimpleClassName(node.getSuperClassName())));
 			rootType.setSuperclassType(superClassType);
 		}
 
@@ -211,8 +206,7 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		 * add the interfaces to the class declaration
 		 */
 		for (String interfaceName : node.getInterfaces()) {
-			Type interfaceType = ast.newSimpleType(getQualifiedName(ControllerNodeUtils
-					.getSimpleClassName(interfaceName)));
+			Type interfaceType = ast.newSimpleType(getQualifiedName(ControllerNodeUtils.getSimpleClassName(interfaceName)));
 			rootType.superInterfaceTypes().add(interfaceType);
 		}
 
@@ -240,7 +234,6 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		}
 
 		return qn;
-
 	}
 
 }

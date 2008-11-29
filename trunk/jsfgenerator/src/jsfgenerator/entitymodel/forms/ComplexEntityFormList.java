@@ -3,7 +3,6 @@ package jsfgenerator.entitymodel.forms;
 import java.util.ArrayList;
 import java.util.List;
 
-import jsfgenerator.entitymodel.fields.EntityField;
 
 /**
  * Maintain a list of entity forms and supports commands for adding, removing

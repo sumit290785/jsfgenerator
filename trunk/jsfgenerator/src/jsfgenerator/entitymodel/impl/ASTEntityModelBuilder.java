@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jsfgenerator.entitymodel.AbstractEntityModelBuilder;
-import jsfgenerator.entitymodel.fields.EntityField;
-import jsfgenerator.entitymodel.fields.EntityFieldType;
-import jsfgenerator.entitymodel.fields.NumberFieldType;
-import jsfgenerator.entitymodel.fields.TextFieldType;
+import jsfgenerator.entitymodel.forms.EntityField;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
-import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
+import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.ui.wizards.EntityWizardInput;
 import jsfgenerator.ui.wizards.EntityWizardInput.EntityFieldInput;
 
@@ -56,8 +53,7 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityWiza
 		EntityPageModel model = (EntityPageModel) view;
 		List<EntityField> fields = new ArrayList<EntityField>();
 		for (EntityFieldInput input : entity.getFields()) {
-			EntityFieldType type = getEntityFieldType(input.getFieldType());
-			EntityField field = new EntityField(input.getFieldName(), type);
+			EntityField field = new EntityField(input.getFieldName(), getEntityFieldType(input.getFieldType()));
 			fields.add(field);
 		}
 
@@ -66,27 +62,27 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityWiza
 		model.addForm(form);
 	}
 	
-	private EntityFieldType getEntityFieldType(Type type) {
+	private String getEntityFieldType(Type type) {
 		
-		// TODO: take care about complex types from the project class path
+		// TODO: implement style if i have time to do
 		
 		if (type.isPrimitiveType()) {
 			PrimitiveType primitiveType = (PrimitiveType) type;
 			
 			if (PrimitiveType.INT == primitiveType.getPrimitiveTypeCode()) {
-				return new NumberFieldType(NumberFieldType.INTEGER);
+				return "FREE_TEXT_INPUT";
 			}
 			
 			// default for primitive types
-			return new TextFieldType(TextFieldType.NONE);
+			return "FREE_TEXT_INPUT";
 		}
 		
-		
+		// TODO: 
 		if (type.isSimpleType()) {
 			SimpleType simpleType = (SimpleType) type;
 		}
 		
-		return new TextFieldType(TextFieldType.MULTILINE);
+		return "FREE_TEXT_INPUT_MULTILINE";
 	}
 
 }
