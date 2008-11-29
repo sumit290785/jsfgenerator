@@ -1,5 +1,8 @@
 package jsfgenerator.generation.controller.utilities;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,7 +11,7 @@ public final class ControllerNodeUtils {
 	// regular expression for parsing a fully qualified java class name with
 	// generic parameters
 	private static Pattern fullyQualifiedPatttern = Pattern
-			.compile("^((?:[A-Za-z0-9_]+\\.)*)([A-Za-z0-9]+)($|<(?:([^>,]+),?)+>)");
+			.compile("^((?:[A-Za-z0-9_]+\\.)*)([A-Za-z0-9]+)($|<((([^>,]+),?)+)>)");
 
 	public static String getPackageName(String fullyQualifiedName) {
 		int index = fullyQualifiedName.lastIndexOf(".");
@@ -69,9 +72,27 @@ public final class ControllerNodeUtils {
 
 		return buffer.toString();
 	}
+	
+	public static List<String> getGenericParameterList(String className) {
+		Matcher matcher = fullyQualifiedPatttern.matcher(className);
+
+		if (!matcher.matches()) {
+			throw new IllegalArgumentException("Invalid class name!");
+		}
+		
+		if (matcher.groupCount() < 4) {
+			return Collections.emptyList();
+		}
+		
+		return Arrays.asList(matcher.group(4).split("[,]"));
+	}
 
 	public static void main(String... args) {
-		System.err.println(removeGenericParameters("xxx<A,B>"));
+		List<String> p = getGenericParameterList("jssdf.sfsf.sfd.sdfsf.xxx<AAAA,AAAB>");
+		
+		for (String string : p) {
+			System.err.println(string);
+		}
 	}
 
 }

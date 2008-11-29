@@ -77,10 +77,6 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		classNode.addAllChildren(controllerNodeProvider.createSimpleFormControllerNodes(form,
 				AbstractControllerNodeProvider.GETTER | AbstractControllerNodeProvider.SETTER));
 
-		/*
-		 * TODO: add getter function node for the field
-		 */
-		
 	}
 
 	public void addInputField(SimpleEntityForm form, EntityField field) {

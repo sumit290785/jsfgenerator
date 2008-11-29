@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
+import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TagElement;
@@ -130,14 +131,15 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		methodDeclaration.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));
 		methodDeclaration.setName(ast.newSimpleName(ControllerNodeUtils.getSimpleClassName(node.getFunctionName())));
 
-		Type returnType = (node.getReturnType() == null) ? ast.newPrimitiveType(PrimitiveType.VOID) : ast.newSimpleType(ast
-				.newSimpleName(ControllerNodeUtils.getSimpleClassName(node.getReturnType())));
+		Type returnType = (node.getReturnType() == null) ? ast.newPrimitiveType(PrimitiveType.VOID) : createSimpleOrParameterizedType(node
+				.getReturnType());
 		methodDeclaration.setReturnType2(returnType);
 
 		for (String parameterName : node.getParameterNames()) {
 			String type = node.getType(parameterName);
 			SingleVariableDeclaration singleVariableDecl = ast.newSingleVariableDeclaration();
-			singleVariableDecl.setType(ast.newSimpleType(getQualifiedName(ControllerNodeUtils.getSimpleClassName(type))));
+			//singleVariableDecl.setType(ast.newSimpleType(getQualifiedName(ControllerNodeUtils.getSimpleClassName(type))));
+			singleVariableDecl.setType(createSimpleOrParameterizedType(type));
 			singleVariableDecl.setName(ast.newSimpleName(parameterName));
 
 			methodDeclaration.parameters().add(singleVariableDecl);
@@ -156,13 +158,7 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 
 		FieldDeclaration fd = ast.newFieldDeclaration(vdf);
 
-		Type type = ast.newSimpleType(ast.newSimpleName(ControllerNodeUtils.getSimpleClassName(node.getClassName())));
-		/*
-		 * TODO: generic ParameterizedType
-		 * 
-		 * ptype = ast.newParameterizedType(type); ptype.typeArguments().add(e);
-		 * fd.setType(ptype);
-		 */
+		Type type = createSimpleOrParameterizedType(node.getClassName());
 		fd.setType(type);
 		fd.modifiers().add(ast.newModifier(ModifierKeyword.PRIVATE_KEYWORD));
 		rootType.bodyDeclarations().add(fd);
@@ -234,6 +230,26 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		}
 
 		return qn;
+	}
+
+	protected Type createSimpleOrParameterizedType(String className) {
+		String simpleName = ControllerNodeUtils.getSimpleClassName(className);
+		List<String> params = ControllerNodeUtils.getGenericParameterList(className);
+
+		Type type = ast.newSimpleType(ast.newSimpleName(simpleName));
+
+		if (params.size() == 0) {
+			return type;
+		}
+
+		ParameterizedType ptype = ast.newParameterizedType(type);
+
+		for (String paramName : params) {
+			Type paramType = ast.newSimpleType(ast.newSimpleName(paramName));
+			ptype.typeArguments().add(paramType);
+		}
+
+		return ptype;
 	}
 
 }
