@@ -2,7 +2,7 @@ package jsfgenerator.generation.common.treebuilders;
 
 import java.util.Iterator;
 
-import jsfgenerator.entitymodel.fields.EntityField;
+import jsfgenerator.entitymodel.forms.EntityField;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.generation.common.utilities.Tags;
 import jsfgenerator.generation.controller.ControllerTree;
@@ -23,7 +23,7 @@ import jsfgenerator.generation.view.ProxyTag.ProxyTagType;
 public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 
 	private TagTree tagTree;
-
+	
 	// it is used to keep the information about the class, its fields and
 	// functions which is created as backing bean
 	private ControllerTree controllerTree;
@@ -80,6 +80,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		/*
 		 * TODO: add getter function node for the field
 		 */
+		
 	}
 
 	public void addInputField(SimpleEntityForm form, EntityField field) {
@@ -91,7 +92,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 							+ form.getFormName());
 		}
 
-		StaticTag inputTag = tagTreeProvider.getInputTag(field.getType());
+		StaticTag inputTag = tagTreeProvider.getInputTag(field.getInputTagId());
 		inputTag.setReferenceName(field.getFieldName());
 		if (inputTag != null) {
 			inputProxyTag.addChild(inputTag);

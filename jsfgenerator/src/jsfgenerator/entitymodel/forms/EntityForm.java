@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jsfgenerator.entitymodel.fields.EntityField;
 
 /**
  * Abstract super class of a simple entity form or an entity list which contains

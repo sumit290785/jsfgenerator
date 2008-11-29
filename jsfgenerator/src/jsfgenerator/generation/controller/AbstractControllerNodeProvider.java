@@ -5,7 +5,6 @@ import java.util.List;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.generation.controller.nodes.ClassControllerNode;
 import jsfgenerator.generation.controller.nodes.ControllerNode;
-import jsfgenerator.generation.controller.nodes.FunctionControllerNode;
 
 /**
  * @author zoltan verebes
@@ -33,7 +32,6 @@ public abstract class AbstractControllerNodeProvider {
 
 	public abstract List<ControllerNode> createSimpleFormControllerNodes(SimpleEntityForm form, int flag);
 
-	public abstract FunctionControllerNode createFunctionControllerNode(String functionName, String returnType, String... args);
 	/**
 	 * checks if the style flag is 1 or 0
 	 * 

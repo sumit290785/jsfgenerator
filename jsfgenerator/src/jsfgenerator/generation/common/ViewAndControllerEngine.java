@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jsfgenerator.entitymodel.EntityModel;
-import jsfgenerator.entitymodel.fields.EntityField;
+import jsfgenerator.entitymodel.forms.EntityField;
 import jsfgenerator.entitymodel.forms.EntityForm;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;

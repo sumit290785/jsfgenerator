@@ -14,20 +14,29 @@ import java.util.Set;
  */
 public class FunctionControllerNode extends ControllerNode {
 
+	public enum FunctionType {
+		GETTER, SETTER, SAVE, UPDATE, REMOVE, EMPTY
+	}
+
 	private String functionName;
 
 	private String returnType;
 
 	private Map<String, String> parameters = new HashMap<String, String>();
 
-	public FunctionControllerNode(String functionName) {
-		this.functionName = functionName;
-		this.returnType = null;
+	private FunctionType type;
+
+	private Object[] arguments;
+
+	public FunctionControllerNode(String functionName, FunctionType type, Object... arguments) {
+		this(functionName, null, type, arguments);
 	}
 
-	public FunctionControllerNode(String functionName, String returnType) {
+	public FunctionControllerNode(String functionName, String returnType, FunctionType type, Object... arguments) {
 		this.functionName = functionName;
 		this.returnType = returnType;
+		this.type = type;
+		this.arguments = arguments;
 	}
 
 	/*
@@ -64,4 +73,11 @@ public class FunctionControllerNode extends ControllerNode {
 		return parameters.get(name);
 	}
 
+	public FunctionType getType() {
+		return type;
+	}
+
+	public Object[] getArguments() {
+		return arguments;
+	}
 }

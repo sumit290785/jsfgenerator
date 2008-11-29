@@ -5,6 +5,7 @@ import java.util.List;
 
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
+import jsfgenerator.generation.controller.nodes.FunctionControllerNode.FunctionType;
 import jsfgenerator.generation.controller.utilities.ControllerNodeUtils;
 
 public class ControllerNodeFactory extends AbstractControllerNodeProvider {
@@ -26,6 +27,7 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 		ClassControllerNode node = new ClassControllerNode(packageName, viewId + "Page", SUPER_CLASS_NAME);
 		node.addInterface("jsfgenerator.aaa.IProba");
 		node.addInterface("jsfgenerator.bbb.IProba2");
+
 		return node;
 	}
 
@@ -35,14 +37,12 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 		nodes.add(new FieldControllerNode(form.getFormName() + "Editor", fieldType, fieldType));
 
 		if (isFlagOn(flag, GETTER)) {
-			FunctionControllerNode getterNode = createFunctionControllerNode(getGetterName(form.getFormName()
-					+ "Editor"), fieldType);
+			FunctionControllerNode getterNode = createGetterFunctionControllerNode(form.getFormName() + "Editor", fieldType);
 			nodes.add(getterNode);
 		}
 
 		if (isFlagOn(flag, SETTER)) {
-			FunctionControllerNode setterNode = createFunctionControllerNode(getSetterName(form.getFormName()
-					+ "Editor"), null, fieldType);
+			FunctionControllerNode setterNode = createSetterFunctionControllerNode(form.getFormName() + "Editor", fieldType);
 			nodes.add(setterNode);
 		}
 
@@ -53,21 +53,13 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 		return packageName;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seejsfgenerator.generation.controller.AbstractControllerNodeProvider#
-	 * createFunctionControllerNode(java.lang.String, java.lang.String,
-	 * java.lang.String[])
-	 */
-	@Override
-	public FunctionControllerNode createFunctionControllerNode(String functionName, String returnType, String... args) {
-		FunctionControllerNode node = new FunctionControllerNode(functionName, returnType);
+	protected FunctionControllerNode createGetterFunctionControllerNode(String fieldName, String fieldType) {
+		return new FunctionControllerNode(getGetterName(fieldName), fieldType, FunctionType.GETTER, fieldName);
+	}
 
-		for (int i = 0; i < args.length; i++) {
-			node.addParameter("arg" + i, args[i]);
-		}
-
+	protected FunctionControllerNode createSetterFunctionControllerNode(String fieldName, String fieldType) {
+		FunctionControllerNode node = new FunctionControllerNode(getSetterName(fieldName), fieldType, FunctionType.SETTER, fieldName);
+		node.addParameter(fieldName, fieldType);
 		return node;
 	}
 
@@ -100,4 +92,5 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 
 		return buffer.toString();
 	}
+
 }
