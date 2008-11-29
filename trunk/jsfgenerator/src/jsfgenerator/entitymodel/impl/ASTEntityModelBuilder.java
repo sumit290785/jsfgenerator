@@ -68,6 +68,8 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityWiza
 	
 	private EntityFieldType getEntityFieldType(Type type) {
 		
+		// TODO: take care about complex types from the project class path
+		
 		if (type.isPrimitiveType()) {
 			PrimitiveType primitiveType = (PrimitiveType) type;
 			
