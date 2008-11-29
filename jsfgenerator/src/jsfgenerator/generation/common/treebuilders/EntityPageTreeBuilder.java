@@ -78,7 +78,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 				AbstractControllerNodeProvider.GETTER | AbstractControllerNodeProvider.SETTER));
 
 		/*
-		 * add getter function node for the field
+		 * TODO: add getter function node for the field
 		 */
 	}
 
