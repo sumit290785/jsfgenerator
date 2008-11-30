@@ -1,5 +1,6 @@
-package jsfgenerator.ui.wizards;
+package jsfgenerator.ui.providers;
 
+import jsfgenerator.ui.wizards.EntityWizardInput;
 import jsfgenerator.ui.wizards.EntityWizardInput.EntityFieldInput;
 
 import org.eclipse.jface.viewers.LabelProvider;

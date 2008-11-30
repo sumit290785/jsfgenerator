@@ -61,6 +61,8 @@ public class TagTreeParser implements ITagTreeProvider {
 
 	private static final String SIMPLE_FORM_TAG_NAME = "simpleform";
 
+	private static final String COMPLEX_FORM_TAG_NAME = "complexform";
+
 	// cache for the tag trees due to store already parsed tag trees
 	private Map<String, TagTree> tagTreeCache = new HashMap<String, TagTree>();
 
@@ -79,6 +81,14 @@ public class TagTreeParser implements ITagTreeProvider {
 		factory = XPathFactory.newInstance();
 	}
 
+	/**
+	 * parses the document with DOM
+	 * 
+	 * @param is
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 * @throws IOException
+	 */
 	protected void parseXML(InputStream is) throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setNamespaceAware(true); // never forget this!
@@ -87,6 +97,13 @@ public class TagTreeParser implements ITagTreeProvider {
 		doc = builder.parse(is);
 	}
 
+	/**
+	 * TODO: remove it if i don't use it at the end. it is not used currently
+	 * 
+	 * @param node
+	 * @param styles
+	 * @return
+	 */
 	private boolean stylesMatch(Node node, String[] styles) {
 		if (styles == null) {
 			return true;
@@ -106,6 +123,13 @@ public class TagTreeParser implements ITagTreeProvider {
 		return f.containsAll(Arrays.asList(styles));
 	}
 
+	/**
+	 * parses the xml from a statictag node down to the bottom of the tree
+	 * 
+	 * @param rootNode
+	 * @return
+	 * @throws ParserException
+	 */
 	protected StaticTag parseStaticTag(Node rootNode) throws ParserException {
 		return parseStaticTag(rootNode, null);
 	}
@@ -326,6 +350,16 @@ public class TagTreeParser implements ITagTreeProvider {
 	public TagTree getSimpleFormTagTree() {
 		try {
 			return getTagTree(SIMPLE_FORM_TAG_NAME);
+		} catch (ParserException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
+	public TagTree getComplexFormListTagTree() {
+		try {
+			return getTagTree(COMPLEX_FORM_TAG_NAME);
 		} catch (ParserException e) {
 			e.printStackTrace();
 		}
