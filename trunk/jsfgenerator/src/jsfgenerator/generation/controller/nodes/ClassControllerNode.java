@@ -3,7 +3,7 @@ package jsfgenerator.generation.controller.nodes;
 import java.util.HashSet;
 import java.util.Set;
 
-import jsfgenerator.generation.controller.utilities.ControllerNodeUtils;
+import jsfgenerator.generation.common.utilities.ClassNameUtils;
 
 /**
  * 
@@ -70,14 +70,14 @@ public class ClassControllerNode extends ControllerNode {
 		 * superclass import
 		 */
 		if (superClassName != null) {
-			imports.add(ControllerNodeUtils.removeGenericParameters(superClassName));
+			imports.add(ClassNameUtils.removeGenericParameters(superClassName));
 		}
 		
 		/*
 		 * interface imports
 		 */
 		for (String interfaceName : getInterfaces()) {
-			imports.add(ControllerNodeUtils.removeGenericParameters(interfaceName));
+			imports.add(ClassNameUtils.removeGenericParameters(interfaceName));
 		}
 		
 		return imports;
