@@ -3,6 +3,8 @@ package jsfgenerator.ui.wizards;
 import java.util.ArrayList;
 import java.util.List;
 
+import jsfgenerator.ui.providers.EntitySelectionContentProvider;
+import jsfgenerator.ui.providers.EntitySelectionLabelProvider;
 import jsfgenerator.ui.wizards.EntityWizardInput.EntityFieldInput;
 
 import org.eclipse.jface.viewers.CheckStateChangedEvent;

@@ -6,18 +6,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import jsfgenerator.entitymodel.AbstractEntityModelBuilder;
 import jsfgenerator.entitymodel.EntityModel;
 import jsfgenerator.entitymodel.impl.ASTEntityModelBuilder;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
+import jsfgenerator.generation.common.ViewAndControllerDTO;
+import jsfgenerator.generation.common.ViewAndControllerEngine;
 import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.impl.TagTreeParser;
-import jsfgenerator.generation.common.ViewAndControllerDTO;
-import jsfgenerator.generation.common.ViewAndControllerEngine;
+import jsfgenerator.ui.wizards.EntityWizardInput.EntityFieldInput;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -29,6 +31,8 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ParameterizedType;
+import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jface.wizard.Wizard;
 
 public class EntityWizard extends Wizard {
@@ -80,7 +84,20 @@ public class EntityWizard extends Wizard {
 				builder.createEntityPageModel(viewId);
 			}
 
-			builder.addSimpleEntityForm(entity, viewId);
+			if (hasSimpleField(entity)) {
+				builder.addSimpleEntityForm(entity, viewId);
+			}
+			
+			//TODO: get the generic entity and use that
+			for (EntityFieldInput fieldInput : getComplexFields(entity)) {
+				Type type = fieldInput.getFieldType();
+				if (type.isParameterizedType() && ((ParameterizedType) type).typeArguments().size() == 1) {
+					ParameterizedType ptype = (ParameterizedType) type;
+					Type param = (Type)ptype.typeArguments().get(0);
+					builder.addComplexEntityFormList(entity, viewId);
+				}
+				
+			}
 		}
 
 		EntityModel entityModel = builder.createEntityModel();
@@ -93,14 +110,14 @@ public class EntityWizard extends Wizard {
 		}
 
 		ITagTreeProvider tagFactory = new TagTreeParser(is);
-		// TODO
+		// TODO: package
 		AbstractControllerNodeProvider controllerNodeProvider = new ControllerNodeFactory("pkg.generated");
 
 		ViewAndControllerEngine engine = ViewAndControllerEngine.getInstance();
 		engine.generateViewsAndControllers(entityModel, tagFactory, controllerNodeProvider);
 
 		for (AbstractPageModel pageModel : entityModel.getPageModels()) {
-			ViewAndControllerDTO viewDTO = engine.getViewAndControllerDTo(pageModel.getViewId());
+			ViewAndControllerDTO viewDTO = engine.getViewAndControllerDTO(pageModel.getViewId());
 			saveView(viewDTO.getViewName(), viewDTO.getViewStream());
 			saveController(viewDTO.getControllerClassName(), viewDTO.getViewClass());
 		}
@@ -159,6 +176,31 @@ public class EntityWizard extends Wizard {
 			e.printStackTrace();
 		}
 
+	}
+	
+	private List<EntityFieldInput> getComplexFields(EntityWizardInput input) {
+		
+		List<EntityFieldInput> inputs = new ArrayList<EntityFieldInput>();
+		
+		for (EntityFieldInput fieldInput : input.getFields()) {
+			
+			if (fieldInput.getFieldType().isArrayType()) {
+				inputs.add(fieldInput);
+			}
+		}
+		
+		return inputs;
+	}
+	
+	private boolean hasSimpleField(EntityWizardInput input) {
+		
+		for (EntityFieldInput fieldInput : input.getFields()) {
+			if (!fieldInput.getFieldType().isArrayType()) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 }
