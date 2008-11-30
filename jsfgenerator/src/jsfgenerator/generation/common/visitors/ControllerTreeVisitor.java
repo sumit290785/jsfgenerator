@@ -6,13 +6,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.controller.ControllerTree;
 import jsfgenerator.generation.controller.nodes.BlockImplementationFactory;
 import jsfgenerator.generation.controller.nodes.ClassControllerNode;
 import jsfgenerator.generation.controller.nodes.ControllerNode;
 import jsfgenerator.generation.controller.nodes.FieldControllerNode;
 import jsfgenerator.generation.controller.nodes.FunctionControllerNode;
-import jsfgenerator.generation.controller.utilities.ControllerNodeUtils;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -129,17 +129,17 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		MethodDeclaration methodDeclaration = ast.newMethodDeclaration();
 		methodDeclaration.setConstructor(false);
 		methodDeclaration.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));
-		methodDeclaration.setName(ast.newSimpleName(ControllerNodeUtils.getSimpleClassName(node.getFunctionName())));
+		methodDeclaration.setName(ast.newSimpleName(ClassNameUtils.getSimpleClassName(node.getFunctionName())));
 
-		Type returnType = (node.getReturnType() == null) ? ast.newPrimitiveType(PrimitiveType.VOID) : createSimpleOrParameterizedType(node
-				.getReturnType());
+		Type returnType = (node.getReturnType() == null) ? ast.newPrimitiveType(PrimitiveType.VOID) : createParameterizedType(node
+				.getReturnType(), false);
 		methodDeclaration.setReturnType2(returnType);
 
 		for (String parameterName : node.getParameterNames()) {
 			String type = node.getType(parameterName);
 			SingleVariableDeclaration singleVariableDecl = ast.newSingleVariableDeclaration();
 			//singleVariableDecl.setType(ast.newSimpleType(getQualifiedName(ControllerNodeUtils.getSimpleClassName(type))));
-			singleVariableDecl.setType(createSimpleOrParameterizedType(type));
+			singleVariableDecl.setType(createParameterizedType(type, false));
 			singleVariableDecl.setName(ast.newSimpleName(parameterName));
 
 			methodDeclaration.parameters().add(singleVariableDecl);
@@ -158,7 +158,7 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 
 		FieldDeclaration fd = ast.newFieldDeclaration(vdf);
 
-		Type type = createSimpleOrParameterizedType(node.getClassName());
+		Type type = createParameterizedType(node.getClassName(), false);
 		fd.setType(type);
 		fd.modifiers().add(ast.newModifier(ModifierKeyword.PRIVATE_KEYWORD));
 		rootType.bodyDeclarations().add(fd);
@@ -181,20 +181,18 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		doc.tags().add(comment);
 		rootType.setJavadoc(doc);
 
-		// TODO: add interfaces
-
 		// it sets the flag if the compilation unit is an interface or a class
 		rootType.setInterface(false);
 		// class is public
 		rootType.modifiers().add(ast.newModifier(ModifierKeyword.PUBLIC_KEYWORD));
-		rootType.setName(ast.newSimpleName(ControllerNodeUtils.getSimpleClassName(node.getClassName())));
-		rootName = ControllerNodeUtils.getSimpleClassName(node.getClassName());
+		rootType.setName(ast.newSimpleName(ClassNameUtils.getSimpleClassName(node.getClassName())));
+		rootName = ClassNameUtils.getSimpleClassName(node.getClassName());
 
 		/*
 		 * set its superclass
 		 */
 		if (node.getSuperClassName() != null || !node.getSuperClassName().equals("")) {
-			Type superClassType = ast.newSimpleType(getQualifiedName(ControllerNodeUtils.getSimpleClassName(node.getSuperClassName())));
+			Type superClassType = createParameterizedType(node.getSuperClassName(), false);
 			rootType.setSuperclassType(superClassType);
 		}
 
@@ -202,9 +200,11 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		 * add the interfaces to the class declaration
 		 */
 		for (String interfaceName : node.getInterfaces()) {
-			Type interfaceType = ast.newSimpleType(getQualifiedName(ControllerNodeUtils.getSimpleClassName(interfaceName)));
+			Type interfaceType = ast.newSimpleType(getQualifiedName(ClassNameUtils.getSimpleClassName(interfaceName)));
 			rootType.superInterfaceTypes().add(interfaceType);
 		}
+		
+		//TODO: add interface functions
 
 		unit.types().add(rootType);
 	}
@@ -231,12 +231,19 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 
 		return qn;
 	}
+	
+	protected Type createParameterizedType(String className, boolean isQualified) {
+		Name name;
+		if (isQualified) {
+			name = getQualifiedName(className);
+		} else {
+			String simpleName = ClassNameUtils.getSimpleClassName(className);
+			name = ast.newSimpleName(simpleName);
+		}
+		
+		List<String> params = ClassNameUtils.getGenericParameterList(className);
 
-	protected Type createSimpleOrParameterizedType(String className) {
-		String simpleName = ControllerNodeUtils.getSimpleClassName(className);
-		List<String> params = ControllerNodeUtils.getGenericParameterList(className);
-
-		Type type = ast.newSimpleType(ast.newSimpleName(simpleName));
+		Type type = ast.newSimpleType(name);
 
 		if (params.size() == 0) {
 			return type;
@@ -251,5 +258,5 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 
 		return ptype;
 	}
-
+	
 }

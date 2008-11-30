@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jsfgenerator.entitymodel.EntityModel;
+import jsfgenerator.entitymodel.forms.ComplexEntityFormList;
 import jsfgenerator.entitymodel.forms.EntityField;
 import jsfgenerator.entitymodel.forms.EntityForm;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
@@ -50,8 +51,7 @@ public class ViewAndControllerEngine {
 		return instance;
 	}
 
-	public void generateViewsAndControllers(EntityModel model, ITagTreeProvider tagTreeProvider,
-			AbstractControllerNodeProvider controllerNodeProvider) {
+	public void generateViewsAndControllers(EntityModel model, ITagTreeProvider tagTreeProvider, AbstractControllerNodeProvider controllerNodeProvider) {
 
 		if (model == null) {
 			throw new IllegalArgumentException("Model parameter cannot be null!");
@@ -68,8 +68,7 @@ public class ViewAndControllerEngine {
 		init();
 		for (AbstractPageModel pageModel : model.getPageModels()) {
 			if (pageModel instanceof EntityPageModel) {
-				generateEntityPageViewAndController((EntityPageModel) pageModel, tagTreeProvider,
-						controllerNodeProvider);
+				generateEntityPageViewAndController((EntityPageModel) pageModel, tagTreeProvider, controllerNodeProvider);
 			} else if (pageModel instanceof EntityListPageModel) {
 				// TODO: list page
 			}
@@ -77,13 +76,13 @@ public class ViewAndControllerEngine {
 
 	}
 
-	public ViewAndControllerDTO getViewAndControllerDTo(String viewId) {
+	public ViewAndControllerDTO getViewAndControllerDTO(String viewId) {
 		if (viewId == null || viewId.equals("")) {
 			throw new IllegalArgumentException("View id parameter cannot be null!");
 		}
 
 		return views.get(viewId);
-	} 
+	}
 
 	protected ViewAndControllerEngine() {
 	}
@@ -101,15 +100,26 @@ public class ViewAndControllerEngine {
 
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-		EntityPageTreeBuilder treeBuilder = new EntityPageTreeBuilder(pageModel.getViewId(), tagTreeProvider,
-				controllerNodeProvider);
+		EntityPageTreeBuilder treeBuilder = new EntityPageTreeBuilder(pageModel.getViewId(), tagTreeProvider, controllerNodeProvider);
 
 		for (EntityForm form : pageModel.getForms()) {
 			if (form instanceof SimpleEntityForm) {
-				treeBuilder.addSimpleForm((SimpleEntityForm) form);
+				SimpleEntityForm simpleForm = (SimpleEntityForm) form;
+				treeBuilder.addSimpleForm(simpleForm);
 
-				for (EntityField field : form.getFields()) {
-					treeBuilder.addInputField((SimpleEntityForm) form, field);
+				for (EntityField field : simpleForm.getFields()) {
+					treeBuilder.addInputField(simpleForm, field);
+				}
+			} else if (form instanceof ComplexEntityFormList) {
+				ComplexEntityFormList complexForm = (ComplexEntityFormList) form;
+				treeBuilder.addComplexFormTagTree(complexForm);
+				
+				/*
+				 * add a simple form to the complex form and input fields to the simple form then
+				 */
+				treeBuilder.addSimpleForm(complexForm);
+				for (EntityField field : complexForm.getFields()) {
+					treeBuilder.addInputField(complexForm, field);
 				}
 			}
 		}
@@ -140,7 +150,7 @@ public class ViewAndControllerEngine {
 		viewDTO.setViewClass(treeVisitor.getCompilationUnit());
 		viewDTO.setControllerClassName(treeVisitor.getRootClassName());
 		viewDTO.setViewName(pageModel.getViewId());
-		
+
 		views.put(viewDTO.getViewId(), viewDTO);
 	}
 }

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
+import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.nodes.FunctionControllerNode.FunctionType;
-import jsfgenerator.generation.controller.utilities.ControllerNodeUtils;
 
 public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 
@@ -33,7 +33,7 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 
 	public List<ControllerNode> createSimpleFormControllerNodes(SimpleEntityForm form, int flag) {
 		List<ControllerNode> nodes = new ArrayList<ControllerNode>();
-		String fieldType = ControllerNodeUtils.addGenericParameter(SIMPLE_FORM_FIELD_CLASS, form.getFormName());
+		String fieldType = ClassNameUtils.addGenericParameter(SIMPLE_FORM_FIELD_CLASS, form.getFormName());
 		nodes.add(new FieldControllerNode(form.getFormName() + "Editor", fieldType, fieldType));
 
 		if (isFlagOn(flag, GETTER)) {

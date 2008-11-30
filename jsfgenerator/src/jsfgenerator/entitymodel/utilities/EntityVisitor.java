@@ -21,30 +21,28 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
  * 
  */
 public class EntityVisitor extends ASTVisitor {
-	
+
 	private Map<String, EntityWizardInput> entities = new HashMap<String, EntityWizardInput>();
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @seeorg.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
-	 * TypeDeclaration)
+	 * @seeorg.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom. TypeDeclaration)
 	 */
 	@Override
 	public boolean visit(TypeDeclaration node) {
 
 		if (isEntity(node)) {
-			
+
 			for (FieldDeclaration field : node.getFields()) {
 				for (Object obj : field.fragments()) {
 					if (obj instanceof VariableDeclarationFragment) {
-
 						VariableDeclarationFragment fragment = (VariableDeclarationFragment) obj;
-
+						
 						// check if the field has getter and setter and create EntityField
-						if (containsGetter(node.getMethods(), fragment, field.getType())
-								&& containsSetter(node.getMethods(), fragment, field.getType())) {
-							createEntityWizardInput(node.getName().getFullyQualifiedName(), fragment.getName().getFullyQualifiedName(), field.getType());
+						if (hasGetter(node.getMethods(), fragment, field.getType()) && hasSetter(node.getMethods(), fragment, field.getType())) {
+							createEntityWizardInput(node.getName().getFullyQualifiedName(), fragment.getName().getFullyQualifiedName(), field
+									.getType());
 						}
 					}
 				}
@@ -56,8 +54,7 @@ public class EntityVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * checks the type declaration weather it is an entity! A type declaration
-	 * is entity if it is a class and it is annotated by @Entity
+	 * checks the type declaration weather it is an entity! A type declaration is entity if it is a class and it is annotated by @Entity
 	 * 
 	 * @param node
 	 * @return true when node represents and entity class
@@ -66,7 +63,7 @@ public class EntityVisitor extends ASTVisitor {
 		return true;
 	}
 
-	protected boolean containsGetter(MethodDeclaration[] methods, VariableDeclarationFragment fragment, Type type) {
+	protected boolean hasGetter(MethodDeclaration[] methods, VariableDeclarationFragment fragment, Type type) {
 		for (MethodDeclaration method : methods) {
 			if (EntityParser.isGetterOf(method, fragment, type)) {
 				return true;
@@ -75,7 +72,7 @@ public class EntityVisitor extends ASTVisitor {
 		return false;
 	}
 
-	protected boolean containsSetter(MethodDeclaration[] methods, VariableDeclarationFragment fragment, Type type) {
+	protected boolean hasSetter(MethodDeclaration[] methods, VariableDeclarationFragment fragment, Type type) {
 		for (MethodDeclaration method : methods) {
 			if (EntityParser.isSetterOf(method, fragment, type)) {
 				return true;
@@ -83,7 +80,7 @@ public class EntityVisitor extends ASTVisitor {
 		}
 		return false;
 	}
-	
+
 	protected void createEntityWizardInput(String entityName, String fieldName, Type type) {
 		EntityWizardInput entity = entities.get(entityName);
 		if (entity == null) {
@@ -94,8 +91,7 @@ public class EntityVisitor extends ASTVisitor {
 		entity.addField(fieldName, type);
 		entities.put(entityName, entity);
 	}
-	
-	
+
 	public List<EntityWizardInput> getEntityWizardInputs() {
 		return Arrays.asList(entities.values().toArray(new EntityWizardInput[0]));
 	}

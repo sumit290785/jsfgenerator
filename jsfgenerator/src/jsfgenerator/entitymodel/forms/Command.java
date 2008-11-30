@@ -8,12 +8,15 @@ package jsfgenerator.entitymodel.forms;
  */
 public enum Command {
 
-	// create
+	// add a list element
 	ADD,
 
-	// delete
+	// remove a list element
 	REMOVE,
 
-	// update
-	SAVE
+	// update an entity
+	SAVE,
+	
+	// delete an entity
+	DELETE
 }

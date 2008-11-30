@@ -1,6 +1,5 @@
 package jsfgenerator.entitymodel.forms;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -9,26 +8,21 @@ import java.util.List;
  * actions!
  * 
  * @author zoltan verebes
- * 
- * @param <T>
  */
 public class ComplexEntityFormList extends EntityForm {
 	
-	// list of entity forms which are managed by this form list class
-	private List<EntityForm> innerForms = new ArrayList<EntityForm>();
+	private SimpleEntityForm simpleForm;
 	
 	public ComplexEntityFormList(String entityName, List<EntityField> fields) {
 		super(entityName, fields);
 		addCommand(Command.ADD);
 		addCommand(Command.REMOVE);
+		
+		simpleForm = new SimpleEntityForm(entityName, fields);
 	}
 
-	public void setInnerForms(List<EntityForm> innerForms) {
-		this.innerForms = innerForms;
-	}
-
-	public List<EntityForm> getInnerForms() {
-		return innerForms;
+	public SimpleEntityForm getSimpleForm() {
+		return simpleForm;
 	}
 
 }
