@@ -33,7 +33,7 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityWiza
 	 */
 	@Override
 	public void addSimpleEntityForm(String viewId, EntityWizardInput entity) {
-		String formName = NodeNameUtils.getUniqueFormName(viewId, entity.getName());
+		String formName = NodeNameUtils.getCanonicalName(viewId, entity.getName());
 		String className = entity.getName();
 
 		EntityForm form = new SimpleEntityForm(formName, className, getEntityFields(entity));
@@ -42,7 +42,7 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityWiza
 
 	@Override
 	public void addComplexEntityFormList(String viewId, EntityWizardInput domainEntity, EntityFieldInput listField, EntityWizardInput genericEntity) {
-		String formName = NodeNameUtils.getUniqueFormName(viewId, domainEntity.getName(), listField.getFieldName());
+		String formName = NodeNameUtils.getCanonicalName(viewId, domainEntity.getName(), listField.getFieldName());
 		String className = genericEntity.getName();
 
 		EntityForm form = new ComplexEntityFormList(formName, genericEntity.getName(), className, getEntityFields(genericEntity));
