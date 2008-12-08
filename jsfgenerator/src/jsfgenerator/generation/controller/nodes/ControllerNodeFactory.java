@@ -40,7 +40,7 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 	public List<ControllerNode> createSimpleFormControllerNodes(SimpleEntityForm form, int flag) {
 		List<ControllerNode> nodes = new ArrayList<ControllerNode>();
 		String fieldType = ClassNameUtils.addGenericParameter(SIMPLE_FORM_FIELD_CLASS, form.getEntityClassName());
-		String fieldName = NodeNameUtils.getControllerEditorFieldNameByUniqueName(form.getFormName());
+		String fieldName = NodeNameUtils.getControllerEditorFieldNameByCanonicalName(form.getFormName());
 
 		nodes.add(new FieldControllerNode(fieldName, fieldType, fieldType));
 
