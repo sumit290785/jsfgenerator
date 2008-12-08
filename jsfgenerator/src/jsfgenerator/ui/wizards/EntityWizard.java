@@ -32,10 +32,17 @@ import org.eclipse.jdt.core.IRegion;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.formatter.CodeFormatter;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.text.edits.MalformedTreeException;
+import org.eclipse.text.edits.TextEdit;
 
 public class EntityWizard extends Wizard {
 	
@@ -138,6 +145,8 @@ public class EntityWizard extends Wizard {
 	}
 
 	private void saveController(String className, CompilationUnit controller) {
+		String sourceCode = formatCode(controller.toString());
+		
 		IPackageFragment fragment = null;
 		try {
 			fragment = (project.getAllPackageFragmentRoots()[0]).getPackageFragment("pkg.generated");
@@ -145,14 +154,30 @@ public class EntityWizard extends Wizard {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
+		
+		
 		ICompilationUnit cu = null;
 		try {
-			cu = fragment.createCompilationUnit(className + ".java", controller.toString(), false, null);
+			cu = fragment.createCompilationUnit(className + ".java", sourceCode, false, null);
 			cu.becomeWorkingCopy(null);
 		} catch (JavaModelException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private String formatCode(String source) {
+		final CodeFormatter formatter = ToolFactory.createCodeFormatter(JavaCore.getDefaultOptions());
+		TextEdit edit = formatter.format(CodeFormatter.K_COMPILATION_UNIT, source, 0, source.length(), 0, null);
+		IDocument document = new Document(source);
+		try {
+			edit.apply(document);
+		} catch (MalformedTreeException e) {
+			e.printStackTrace();
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+		
+		return document.get();
 	}
 
 	private void saveView(String viewId, ByteArrayOutputStream stream) {
