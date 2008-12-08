@@ -14,13 +14,13 @@ import org.eclipse.jdt.core.dom.Type;
 public class EntityWizardInput {
 
 	public static class EntityFieldInput {
-		
+
 		private EntityWizardInput parent;
 
 		private String fieldName;
 
 		private Type fieldType;
-		
+
 		public EntityFieldInput(String fieldName, Type fieldType, EntityWizardInput parent) {
 			this.fieldName = fieldName;
 			this.fieldType = fieldType;

@@ -13,11 +13,6 @@ public final class BlockImplementationFactory {
 
 	public static Block createBlock(AST ast, FunctionType type, Object[] args) {
 		if (FunctionType.EMPTY.equals(type)) {
-
-			if (args != null && args.length != 0) {
-				throw new IllegalArgumentException("Number of arguments is not satisfying");
-			}
-
 			return createEmptyBlock(ast);
 		} else if (FunctionType.GETTER.equals(type) || FunctionType.SETTER.equals(type)) {
 
@@ -35,11 +30,19 @@ public final class BlockImplementationFactory {
 				return createSetterBlock(ast, (String) args[0]);
 			}
 
+		} else if (FunctionType.SAVE.equals(type)) {
+			return createEmptyBlock(ast);
 		}
 
 		return null;
 	}
 
+	/**
+	 * Empty block is not the same as if the block is null
+	 * 
+	 * @param ast
+	 * @return
+	 */
 	protected static Block createEmptyBlock(AST ast) {
 		return ast.newBlock();
 	}
@@ -51,6 +54,7 @@ public final class BlockImplementationFactory {
 	 * @param fieldName
 	 * @return getter block
 	 */
+	@SuppressWarnings("unchecked")
 	protected static Block createGetterBlock(AST ast, String fieldName) {
 		Block block = createEmptyBlock(ast);
 
@@ -70,6 +74,7 @@ public final class BlockImplementationFactory {
 	 * @param fieldName
 	 * @return setter block
 	 */
+	@SuppressWarnings("unchecked")
 	protected static Block createSetterBlock(AST ast, String fieldName) {
 		Block block = createEmptyBlock(ast);
 

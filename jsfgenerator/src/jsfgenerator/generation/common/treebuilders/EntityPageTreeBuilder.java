@@ -79,18 +79,25 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	}
 
 	public void addSimpleForm(ComplexEntityFormList form) {
-		TagTree simpleFormTagTree = tagTreeProvider.getSimpleFormTagTree();
 		TagNode formProxyTag = getProxyTagByType(getFormTagByName(form.getFormName()), ProxyTagType.FORM);
+
+		if (formProxyTag == null) {
+			throw new IllegalArgumentException("Complex form tag tree does not contain proxy tag: FORM");
+		}
+
+		TagTree simpleFormTagTree = tagTreeProvider.getSimpleFormTagTree();
 		formProxyTag.addAllChildren(simpleFormTagTree.getNodes());
+
+	//	classNode.addAllChildren(controllerNodeProvider.createSimpleFormControllerNodes(form.getSimpleForm(), AbstractControllerNodeProvider.GETTER | AbstractControllerNodeProvider.SETTER));
+
 	}
 
 	public void addComplexFormTagTree(ComplexEntityFormList form) {
 		TagTree complexFormList = tagTreeProvider.getComplexFormListTagTree();
 		complexFormList.applyReferenceName(form.getFormName());
 		getFormProxyTag().addAllChildren(complexFormList.getNodes());
-		
-		// TODO: add it to the controller tree too
 
+		classNode.addAllChildren(controllerNodeProvider.createComplexFormControllerNodes(form));
 	}
 
 	public void addInputField(EntityForm form, EntityField field) {
@@ -196,4 +203,5 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		tagTree.addNode(node);
 		return getProxyTagByType(tagTree, type);
 	}
+	
 }

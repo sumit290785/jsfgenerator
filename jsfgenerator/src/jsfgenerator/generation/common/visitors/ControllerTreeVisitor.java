@@ -191,9 +191,11 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		/*
 		 * set its superclass
 		 */
-		if (node.getSuperClassName() != null || !node.getSuperClassName().equals("")) {
+		if (node.getSuperClassName() != null && !node.getSuperClassName().equals("")) {
 			Type superClassType = createParameterizedType(node.getSuperClassName(), false);
 			rootType.setSuperclassType(superClassType);
+			
+			//TODO: add empty block of abstract functions
 		}
 
 		/*
@@ -205,7 +207,7 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		}
 		
 		//TODO: add interface functions
-
+		
 		unit.types().add(rootType);
 	}
 

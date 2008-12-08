@@ -51,11 +51,6 @@ public abstract class EntityForm {
 		commands.add(command);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see jsfgenerator.inspector.entitymodel.INamingContext#getName()
-	 */
 	public String getFormName() {
 		return entityName;
 	}
