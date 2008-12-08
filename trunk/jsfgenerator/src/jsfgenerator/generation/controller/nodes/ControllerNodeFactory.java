@@ -3,16 +3,17 @@ package jsfgenerator.generation.controller.nodes;
 import java.util.ArrayList;
 import java.util.List;
 
+import jsfgenerator.entitymodel.forms.Command;
+import jsfgenerator.entitymodel.forms.ComplexEntityFormList;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
+import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.nodes.FunctionControllerNode.FunctionType;
 
 public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 
 	// entity page controller super class
-	// TODO: may be moved to external definition file with its generic
-	// parameters
 	private static final String SUPER_CLASS_NAME = "jsfgenerator.xxx.AbstractHome";
 
 	private static final String SIMPLE_FORM_FIELD_CLASS = "jsfgenerator.xxx.EditHelper";
@@ -24,73 +25,111 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 	}
 
 	public ClassControllerNode createEntityPageClassNode(String viewId) {
-		ClassControllerNode node = new ClassControllerNode(packageName, viewId + "Page", SUPER_CLASS_NAME);
-		node.addInterface("jsfgenerator.aaa.IProba");
+		ClassControllerNode node = new ClassControllerNode(packageName, NodeNameUtils.getEntityPageClassNameByUniqueName(viewId));
+
+		/*node.addInterface("jsfgenerator.aaa.IProba");
 		node.addInterface("jsfgenerator.bbb.IProba2");
+		*/
+		/*
+		 * add empty functions for interface functions
+		 */
 
 		return node;
 	}
 
 	public List<ControllerNode> createSimpleFormControllerNodes(SimpleEntityForm form, int flag) {
 		List<ControllerNode> nodes = new ArrayList<ControllerNode>();
-		String fieldType = ClassNameUtils.addGenericParameter(SIMPLE_FORM_FIELD_CLASS, form.getFormName());
-		nodes.add(new FieldControllerNode(form.getFormName() + "Editor", fieldType, fieldType));
+		String fieldType = ClassNameUtils.addGenericParameter(SIMPLE_FORM_FIELD_CLASS, form.getEntityClassName());
+		String fieldName = NodeNameUtils.getControllerEditorFieldNameByUniqueName(form.getFormName());
+
+		nodes.add(new FieldControllerNode(fieldName, fieldType, fieldType));
 
 		if (isFlagOn(flag, GETTER)) {
-			FunctionControllerNode getterNode = createGetterFunctionControllerNode(form.getFormName() + "Editor", fieldType);
+			FunctionControllerNode getterNode = createGetterFunctionControllerNode(fieldName, fieldType);
 			nodes.add(getterNode);
 		}
 
 		if (isFlagOn(flag, SETTER)) {
-			FunctionControllerNode setterNode = createSetterFunctionControllerNode(form.getFormName() + "Editor", fieldType);
+			FunctionControllerNode setterNode = createSetterFunctionControllerNode(fieldName, fieldType);
 			nodes.add(setterNode);
 		}
+		
+		for (Command command : form.getCommands()) {
+			nodes.add(createCommandNodes(form, command));
+		}
+		
+		return nodes;
+	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * jsfgenerator.generation.controller.AbstractControllerNodeProvider#createComplexFormControllerNodes(jsfgenerator.entitymodel.forms
+	 * .ComplexEntityFormList, int)
+	 */
+	@Override
+	public List<ControllerNode> createComplexFormControllerNodes(ComplexEntityFormList form) {
+
+		List<ControllerNode> nodes = new ArrayList<ControllerNode>();
+
+		for (Command command : form.getCommands()) {
+			nodes.add(createCommandNodes(form, command));
+		}
+		
 		return nodes;
 	}
 
 	public String getPackageName() {
 		return packageName;
 	}
+	
+	protected FunctionControllerNode createCommandNodes(ComplexEntityFormList form, Command command) {
+		if (Command.ADD.equals(command)) {
+			return createAddFunctionControllerNode(form.getFormName(), form.getSimpleForm().getEntityClassName());
+		}
+		
+		if (Command.REMOVE.equals(command)) {
+			return createRemoveFunctionControllerNode(form.getFormName(), form.getSimpleForm().getEntityClassName());
+		}
+		
+		return null;
+	}
+	
+	protected FunctionControllerNode createCommandNodes(SimpleEntityForm form, Command command) {
+		
+		if (Command.SAVE.equals(command)) {
+			return createSaveFunctionControllerNode(form.getEntityClassName());
+		}
+		
+		return null;
+	}
 
 	protected FunctionControllerNode createGetterFunctionControllerNode(String fieldName, String fieldType) {
-		return new FunctionControllerNode(getGetterName(fieldName), fieldType, FunctionType.GETTER, fieldName);
+		return new FunctionControllerNode(NodeNameUtils.getGetterName(fieldName), fieldType, FunctionType.GETTER, fieldName);
 	}
 
 	protected FunctionControllerNode createSetterFunctionControllerNode(String fieldName, String fieldType) {
-		FunctionControllerNode node = new FunctionControllerNode(getSetterName(fieldName), fieldType, FunctionType.SETTER, fieldName);
+		FunctionControllerNode node = new FunctionControllerNode(NodeNameUtils.getSetterName(fieldName), fieldType, FunctionType.SETTER, fieldName);
 		node.addParameter(fieldName, fieldType);
 		return node;
 	}
 
-	private String getSetterName(String fieldName) {
-		if (fieldName == null || fieldName.equals("")) {
-			return null;
-		}
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("set");
-		buffer.append(fieldName.substring(0, 1).toUpperCase());
-
-		if (fieldName.length() > 1) {
-			buffer.append(fieldName.substring(1));
-		}
-
-		return buffer.toString();
+	protected FunctionControllerNode createAddFunctionControllerNode(String listFieldName, String listElementType) {
+		FunctionControllerNode node = new FunctionControllerNode(NodeNameUtils.getAddFunctionName(listElementType), FunctionType.ADD, listFieldName);
+		node.addParameter("element", listElementType);
+		return node;
 	}
-
-	private String getGetterName(String fieldName) {
-		if (fieldName == null || fieldName.equals("")) {
-			return null;
-		}
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("get");
-		buffer.append(fieldName.substring(0, 1).toUpperCase());
-
-		if (fieldName.length() > 1) {
-			buffer.append(fieldName.substring(1));
-		}
-
-		return buffer.toString();
+	
+	protected FunctionControllerNode createRemoveFunctionControllerNode(String listFieldName, String listElementType) {
+		FunctionControllerNode node = new FunctionControllerNode(NodeNameUtils.getRemoveFunctionName(listElementType), FunctionType.REMOVE, listFieldName);
+		node.addParameter("element", listElementType);
+		return node;
+	}
+	
+	protected FunctionControllerNode createSaveFunctionControllerNode(String entityClassName) {
+		FunctionControllerNode node = new FunctionControllerNode(NodeNameUtils.getSaveFunctionName(), FunctionType.SAVE, entityClassName);
+		return node;
 	}
 
 }

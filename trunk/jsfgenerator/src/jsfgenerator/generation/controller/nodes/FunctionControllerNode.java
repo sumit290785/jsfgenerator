@@ -15,7 +15,7 @@ import java.util.Set;
 public class FunctionControllerNode extends ControllerNode {
 
 	public enum FunctionType {
-		GETTER, SETTER, SAVE, UPDATE, REMOVE, EMPTY
+		GETTER, SETTER, SAVE, UPDATE, DELETE, EMPTY, ADD, REMOVE
 	}
 
 	private String functionName;

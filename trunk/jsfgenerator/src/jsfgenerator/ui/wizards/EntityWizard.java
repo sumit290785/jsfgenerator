@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import jsfgenerator.entitymodel.AbstractEntityModelBuilder;
 import jsfgenerator.entitymodel.EntityModel;
 import jsfgenerator.entitymodel.impl.ASTEntityModelBuilder;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
@@ -28,6 +27,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.IRegion;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -36,6 +38,10 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jface.wizard.Wizard;
 
 public class EntityWizard extends Wizard {
+	
+	private IJavaProject project;
+	
+	private IRegion region;
 
 	private List<EntityWizardInput> entities;
 
@@ -75,28 +81,28 @@ public class EntityWizard extends Wizard {
 	 */
 	@Override
 	public boolean performFinish() {
-		AbstractEntityModelBuilder<EntityWizardInput> builder = new ASTEntityModelBuilder();
+		initGeneration();
+		
+		ASTEntityModelBuilder builder = new ASTEntityModelBuilder();
 
 		for (EntityWizardInput entity : entitySelectionWizardPage.getSelectedEntities()) {
-			builder.addEntity(entity);
 			String viewId = entity.getName();
 			if (!builder.isViewSpecified(viewId)) {
 				builder.createEntityPageModel(viewId);
 			}
 
 			if (hasSimpleField(entity)) {
-				builder.addSimpleEntityForm(entity, viewId);
+				builder.addSimpleEntityForm(viewId, entity);
 			}
 			
-			//TODO: get the generic entity and use that
+			//TODO
 			for (EntityFieldInput fieldInput : getComplexFields(entity)) {
-				Type type = fieldInput.getFieldType();
-				if (type.isParameterizedType() && ((ParameterizedType) type).typeArguments().size() == 1) {
-					ParameterizedType ptype = (ParameterizedType) type;
+				Type inputFieldType = fieldInput.getFieldType();
+				if (inputFieldType.isParameterizedType() && ((ParameterizedType) inputFieldType).typeArguments().size() == 1) {
+					ParameterizedType ptype = (ParameterizedType) inputFieldType;
 					Type param = (Type)ptype.typeArguments().get(0);
-					builder.addComplexEntityFormList(entity, viewId);
+					builder.addComplexEntityFormList(viewId, entity, fieldInput, entity);
 				}
-				
 			}
 		}
 
@@ -125,10 +131,13 @@ public class EntityWizard extends Wizard {
 		return true;
 	}
 
-	private void saveController(String className, CompilationUnit controller) {
+	private void initGeneration() {
 		IFolder folder = viewFolderSelectionWizardPage.getSelectedFolder();
-		IJavaProject project = JavaCore.create(folder.getProject());
+		project = JavaCore.create(folder.getProject());
+		buildRegion();
+	}
 
+	private void saveController(String className, CompilationUnit controller) {
 		IPackageFragment fragment = null;
 		try {
 			fragment = (project.getAllPackageFragmentRoots()[0]).getPackageFragment("pkg.generated");
@@ -144,7 +153,6 @@ public class EntityWizard extends Wizard {
 		} catch (JavaModelException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	private void saveView(String viewId, ByteArrayOutputStream stream) {
@@ -178,13 +186,29 @@ public class EntityWizard extends Wizard {
 
 	}
 	
+	/**
+	 * TODO: speed it up and change the static java.util.List to any type
+	 * @param input
+	 * @return
+	 */
 	private List<EntityFieldInput> getComplexFields(EntityWizardInput input) {
-		
 		List<EntityFieldInput> inputs = new ArrayList<EntityFieldInput>();
 		
 		for (EntityFieldInput fieldInput : input.getFields()) {
 			
-			if (fieldInput.getFieldType().isArrayType()) {
+			//TODO: speed it up, get the fully qualified name from the imports!
+			try {
+				//TODO: get the fully qualified name of the particular class and check whether it is instance of java.util.Collection
+				IType type = project.findType("java.util.List");
+				//ITypeHierarchy hierarchy = project.newTypeHierarchy(type, region, null);
+				//hierarchy.getSuperInterfaces(type);
+			} catch (JavaModelException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+
+			Type type = fieldInput.getFieldType();
+			if (fieldInput.getFieldType().toString().startsWith("List<")) {
 				inputs.add(fieldInput);
 			}
 		}
@@ -201,6 +225,22 @@ public class EntityWizard extends Wizard {
 		}
 		
 		return false;
+	}
+	
+	//TODO: speed this up!!!!
+	protected void buildRegion() {
+		region = JavaCore.newRegion();
+		/*
+		 * add all of the classes and jars in the project
+		 */
+		try {
+			for (IPackageFragmentRoot root : project.getAllPackageFragmentRoots()) {
+				region.add(root);
+			}
+		} catch (JavaModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

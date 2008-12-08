@@ -38,7 +38,7 @@ public class EntityVisitor extends ASTVisitor {
 				for (Object obj : field.fragments()) {
 					if (obj instanceof VariableDeclarationFragment) {
 						VariableDeclarationFragment fragment = (VariableDeclarationFragment) obj;
-						
+
 						// check if the field has getter and setter and create EntityField
 						if (hasGetter(node.getMethods(), fragment, field.getType()) && hasSetter(node.getMethods(), fragment, field.getType())) {
 							createEntityWizardInput(node.getName().getFullyQualifiedName(), fragment.getName().getFullyQualifiedName(), field

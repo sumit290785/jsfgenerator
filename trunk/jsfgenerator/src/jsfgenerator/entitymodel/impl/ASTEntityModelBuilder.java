@@ -10,6 +10,7 @@ import jsfgenerator.entitymodel.forms.EntityForm;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
+import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.ui.wizards.EntityWizardInput;
 import jsfgenerator.ui.wizards.EntityWizardInput.EntityFieldInput;
 
@@ -23,29 +24,52 @@ import org.eclipse.jdt.core.dom.Type;
  * @author zoltan verebes
  * 
  */
-public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityWizardInput> {
+public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityWizardInput, EntityFieldInput> {
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @seejsfgenerator.inspector.entitymodel.AbstractEntityModelBuilder# addComplexEntityFormList(java.lang.Object, java.lang.String)
+	 * @seejsfgenerator.inspector.entitymodel.AbstractEntityModelBuilder# addSimpleEntityForm(java.lang.String, java.lang.Object)
 	 */
 	@Override
-	public void addComplexEntityFormList(EntityWizardInput entity, String viewId) {
-		createEntityForm(entity, viewId, false);
+	public void addSimpleEntityForm(String viewId, EntityWizardInput entity) {
+		String formName = NodeNameUtils.getUniqueFormName(viewId, entity.getName());
+		String className = entity.getName();
+
+		EntityForm form = new SimpleEntityForm(formName, className, getEntityFields(entity));
+		getEntityPageModel(viewId).addForm(form);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seejsfgenerator.inspector.entitymodel.AbstractEntityModelBuilder# addSimpleEntityForm(java.lang.Object, java.lang.String)
-	 */
 	@Override
-	public void addSimpleEntityForm(EntityWizardInput entity, String viewId) {
-		createEntityForm(entity, viewId, true);
+	public void addComplexEntityFormList(String viewId, EntityWizardInput domainEntity, EntityFieldInput listField, EntityWizardInput genericEntity) {
+		String formName = NodeNameUtils.getUniqueFormName(viewId, domainEntity.getName(), listField.getFieldName());
+		String className = genericEntity.getName();
+
+		EntityForm form = new ComplexEntityFormList(formName, genericEntity.getName(), className, getEntityFields(genericEntity));
+		getEntityPageModel(viewId).addForm(form);
 	}
 
-	private String getEntityFieldType(Type type) {
+	protected EntityPageModel getEntityPageModel(String viewId) {
+		AbstractPageModel view = getView(viewId);
+
+		if (!(view instanceof EntityPageModel)) {
+			throw new IllegalArgumentException("Simple entity form is applicable only for entity page models!");
+		}
+
+		return (EntityPageModel) view;
+	}
+
+	protected List<EntityField> getEntityFields(EntityWizardInput entity) {
+		List<EntityField> fields = new ArrayList<EntityField>();
+		for (EntityFieldInput input : entity.getFields()) {
+			EntityField field = new EntityField(input.getFieldName(), getEntityFieldType(input.getFieldType()));
+			fields.add(field);
+		}
+
+		return fields;
+	}
+
+	protected String getEntityFieldType(Type type) {
 
 		// TODO: implement style if i have time to do
 
@@ -66,31 +90,6 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityWiza
 		}
 
 		return "FREE_TEXT_INPUT_MULTILINE";
-	}
-
-	private void createEntityForm(EntityWizardInput entity, String viewId, boolean isSimple) {
-		AbstractPageModel view = getView(viewId);
-
-		if (!(view instanceof EntityPageModel)) {
-			throw new IllegalArgumentException("Simple entity form is applicable only for entity page models!");
-		}
-
-		EntityPageModel model = (EntityPageModel) view;
-		List<EntityField> fields = new ArrayList<EntityField>();
-		for (EntityFieldInput input : entity.getFields()) {
-			EntityField field = new EntityField(input.getFieldName(), getEntityFieldType(input.getFieldType()));
-			fields.add(field);
-		}
-
-		EntityForm form;
-
-		if (isSimple) {
-			form = new SimpleEntityForm(entity.getName(), fields);
-		} else {
-			form = new ComplexEntityFormList(entity.getName(), fields);
-		}
-
-		model.addForm(form);
 	}
 
 }
