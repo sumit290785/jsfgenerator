@@ -18,7 +18,6 @@ import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.impl.TagTreeParser;
-import jsfgenerator.ui.wizards.EntityWizardInput.EntityFieldInput;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -27,15 +26,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.jdt.core.IRegion;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.ParameterizedType;
-import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
@@ -44,79 +38,66 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
-public class EntityWizard extends Wizard {
+public class MVCGenerationWizard extends Wizard {
+	private List<EntityDescription> entityDescriptions;
+
+	private TagDescriptorSelectionWizardPage tagDescriptorSelectionWizardPage;
+	private ViewTargetFolderSelectionWizardPage viewTargetFolderSelectionWizardPage;
+	private ControllerTargetPackageSelectionWizardPage controllerTargetPackageSelectionWizardPage;
+	private EntityClassSelectionWizardPage entityClassSelectionWizardPage;
+	private EntityClassFieldSelectionWizardPage entityClassFieldSelectionWizardPage;
 
 	private IJavaProject project;
 
-	private IRegion region;
-
-	private List<EntityWizardInput> entities;
-
-	private EntitySelectionWizardPage entitySelectionWizardPage;
-
-	private TagDescriptorSelectionWizardPage tagDescriptionSelectionWizardPage;
-
-	private ViewTargetFolderSelectionWizardPage viewFolderSelectionWizardPage;
-
-	public EntityWizard(List<EntityWizardInput> entities) {
+	public MVCGenerationWizard(IJavaProject project, List<EntityDescription> entityDescriptions) {
 		super();
-		this.entities = entities;
-		setWindowTitle("Entity wizard");
+		this.entityDescriptions = entityDescriptions;
+		this.project = project;
+		setWindowTitle("View and Controller generation wizard");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.wizard.Wizard#addPages()
-	 */
 	@Override
 	public void addPages() {
-		entitySelectionWizardPage = new EntitySelectionWizardPage(entities);
-		tagDescriptionSelectionWizardPage = new TagDescriptorSelectionWizardPage();
-		viewFolderSelectionWizardPage = new ViewTargetFolderSelectionWizardPage();
+		entityClassSelectionWizardPage = new EntityClassSelectionWizardPage();
+		tagDescriptorSelectionWizardPage = new TagDescriptorSelectionWizardPage();
+		entityClassFieldSelectionWizardPage = new EntityClassFieldSelectionWizardPage();
+		viewTargetFolderSelectionWizardPage = new ViewTargetFolderSelectionWizardPage();
+		controllerTargetPackageSelectionWizardPage = new ControllerTargetPackageSelectionWizardPage();
 
-		addPage(entitySelectionWizardPage);
-		addPage(tagDescriptionSelectionWizardPage);
-		addPage(viewFolderSelectionWizardPage);
+		addPage(entityClassSelectionWizardPage);
+		addPage(tagDescriptorSelectionWizardPage);
+		addPage(entityClassFieldSelectionWizardPage);
+		addPage(viewTargetFolderSelectionWizardPage);
+		addPage(controllerTargetPackageSelectionWizardPage);
 		super.addPages();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.wizard.Wizard#performFinish()
-	 */
 	@Override
 	public boolean performFinish() {
-		initGeneration();
 
 		ASTEntityModelBuilder builder = new ASTEntityModelBuilder();
 
-		for (EntityWizardInput entity : entitySelectionWizardPage.getSelectedEntities()) {
-			String viewId = entity.getName();
-			if (!builder.isViewSpecified(viewId)) {
-				builder.createEntityPageModel(viewId);
-			}
+		for (EntityDescription entity : entityDescriptions) {
 
-			if (hasSimpleField(entity)) {
-				//builder.addSimpleEntityForm(viewId, entity);
-			}
+			if (entity.isEntityPage()) {
+				String viewId = entity.getViewId();
+				if (!builder.isViewSpecified(viewId)) {
+					builder.createEntityPageModel(viewId);
+				}
 
-			// TODO
-			for (EntityFieldInput fieldInput : getComplexFields(entity)) {
-				Type inputFieldType = fieldInput.getFieldType();
-				if (inputFieldType.isParameterizedType() && ((ParameterizedType) inputFieldType).typeArguments().size() == 1) {
-					ParameterizedType ptype = (ParameterizedType) inputFieldType;
-					Type param = (Type) ptype.typeArguments().get(0);
-				//	builder.addComplexEntityFormList(viewId, entity, fieldInput, entity);
+				//if (hasSimpleField(entity)) {
+					builder.addSimpleEntityForm(viewId, entity);
+				//}
+
+				for (EntityFieldDescription entityField : getComplexFields(entity)) {
+					builder.addComplexEntityFormList(entity, entityField);
 				}
 			}
 		}
 
 		EntityModel entityModel = builder.createEntityModel();
-
 		InputStream is = null;
-		File file = tagDescriptionSelectionWizardPage.getSelectedFile();
+		File file = tagDescriptorSelectionWizardPage.getSelectedFile();
 		try {
 			is = new FileInputStream(file);
 		} catch (FileNotFoundException e) {
@@ -135,15 +116,31 @@ public class EntityWizard extends Wizard {
 			saveController(viewDTO.getControllerClassName(), viewDTO.getViewClass());
 		}
 
-		configureWebNature();
-		
 		return true;
 	}
 
-	private void initGeneration() {
-		IFolder folder = viewFolderSelectionWizardPage.getSelectedFolder();
-		project = JavaCore.create(folder.getProject());
-		buildRegion();
+	public List<EntityDescription> getEntityDescriptions() {
+		return entityDescriptions;
+	}
+
+	public List<String> getInputTagIds() {
+		if (tagDescriptorSelectionWizardPage != null && tagDescriptorSelectionWizardPage.getSelectedFile() != null) {
+			InputStream is = null;
+			File file = tagDescriptorSelectionWizardPage.getSelectedFile();
+			try {
+				is = new FileInputStream(file);
+			} catch (FileNotFoundException e) {
+			}
+
+			ITagTreeProvider tagFactory = new TagTreeParser(is);
+			return tagFactory.getInputTagIds();
+		}
+
+		return null;
+	}
+
+	public IJavaProject getProject() {
+		return project;
 	}
 
 	private void saveController(String className, CompilationUnit controller) {
@@ -182,7 +179,7 @@ public class EntityWizard extends Wizard {
 	}
 
 	private void saveView(String viewId, ByteArrayOutputStream stream) {
-		IFolder folder = viewFolderSelectionWizardPage.getSelectedFolder();
+		IFolder folder = viewTargetFolderSelectionWizardPage.getSelectedFolder();
 		if (folder == null) {
 			throw new NullPointerException("Target folder is not selected");
 		}
@@ -211,79 +208,17 @@ public class EntityWizard extends Wizard {
 		}
 
 	}
-
-	/**
-	 * TODO: speed it up and change the static java.util.List to any type
-	 * 
-	 * @param input
-	 * @return
-	 */
-	private List<EntityFieldInput> getComplexFields(EntityWizardInput input) {
-		List<EntityFieldInput> inputs = new ArrayList<EntityFieldInput>();
-
-		for (EntityFieldInput fieldInput : input.getFields()) {
-
-			// TODO: speed it up, get the fully qualified name from the imports!
-			try {
-				// TODO: get the fully qualified name of the particular class and check whether it is instance of java.util.Collection
-				IType type = project.findType("java.util.List");
-				// ITypeHierarchy hierarchy = project.newTypeHierarchy(type, region, null);
-				// hierarchy.getSuperInterfaces(type);
-			} catch (JavaModelException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-
-			Type type = fieldInput.getFieldType();
-			if (fieldInput.getFieldType().toString().startsWith("List<")) {
-				inputs.add(fieldInput);
+	
+	private List<EntityFieldDescription> getComplexFields(EntityDescription entityDescription) {
+		List<EntityFieldDescription> entityFields = new ArrayList<EntityFieldDescription>();
+		
+		for (EntityFieldDescription entityFieldDescription : entityDescription.getEntityFieldDescriptions()) {
+			if (entityFieldDescription.isCollectionInComplexForm()) {
+				entityFields.add(entityFieldDescription);
 			}
 		}
-
-		return inputs;
-	}
-
-	private boolean hasSimpleField(EntityWizardInput input) {
-
-		for (EntityFieldInput fieldInput : input.getFields()) {
-			if (!fieldInput.getFieldType().isArrayType()) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	private void configureWebNature() {
-		try {
-			/*
-			 * add nature
-			 */
-			String[] natures = project.getProject().getDescription().getNatureIds();
-			String[] newNatures = new String[natures.length + 1];
-			System.arraycopy(natures, 0, newNatures, 0, natures.length);
-			newNatures[natures.length] = "org.eclipse.wst.common.project.facet.core.nature";
-			project.getProject().getDescription().setNatureIds(newNatures);
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	// TODO: speed this up!!!!
-	protected void buildRegion() {
-		region = JavaCore.newRegion();
-		/*
-		 * add all of the classes and jars in the project
-		 */
-		try {
-			for (IPackageFragmentRoot root : project.getAllPackageFragmentRoots()) {
-				region.add(root);
-			}
-		} catch (JavaModelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+		return entityFields;
 	}
 
 }

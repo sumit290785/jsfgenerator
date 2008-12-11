@@ -10,13 +10,10 @@ import jsfgenerator.entitymodel.forms.EntityForm;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
+import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
-import jsfgenerator.ui.wizards.EntityWizardInput;
-import jsfgenerator.ui.wizards.EntityWizardInput.EntityFieldInput;
-
-import org.eclipse.jdt.core.dom.PrimitiveType;
-import org.eclipse.jdt.core.dom.SimpleType;
-import org.eclipse.jdt.core.dom.Type;
+import jsfgenerator.ui.wizards.EntityDescription;
+import jsfgenerator.ui.wizards.EntityFieldDescription;
 
 /**
  * Entity model builder class for abstract syntax trees, provided by eclipse!
@@ -24,7 +21,7 @@ import org.eclipse.jdt.core.dom.Type;
  * @author zoltan verebes
  * 
  */
-public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityWizardInput, EntityFieldInput> {
+public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityDescription, EntityFieldDescription> {
 
 	/*
 	 * (non-Javadoc)
@@ -32,21 +29,25 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityWiza
 	 * @seejsfgenerator.inspector.entitymodel.AbstractEntityModelBuilder# addSimpleEntityForm(java.lang.String, java.lang.Object)
 	 */
 	@Override
-	public void addSimpleEntityForm(String viewId, EntityWizardInput entity) {
-		String formName = NodeNameUtils.getCanonicalName(viewId, entity.getName());
-		String className = entity.getName();
+	public void addSimpleEntityForm(String viewId, EntityDescription entity) {
+		String entityClassSimpleName = ClassNameUtils.getSimpleClassName(entity.getEntityClassName());
+		String formName = NodeNameUtils.getCanonicalName(viewId, entityClassSimpleName);
 
-		EntityForm form = new SimpleEntityForm(formName, className, getEntityFields(entity));
+		EntityForm form = new SimpleEntityForm(formName, entity.getEntityClassName(), getEntityFields(entity));
 		getEntityPageModel(viewId).addForm(form);
 	}
 
 	@Override
-	public void addComplexEntityFormList(String viewId, EntityWizardInput domainEntity, EntityFieldInput listField, EntityWizardInput genericEntity) {
-		String formName = NodeNameUtils.getCanonicalName(viewId, domainEntity.getName(), listField.getFieldName());
-		String className = genericEntity.getName();
+	public void addComplexEntityFormList(EntityDescription domainEntity, EntityFieldDescription listField) {
+		EntityDescription genericFieldDescription = listField.getEntityDescription();
 
-		EntityForm form = new ComplexEntityFormList(formName, genericEntity.getName(), className, getEntityFields(genericEntity));
-		getEntityPageModel(viewId).addForm(form);
+		String simpleFormName = ClassNameUtils.getSimpleClassName(domainEntity.getEntityClassName());
+		String simpleListFormName = ClassNameUtils.getSimpleClassName(listField.getFieldName());
+		String formName = NodeNameUtils.getCanonicalName(domainEntity.getViewId(), simpleFormName, simpleListFormName);
+
+		EntityForm form = new ComplexEntityFormList(formName, simpleFormName, genericFieldDescription.getEntityClassName(),
+				getEntityFields(genericFieldDescription));
+		getEntityPageModel(domainEntity.getViewId()).addForm(form);
 	}
 
 	protected EntityPageModel getEntityPageModel(String viewId) {
@@ -59,37 +60,18 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityWiza
 		return (EntityPageModel) view;
 	}
 
-	protected List<EntityField> getEntityFields(EntityWizardInput entity) {
+	protected List<EntityField> getEntityFields(EntityDescription entity) {
 		List<EntityField> fields = new ArrayList<EntityField>();
-		for (EntityFieldInput input : entity.getFields()) {
-			EntityField field = new EntityField(input.getFieldName(), getEntityFieldType(input.getFieldType()));
-			fields.add(field);
+		for (EntityFieldDescription entityField : entity.getEntityFieldDescriptions()) {
+
+			if (!entityField.isCollectionInComplexForm()) {
+				EntityField field = new EntityField(entityField.getFieldName(), entityField.getInputTagId());
+				fields.add(field);
+			}
+
 		}
 
 		return fields;
-	}
-
-	protected String getEntityFieldType(Type type) {
-
-		// TODO: implement style if i have time to do
-
-		if (type.isPrimitiveType()) {
-			PrimitiveType primitiveType = (PrimitiveType) type;
-
-			if (PrimitiveType.INT == primitiveType.getPrimitiveTypeCode()) {
-				return "FREE_TEXT_INPUT";
-			}
-
-			// default for primitive types
-			return "FREE_TEXT_INPUT";
-		}
-
-		// TODO:
-		if (type.isSimpleType()) {
-			SimpleType simpleType = (SimpleType) type;
-		}
-
-		return "FREE_TEXT_INPUT_MULTILINE";
 	}
 
 }

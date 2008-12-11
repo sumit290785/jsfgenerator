@@ -52,8 +52,8 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 
 	protected TagDescriptorSelectionWizardPage() {
 		super("TagDescriptorSelectionWizardPage");
-		setTitle("Tag description page");
-		setDescription("This is a single page for selecting an xml file");
+		setTitle("Tag description selector page");
+		setDescription("This page is to select a view descriptor xml file");
 	}
 
 	/*

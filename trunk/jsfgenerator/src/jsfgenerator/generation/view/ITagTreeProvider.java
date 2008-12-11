@@ -1,5 +1,7 @@
 package jsfgenerator.generation.view;
 
+import java.util.List;
+
 /**
  * Implementation of this interface is responsible for xhtml tag model
  * generation! TagModel contains the information about the representation of the
@@ -33,5 +35,7 @@ public interface ITagTreeProvider {
 	public TagTree getComplexFormListTagTree();
 
 	public StaticTag getInputTag(String inputTagId);
+	
+	public List<String> getInputTagIds();
 
 }
