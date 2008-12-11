@@ -26,6 +26,7 @@ import jsfgenerator.ui.model.EntityFieldDescription;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
@@ -147,6 +148,11 @@ public class MVCGenerationWizard extends Wizard {
 		ICompilationUnit cu = null;
 		try {
 			String fileName = NodeNameUtils.getEntityPageClassFileNameByUniqueName(className);
+			
+			// delete the file if exists
+			IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(fragment.getPath());
+			delete(folder, fileName);
+			
 			cu = fragment.createCompilationUnit(fileName, sourceCode, false, null);
 			cu.becomeWorkingCopy(null);
 		} catch (JavaModelException e) {
@@ -165,22 +171,27 @@ public class MVCGenerationWizard extends Wizard {
 		}
 
 		String fileName = NodeNameUtils.getEntityPageViewNameByUniqueName(viewId);
-		IFile file = folder.getFile(fileName);
-		if (file.exists()) {
-			try {
-				file.delete(IResource.FORCE, null);
-			} catch (CoreException e) {
-				throw new GenerationException("Could not delete the previous version of the view!", e);
-			}
-		}
+		delete(folder, fileName);
 
 		InputStream is = new ByteArrayInputStream(stream.toByteArray());
 		try {
+			IFile file = folder.getFile(fileName);
 			file.create(is, IResource.FORCE, null);
 		} catch (CoreException e) {
 			throw new GenerationException("Could not save the generated view!", e);
 		}
 
+	}
+	
+	private void delete(IFolder folder, String fileName) {
+		IFile file = folder.getFile(fileName);
+		if (file.exists()) {
+			try {
+				file.delete(IResource.FORCE, null);
+			} catch (CoreException e) {
+				throw new GenerationException("Could not delete the previous version of the view! File name: "+ fileName, e);
+			}
+		}
 	}
 
 	private String formatCode(String source) {
