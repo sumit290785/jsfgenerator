@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
-import jsfgenerator.ui.wizards.EntityDescription;
+import jsfgenerator.ui.model.EntityDescription;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Annotation;
@@ -16,7 +16,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
  * It walks the class nodes of the AST tree of the selected project, packages, files and collects all of the entities into
  * EntityDescriptions.
  * 
- * @see jsfgenerator.ui.wizards.EntityDescription
+ * @see jsfgenerator.ui.model.EntityDescription
  * 
  * @author zoltan verebes
  * 
@@ -66,7 +66,6 @@ public class EntityClassASTVisitor extends ASTVisitor {
 			return className.equals(ENTITY);
 		}
 	}
-
 
 	private List<EntityDescription> entityDescriptions = new ArrayList<EntityDescription>();
 

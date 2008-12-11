@@ -3,7 +3,7 @@ package jsfgenerator.ui.wizards;
 import java.io.File;
 
 import jsfgenerator.ui.composites.ResourceSelectionComposite;
-import jsfgenerator.ui.providers.ProjectElementLabelProvider;
+import jsfgenerator.ui.providers.ResourceLabelProvider;
 import jsfgenerator.ui.providers.ResourceSelectionContentProvider;
 
 import org.eclipse.core.resources.IContainer;
@@ -64,7 +64,7 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 	 * .Composite)
 	 */
 	public void createControl(Composite parent) {
-		resourceComposite = new ResourceSelectionComposite(parent, SWT.NONE, new ProjectElementLabelProvider(),
+		resourceComposite = new ResourceSelectionComposite(parent, SWT.NONE, new ResourceLabelProvider(),
 				new ResourceSelectionContentProvider(), new XMLViewerFilter());
 		setControl(resourceComposite);
 

@@ -18,6 +18,8 @@ import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.impl.TagTreeParser;
+import jsfgenerator.ui.model.EntityDescription;
+import jsfgenerator.ui.model.EntityFieldDescription;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;

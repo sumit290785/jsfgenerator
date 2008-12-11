@@ -2,6 +2,8 @@ package jsfgenerator.ui.wizards;
 
 import java.util.Arrays;
 
+import jsfgenerator.ui.model.EntityDescription;
+
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;

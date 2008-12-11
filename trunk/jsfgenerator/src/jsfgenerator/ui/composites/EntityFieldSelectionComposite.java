@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import jsfgenerator.ui.wizards.EntityDescription;
-import jsfgenerator.ui.wizards.EntityFieldDescription;
+import jsfgenerator.ui.model.EntityDescription;
+import jsfgenerator.ui.model.EntityFieldDescription;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;

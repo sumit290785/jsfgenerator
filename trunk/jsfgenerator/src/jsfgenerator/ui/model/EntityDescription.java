@@ -1,4 +1,4 @@
-package jsfgenerator.ui.wizards;
+package jsfgenerator.ui.model;
 
 import java.util.List;
 

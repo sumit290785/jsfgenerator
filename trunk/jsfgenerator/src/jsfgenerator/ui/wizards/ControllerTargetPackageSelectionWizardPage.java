@@ -1,11 +1,10 @@
 package jsfgenerator.ui.wizards;
 
-import jsfgenerator.ui.providers.ProjectElementLabelProvider;
+import jsfgenerator.ui.providers.ResourceLabelProvider;
 
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ListViewer;
@@ -32,7 +31,7 @@ public class ControllerTargetPackageSelectionWizardPage extends WizardPage {
 
 		final ListViewer packageViewer = new ListViewer(composite, SWT.BORDER);
 		packageViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		packageViewer.setLabelProvider(new ProjectElementLabelProvider());
+		packageViewer.setLabelProvider(new ResourceLabelProvider());
 		packageViewer.setContentProvider(new ArrayContentProvider());
 		
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();

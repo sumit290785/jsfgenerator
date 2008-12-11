@@ -16,7 +16,7 @@ import org.eclipse.ui.PlatformUI;
  * @author zoltan verebes
  * 
  */
-public class ProjectElementLabelProvider extends LabelProvider {
+public class ResourceLabelProvider extends LabelProvider {
 
 	private static final Image IMG_FOLDER = PlatformUI.getWorkbench().getSharedImages().getImage(
 			ISharedImages.IMG_OBJ_FOLDER);

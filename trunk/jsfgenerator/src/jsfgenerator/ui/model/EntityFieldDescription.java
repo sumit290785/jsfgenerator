@@ -1,4 +1,4 @@
-package jsfgenerator.ui.wizards;
+package jsfgenerator.ui.model;
 
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
