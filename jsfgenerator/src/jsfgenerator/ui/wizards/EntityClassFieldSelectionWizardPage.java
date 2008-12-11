@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jsfgenerator.ui.composites.EntityFieldSelectionComposite;
+import jsfgenerator.ui.model.EntityDescription;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;

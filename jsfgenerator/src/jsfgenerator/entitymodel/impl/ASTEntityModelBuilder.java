@@ -12,8 +12,8 @@ import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
-import jsfgenerator.ui.wizards.EntityDescription;
-import jsfgenerator.ui.wizards.EntityFieldDescription;
+import jsfgenerator.ui.model.EntityDescription;
+import jsfgenerator.ui.model.EntityFieldDescription;
 
 /**
  * Entity model builder class for abstract syntax trees, provided by eclipse!

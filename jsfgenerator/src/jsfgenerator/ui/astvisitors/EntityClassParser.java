@@ -8,8 +8,8 @@ import java.util.Set;
 
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
-import jsfgenerator.ui.wizards.EntityDescription;
-import jsfgenerator.ui.wizards.EntityFieldDescription;
+import jsfgenerator.ui.model.EntityDescription;
+import jsfgenerator.ui.model.EntityFieldDescription;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
