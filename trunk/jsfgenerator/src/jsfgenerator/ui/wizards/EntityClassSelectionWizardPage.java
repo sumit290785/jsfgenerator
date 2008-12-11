@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import jsfgenerator.ui.model.EntityDescription;
 
+import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -15,16 +16,20 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
+@SuppressWarnings("restriction")
 public class EntityClassSelectionWizardPage extends WizardPage {
 
 	private static final String GENERATE = "generate";
 	private static final String DO_NOT_GENERATE = "do not generate";
 	public static final int ENTITY_PAGE = 1 << 1;
 	public static final int LIST_PAGE = 1 << 2;
+	
+	private static final Image IMG_CLASS = JavaPluginImages.get(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_CLASS);
 
 	protected static class GenerateEditingSupport extends EditingSupport {
 
@@ -121,6 +126,11 @@ public class EntityClassSelectionWizardPage extends WizardPage {
 		// class name column
 		TableViewerColumn classNameColumn = new TableViewerColumn(viewer, SWT.NONE);
 		classNameColumn.setLabelProvider(new ColumnLabelProvider() {
+
+			@Override
+			public Image getImage(Object element) {
+				return IMG_CLASS;
+			}
 
 			public String getText(Object element) {
 				return ((EntityDescription) element).getEntityClassName();

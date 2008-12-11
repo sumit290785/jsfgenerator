@@ -1,9 +1,16 @@
 package jsfgenerator.ui.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import jsfgenerator.ui.astvisitors.EntityClassASTVisitor;
 
+import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -39,6 +46,28 @@ public class ProjectResourceProvider {
 		return javaProject;
 	}
 
+	public List<IJavaElement> getProjectPackageFragments() {
+		if (javaProject == null) {
+			throw new NullPointerException("Java project is not found!");
+		}
+
+		List<IJavaElement> fragments = new ArrayList<IJavaElement>();
+		try {
+			for (IClasspathEntry entry : javaProject.getRawClasspath()) {
+				for (IPackageFragmentRoot root : javaProject.findPackageFragmentRoots(entry)) {
+
+					if (!root.isArchive()) {
+						fragments.addAll(Arrays.asList(root.getChildren()));
+					}
+
+				}
+			}
+			return fragments;
+		} catch (JavaModelException e1) {
+			throw new NullPointerException("Could not load packages");
+		}
+	}
+
 	public TypeDeclaration findSingleClassTypeDeclaration(String fullyQualifiedClassName) {
 
 		if (javaProject == null) {
@@ -49,7 +78,7 @@ public class ProjectResourceProvider {
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 
 		try {
-			ICompilationUnit unit =  javaProject.findType(fullyQualifiedClassName).getCompilationUnit();
+			ICompilationUnit unit = javaProject.findType(fullyQualifiedClassName).getCompilationUnit();
 			parser.setSource(unit);
 			CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 			EntityClassASTVisitor visitor = new EntityClassASTVisitor();
@@ -61,7 +90,7 @@ public class ProjectResourceProvider {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 }
