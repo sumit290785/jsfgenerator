@@ -19,7 +19,7 @@ public final class ClassNameUtils {
 	/*
 	 * regular expression for parsing a fully qualified java class name with generic parameter list
 	 */
-	private static Pattern fullyQualifiedPatttern = Pattern.compile("^((?:[A-Za-z0-9_]+\\.)*)([A-Za-z0-9]+)($|<((([^>,]+),?)+)>)");
+	private static Pattern fullyQualifiedPatttern = Pattern.compile("^((?:[A-Za-z][A-Za-z0-9_]*\\.)*)([A-Za-z0-9]+)($|<((([^>,]+),?)+)>)");
 
 	/**
 	 * add generic parameters to a class name

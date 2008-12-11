@@ -45,18 +45,18 @@ public class ControllerTargetPackageSelectionWizardPage extends WizardPage {
 				if (event.getSelection() != null && event.getSelection() instanceof StructuredSelection) {
 					selectedPackageFragment = (IPackageFragment) ((StructuredSelection) event.getSelection()).getFirstElement();
 				}
-				
+
 				validate();
 			}
 		});
-		
+
 		validate();
 	}
 
 	public IPackageFragment getSelectedPackageFragment() {
 		return selectedPackageFragment;
 	}
-	
+
 	private void validate() {
 		setErrorMessage(selectedPackageFragment == null ? "Please, select a target package" : null);
 	}

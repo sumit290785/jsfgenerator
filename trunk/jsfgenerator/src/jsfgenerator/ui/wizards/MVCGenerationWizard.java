@@ -12,8 +12,10 @@ import java.util.List;
 import jsfgenerator.entitymodel.EntityModel;
 import jsfgenerator.entitymodel.impl.ASTEntityModelBuilder;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
+import jsfgenerator.generation.common.GenerationException;
 import jsfgenerator.generation.common.ViewAndControllerDTO;
 import jsfgenerator.generation.common.ViewAndControllerEngine;
+import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
 import jsfgenerator.generation.view.ITagTreeProvider;
@@ -26,7 +28,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
@@ -49,12 +50,9 @@ public class MVCGenerationWizard extends Wizard {
 	private EntityClassSelectionWizardPage entityClassSelectionWizardPage;
 	private EntityClassFieldSelectionWizardPage entityClassFieldSelectionWizardPage;
 
-	private IJavaProject project;
-
-	public MVCGenerationWizard(IJavaProject project, List<EntityDescription> entityDescriptions) {
+	public MVCGenerationWizard(List<EntityDescription> entityDescriptions) {
 		super();
 		this.entityDescriptions = entityDescriptions;
-		this.project = project;
 		setWindowTitle("View and Controller generation wizard");
 	}
 
@@ -87,9 +85,9 @@ public class MVCGenerationWizard extends Wizard {
 					builder.createEntityPageModel(viewId);
 				}
 
-				//if (hasSimpleField(entity)) {
-					builder.addSimpleEntityForm(viewId, entity);
-				//}
+				// if (hasSimpleField(entity)) {
+				builder.addSimpleEntityForm(viewId, entity);
+				// }
 
 				for (EntityFieldDescription entityField : getComplexFields(entity)) {
 					builder.addComplexEntityFormList(entity, entityField);
@@ -106,7 +104,7 @@ public class MVCGenerationWizard extends Wizard {
 		}
 
 		ITagTreeProvider tagFactory = new TagTreeParser(is);
-		
+
 		IPackageFragment fragment = controllerTargetPackageSelectionWizardPage.getSelectedPackageFragment();
 		AbstractControllerNodeProvider controllerNodeProvider = new ControllerNodeFactory(fragment.getElementName());
 
@@ -115,8 +113,8 @@ public class MVCGenerationWizard extends Wizard {
 
 		for (AbstractPageModel pageModel : entityModel.getPageModels()) {
 			ViewAndControllerDTO viewDTO = engine.getViewAndControllerDTO(pageModel.getViewId());
-			saveView(viewDTO.getViewName(), viewDTO.getViewStream());
-			saveController(viewDTO.getControllerClassName(), viewDTO.getViewClass());
+			saveView(pageModel.getViewId(), viewDTO.getViewStream());
+			saveController(pageModel.getViewId(), viewDTO.getViewClass());
 		}
 
 		return true;
@@ -142,21 +140,47 @@ public class MVCGenerationWizard extends Wizard {
 		return null;
 	}
 
-	public IJavaProject getProject() {
-		return project;
-	}
-
 	private void saveController(String className, CompilationUnit controller) {
 		String sourceCode = formatCode(controller.toString());
 		IPackageFragment fragment = controllerTargetPackageSelectionWizardPage.getSelectedPackageFragment();
 
 		ICompilationUnit cu = null;
 		try {
-			cu = fragment.createCompilationUnit(className + ".java", sourceCode, false, null);
+			String fileName = NodeNameUtils.getEntityPageClassFileNameByUniqueName(className);
+			cu = fragment.createCompilationUnit(fileName, sourceCode, false, null);
 			cu.becomeWorkingCopy(null);
 		} catch (JavaModelException e) {
-			e.printStackTrace();
+			throw new GenerationException("Could not save the generated controller!", e);
 		}
+	}
+
+	private void saveView(String viewId, ByteArrayOutputStream stream) {
+		IFolder folder = viewTargetFolderSelectionWizardPage.getSelectedFolder();
+		if (folder == null) {
+			throw new NullPointerException("Target folder is not selected");
+		}
+
+		if (!folder.exists()) {
+			throw new NullPointerException("Target folder does not exist!");
+		}
+
+		String fileName = NodeNameUtils.getEntityPageViewNameByUniqueName(viewId);
+		IFile file = folder.getFile(fileName);
+		if (file.exists()) {
+			try {
+				file.delete(IResource.FORCE, null);
+			} catch (CoreException e) {
+				throw new GenerationException("Could not delete the previous version of the view!", e);
+			}
+		}
+
+		InputStream is = new ByteArrayInputStream(stream.toByteArray());
+		try {
+			file.create(is, IResource.FORCE, null);
+		} catch (CoreException e) {
+			throw new GenerationException("Could not save the generated view!", e);
+		}
+
 	}
 
 	private String formatCode(String source) {
@@ -174,46 +198,15 @@ public class MVCGenerationWizard extends Wizard {
 		return document.get();
 	}
 
-	private void saveView(String viewId, ByteArrayOutputStream stream) {
-		IFolder folder = viewTargetFolderSelectionWizardPage.getSelectedFolder();
-		if (folder == null) {
-			throw new NullPointerException("Target folder is not selected");
-		}
-
-		if (!folder.exists()) {
-			throw new NullPointerException("Target folder does not exist!");
-		}
-
-		String fileName = viewId + ".xhtml";
-		IFile file = folder.getFile(fileName);
-		if (file.exists()) {
-			try {
-				file.delete(IResource.FORCE, null);
-			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		InputStream is = new ByteArrayInputStream(stream.toByteArray());
-		try {
-			file.create(is, IResource.FORCE, null);
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-	
 	private List<EntityFieldDescription> getComplexFields(EntityDescription entityDescription) {
 		List<EntityFieldDescription> entityFields = new ArrayList<EntityFieldDescription>();
-		
+
 		for (EntityFieldDescription entityFieldDescription : entityDescription.getEntityFieldDescriptions()) {
 			if (entityFieldDescription.isCollectionInComplexForm()) {
 				entityFields.add(entityFieldDescription);
 			}
 		}
-		
+
 		return entityFields;
 	}
 

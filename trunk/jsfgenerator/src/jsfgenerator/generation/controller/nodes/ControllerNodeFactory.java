@@ -6,17 +6,13 @@ import java.util.List;
 import jsfgenerator.entitymodel.forms.Command;
 import jsfgenerator.entitymodel.forms.ComplexEntityFormList;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
+import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.nodes.FunctionControllerNode.FunctionType;
 
 public class ControllerNodeFactory extends AbstractControllerNodeProvider {
-
-	// entity page controller super class
-	private static final String SUPER_CLASS_NAME = "jsfgenerator.xxx.AbstractHome";
-
-	private static final String SIMPLE_FORM_FIELD_CLASS = "jsfgenerator.xxx.EditHelper";
 
 	private String packageName;
 
@@ -39,7 +35,7 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 
 	public List<ControllerNode> createSimpleFormControllerNodes(SimpleEntityForm form, int flag) {
 		List<ControllerNode> nodes = new ArrayList<ControllerNode>();
-		String fieldType = ClassNameUtils.addGenericParameter(SIMPLE_FORM_FIELD_CLASS, form.getEntityClassName());
+		String fieldType = ClassNameUtils.addGenericParameter(INameConstants.SIMPLE_FORM_FIELD_CLASS, form.getEntityClassName());
 		String fieldName = NodeNameUtils.getControllerEditorFieldNameByCanonicalName(form.getFormName());
 
 		nodes.add(new FieldControllerNode(fieldName, fieldType, fieldType));

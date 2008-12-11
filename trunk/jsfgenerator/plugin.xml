@@ -20,11 +20,11 @@
         </separator>
      </menu>
 	    <action
-           class="jsfgenerator.ui.actions.SingleEntityGenerationAction"
+           class="jsfgenerator.ui.actions.ViewAndControllerGenerationAction"
            definitionId="jsfgenerator.ui.singleentitygenerationaction"
            enablesFor="1"
            id="jsfgenerator.ui.generationaction"
-           label="Single entity generation"
+           label="View and controller generation"
            menubarPath="jsfgenerator.ui.actions.menu/group1">
 	    </action>
 	 </objectContribution>
