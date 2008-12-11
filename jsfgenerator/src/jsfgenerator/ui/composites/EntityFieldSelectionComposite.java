@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.ui.model.EntityDescription;
 import jsfgenerator.ui.model.EntityFieldDescription;
 
@@ -89,7 +90,7 @@ public class EntityFieldSelectionComposite extends Composite {
 
 			EntityFieldDescription entityField = ((EntityFieldDescription) element);
 			if (value != null && COLLECTION_FIELD.equals((String) value) && !selectedEntityDescription.isEmbedded()) {
-				entityField.setCollectionInComplexForm(selectedEntityDescription.getNode());
+				entityField.setCollectionInComplexForm(ClassNameUtils.getGenericParameterList(entityField.getClassName()).get(0));
 				entityField.setInputTagId(null);
 			} else {
 				entityField.setCollectionInComplexForm(null);

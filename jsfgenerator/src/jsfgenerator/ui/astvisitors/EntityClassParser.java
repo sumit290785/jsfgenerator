@@ -10,11 +10,10 @@ import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.ui.model.EntityDescription;
 import jsfgenerator.ui.model.EntityFieldDescription;
+import jsfgenerator.ui.model.ProjectResourceProvider;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
@@ -203,7 +202,7 @@ public final class EntityClassParser {
 	 * @param imports
 	 * @return
 	 */
-	protected static String getTypeName(Type type, List<String> imports) {
+	public static String getTypeName(Type type, List<String> imports) {
 
 		if (type.isPrimitiveType()) {
 			return type.toString();
@@ -365,6 +364,29 @@ public final class EntityClassParser {
 			buf.append(type.getName().getFullyQualifiedName());
 		}
 
+		return buf.toString();
+	}
+	
+	public static String getFullyQualifiedName(TypeDeclaration node) {
+		String packageName = getPackageName(node);
+		String parentClassName = getParentTypeDeclarationsName(node);
+		String name = node.getName().getFullyQualifiedName();
+		
+		StringBuffer buf = new StringBuffer();
+		
+		if (!packageName.equals("")) {
+			buf.append(packageName);
+			buf.append(".");
+			
+		} 
+		
+		if (!parentClassName.equals("")) {
+			buf.append(parentClassName);
+			buf.append(".");
+		}
+		
+		buf.append(name);
+		
 		return buf.toString();
 	}
 
@@ -559,8 +581,6 @@ public final class EntityClassParser {
 	}
 
 	protected static IJavaProject getProject() {
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		root.getProject();
-		return JavaCore.create(root.getProject("proba"));
+		return ProjectResourceProvider.getInstance().getJavaProject();
 	}
 }
