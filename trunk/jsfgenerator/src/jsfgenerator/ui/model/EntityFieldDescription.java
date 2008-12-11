@@ -2,6 +2,7 @@ package jsfgenerator.ui.model;
 
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
+
 public class EntityFieldDescription {
 
 	private String fieldName;
@@ -46,13 +47,14 @@ public class EntityFieldDescription {
 		return isCollectionOfEntity;
 	}
 
-	public void setCollectionInComplexForm(TypeDeclaration node) {
-		if (node == null) {
+	public void setCollectionInComplexForm(String genericClassName) {
+		if (genericClassName == null || genericClassName.equals("")) {
 			this.isCollectionInComplexForm = false;
 			this.entityDescription = null;
 		} else {
+			TypeDeclaration typeNode = ProjectResourceProvider.getInstance().findSingleClassTypeDeclaration(genericClassName);
 			this.isCollectionInComplexForm = true;
-			this.entityDescription = new EntityDescription(node);
+			this.entityDescription = new EntityDescription(typeNode);
 			this.entityDescription.setEmbedded(true);
 		}
 

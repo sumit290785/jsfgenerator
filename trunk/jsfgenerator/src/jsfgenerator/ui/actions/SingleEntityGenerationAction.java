@@ -4,6 +4,7 @@ import java.util.List;
 
 import jsfgenerator.ui.astvisitors.EntityClassParser;
 import jsfgenerator.ui.model.EntityDescription;
+import jsfgenerator.ui.model.ProjectResourceProvider;
 import jsfgenerator.ui.wizards.MVCGenerationWizard;
 
 import org.eclipse.core.resources.IFile;
@@ -30,13 +31,17 @@ public class SingleEntityGenerationAction extends Action implements IObjectActio
 	public void run(IAction action) {
 
 		if (selectedResource != null) {
+			IJavaProject project = JavaCore.create(selectedResource.getProject());
+			ProjectResourceProvider.getInstance().setJavaProject(project);
 			List<EntityDescription> entityDescriptions = EntityClassParser.findEntities(selectedResource);
 
 			// WizardDialog dialog = new WizardDialog(part.getSite().getShell(), new EntityWizard(entities));
-			IJavaProject project = JavaCore.create(selectedResource.getProject());
+
 			WizardDialog dialog = new WizardDialog(part.getSite().getShell(),
 					new MVCGenerationWizard(project, entityDescriptions));
 			dialog.open();
+		} else {
+			ProjectResourceProvider.getInstance().setJavaProject(null);	
 		}
 
 	}

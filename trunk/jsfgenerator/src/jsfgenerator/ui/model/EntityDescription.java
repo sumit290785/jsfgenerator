@@ -30,7 +30,7 @@ public class EntityDescription {
 	private List<EntityFieldDescription> entityFieldDescriptions;
 
 	private String viewId = "";
-	
+
 	private boolean embedded = false;
 
 	public EntityDescription(TypeDeclaration node) {
@@ -40,33 +40,7 @@ public class EntityDescription {
 		}
 
 		this.node = node;
-		String packageName = EntityClassParser.getPackageName(node);
-		String parentClassName = EntityClassParser.getParentTypeDeclarationsName(node);
-		
-		StringBuffer buf = new StringBuffer();
-		
-		if (!packageName.equals("")) {
-			buf.append(packageName);
-			buf.append(".");
-			
-		} 
-		
-		if (!parentClassName.equals("")) {
-			buf.append(parentClassName);
-			buf.append(".");
-		}
-		
-		buf.append(node.getName().getFullyQualifiedName());
-		this.entityClassName = buf.toString();
-	}
-
-	public EntityDescription(String entityClassName) {
-
-		if (entityClassName == null) {
-			throw new IllegalArgumentException("Class name cannot be null");
-		}
-
-		this.entityClassName = entityClassName;
+		this.entityClassName = EntityClassParser.getFullyQualifiedName(node);
 	}
 
 	public boolean isEntityPage() {
@@ -87,10 +61,6 @@ public class EntityDescription {
 
 	public String getEntityClassName() {
 		return entityClassName;
-	}
-
-	public TypeDeclaration getNode() {
-		return node;
 	}
 
 	public List<EntityFieldDescription> getEntityFieldDescriptions() {

@@ -69,6 +69,10 @@ public class EntityClassASTVisitor extends ASTVisitor {
 
 	private List<EntityDescription> entityDescriptions = new ArrayList<EntityDescription>();
 
+	private String className;
+
+	private TypeDeclaration singleTypeDeclaration;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -78,7 +82,14 @@ public class EntityClassASTVisitor extends ASTVisitor {
 	public boolean visit(TypeDeclaration node) {
 
 		if (isEntity(node)) {
-			entityDescriptions.add(new EntityDescription(node));
+
+			if (className == null) {
+				entityDescriptions.add(new EntityDescription(node));
+				return true;
+			} else if (className.equals( EntityClassParser.getFullyQualifiedName(node))) {
+				singleTypeDeclaration = node;
+				return false;
+			}
 		}
 
 		return true;
@@ -92,6 +103,23 @@ public class EntityClassASTVisitor extends ASTVisitor {
 		EntityAnnotationASTVisitor visitor = new EntityAnnotationASTVisitor();
 		node.accept(visitor);
 		return visitor.isEntity();
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	/**
+	 * ASTNode of the class name configured with setClassName(). Class name is null implies that it will return null!
+	 * 
+	 * @return
+	 */
+	public TypeDeclaration getSingleClassTypeDeclaration() {
+		return singleTypeDeclaration;
 	}
 
 }
