@@ -8,6 +8,7 @@ import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.ui.model.EntityDescription;
 import jsfgenerator.ui.model.EntityFieldDescription;
 
+import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -26,15 +27,19 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+@SuppressWarnings("restriction")
 public class EntityFieldSelectionComposite extends Composite {
 
 	private static final String COLLECTION_FIELD = "Complex entity form...";
+	
+	private static final Image IMG_CLASS = JavaPluginImages.get(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_CLASS);
 
 	protected class InputTagEditingSupport extends EditingSupport {
 
@@ -266,6 +271,15 @@ public class EntityFieldSelectionComposite extends Composite {
 		masterPart.setLabelProvider(new LabelProvider() {
 
 			@Override
+			public Image getImage(Object element) {
+				if (element instanceof EntityDescription) {
+					return IMG_CLASS;
+				}
+				
+				return super.getImage(element);
+			}
+
+			@Override
 			public String getText(Object element) {
 				if (element instanceof EntityDescription) {
 					return ((EntityDescription) element).getEntityClassName();
@@ -273,6 +287,8 @@ public class EntityFieldSelectionComposite extends Composite {
 
 				return null;
 			}
+			
+			
 
 		});
 

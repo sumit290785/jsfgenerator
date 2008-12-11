@@ -106,8 +106,9 @@ public class MVCGenerationWizard extends Wizard {
 		}
 
 		ITagTreeProvider tagFactory = new TagTreeParser(is);
-		// TODO: package
-		AbstractControllerNodeProvider controllerNodeProvider = new ControllerNodeFactory("pkg.generated");
+		
+		IPackageFragment fragment = controllerTargetPackageSelectionWizardPage.getSelectedPackageFragment();
+		AbstractControllerNodeProvider controllerNodeProvider = new ControllerNodeFactory(fragment.getElementName());
 
 		ViewAndControllerEngine engine = ViewAndControllerEngine.getInstance();
 		engine.generateViewsAndControllers(entityModel, tagFactory, controllerNodeProvider);
@@ -147,14 +148,7 @@ public class MVCGenerationWizard extends Wizard {
 
 	private void saveController(String className, CompilationUnit controller) {
 		String sourceCode = formatCode(controller.toString());
-
-		IPackageFragment fragment = null;
-		try {
-			fragment = (project.getAllPackageFragmentRoots()[0]).getPackageFragment("pkg.generated");
-		} catch (JavaModelException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		IPackageFragment fragment = controllerTargetPackageSelectionWizardPage.getSelectedPackageFragment();
 
 		ICompilationUnit cu = null;
 		try {
