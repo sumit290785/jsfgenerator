@@ -3,6 +3,7 @@ package jsfgenerator.ui.providers;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
@@ -48,6 +49,8 @@ public class ProjectElementLabelProvider extends LabelProvider {
 	public String getText(Object element) {
 		if (element instanceof IContainer || element instanceof IFile) {
 			return ((IResource) element).getName();
+		} else if (element instanceof IPackageFragment) {
+			return ((IPackageFragment) element).getElementName();
 		}
 
 		return super.getText(element);

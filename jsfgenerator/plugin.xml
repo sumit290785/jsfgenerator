@@ -5,14 +5,27 @@
          id="jsfgenerator.popupmenu"
          point="org.eclipse.ui.popupMenus">
           <objectContribution
+                adaptable="true"
                 id="jsfgenerator.ui.actions.singleentitygenerationaction"
-                nameFilter="*.java"
                 objectClass="org.eclipse.core.resources.IFile">
-	    <action id="jsfgenerator.ui.generationaction"
-	       label="Single entity generation"
-	       class="jsfgenerator.ui.actions.SingleEntityGenerationAction"	
+     <menu
+           id="jsfgenerator.ui.actions.menu"
+           label="JSF Tools"
+           path="jsfgenerator.ui.actions.groupmaker">
+        <groupMarker
+              name="jsfgenerator.ui.actions.groupmaker">
+        </groupMarker>
+        <separator
+              name="jsfgenerator.ui.menus.separator">
+        </separator>
+     </menu>
+	    <action
+           class="jsfgenerator.ui.actions.SingleEntityGenerationAction"
            definitionId="jsfgenerator.ui.singleentitygenerationaction"
-	       enablesFor="1">
+           enablesFor="1"
+           id="jsfgenerator.ui.generationaction"
+           label="Single entity generation"
+           menubarPath="jsfgenerator.ui.actions.menu/group1">
 	    </action>
 	 </objectContribution>
           

@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Composite;
  * @author zoltan verebes
  * 
  */
-public class ViewFolderSelectionWizardPage extends WizardPage {
+public class ViewTargetFolderSelectionWizardPage extends WizardPage {
 
 	/**
 	 * Filters out all of the non-container (folder and project) type elements
@@ -47,10 +47,10 @@ public class ViewFolderSelectionWizardPage extends WizardPage {
 
 	protected IFolder selectedFolder;
 
-	protected ViewFolderSelectionWizardPage() {
+	protected ViewTargetFolderSelectionWizardPage() {
 		super("ViewFolderSelectionWizardPage");
 		setTitle("View folder page");
-		setDescription("This is a single page for selecting the target folder of the view files");
+		setDescription("Please, select a target folder for the generated view xhtml files");
 	}
 
 	/*

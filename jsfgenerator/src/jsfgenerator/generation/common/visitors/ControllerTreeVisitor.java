@@ -33,8 +33,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.Modifier.ModifierKeyword;
 
 /**
- * Visits the elements of the controller tree and creates classes, fields and
- * functions. It uses eclipse specific AST to do its job
+ * Visits the elements of the controller tree and creates classes, fields and functions. It uses eclipse specific AST to do its job
  * 
  * @author zoltan verebes
  * 
@@ -42,8 +41,7 @@ import org.eclipse.jdt.core.dom.Modifier.ModifierKeyword;
 public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 
 	/**
-	 * Visits all of the nodes in the controller tree and gather all of the
-	 * required import declarations.
+	 * Visits all of the nodes in the controller tree and gather all of the required import declarations.
 	 * 
 	 * @author zoltan verebes
 	 * 
@@ -55,8 +53,7 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @seejsfgenerator.generation.common.visitors.AbstractVisitor#visit(
-		 * jsfgenerator.generation.common.Node)
+		 * @seejsfgenerator.generation.common.visitors.AbstractVisitor#visit( jsfgenerator.generation.common.Node)
 		 */
 		@Override
 		public boolean visit(ControllerNode node) {
@@ -66,8 +63,7 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 
 		/**
 		 * 
-		 * @return collection of imports required by the elements of the
-		 *         controller tree. list is sorted by alphabetical order
+		 * @return collection of imports required by the elements of the controller tree. list is sorted by alphabetical order
 		 */
 		public List<String> getSortedImports() {
 			List<String> sortedImports = Arrays.asList(imports.toArray(new String[0]));
@@ -93,9 +89,7 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * jsfgenerator.generation.common.visitors.AbstractVisitor#visit(jsfgenerator
-	 * .generation.common.Node)
+	 * @see jsfgenerator.generation.common.visitors.AbstractVisitor#visit(jsfgenerator .generation.common.Node)
 	 */
 	@Override
 	public boolean visit(ControllerNode node) {
@@ -131,15 +125,15 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		methodDeclaration.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));
 		methodDeclaration.setName(ast.newSimpleName(ClassNameUtils.getSimpleClassName(node.getFunctionName())));
 
-		Type returnType = (node.getReturnType() == null) ? ast.newPrimitiveType(PrimitiveType.VOID) : createParameterizedType(node
-				.getReturnType(), false);
+		Type returnType = (node.getReturnType() == null) ? ast.newPrimitiveType(PrimitiveType.VOID)
+				: createParameterizedType(node.getReturnType());
 		methodDeclaration.setReturnType2(returnType);
 
 		for (String parameterName : node.getParameterNames()) {
 			String type = node.getType(parameterName);
 			SingleVariableDeclaration singleVariableDecl = ast.newSingleVariableDeclaration();
-			//singleVariableDecl.setType(ast.newSimpleType(getQualifiedName(ControllerNodeUtils.getSimpleClassName(type))));
-			singleVariableDecl.setType(createParameterizedType(type, false));
+			// singleVariableDecl.setType(ast.newSimpleType(getQualifiedName(ControllerNodeUtils.getSimpleClassName(type))));
+			singleVariableDecl.setType(createParameterizedType(type));
 			singleVariableDecl.setName(ast.newSimpleName(parameterName));
 
 			methodDeclaration.parameters().add(singleVariableDecl);
@@ -158,7 +152,7 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 
 		FieldDeclaration fd = ast.newFieldDeclaration(vdf);
 
-		Type type = createParameterizedType(node.getClassName(), false);
+		Type type = createParameterizedType(node.getClassName());
 		fd.setType(type);
 		fd.modifiers().add(ast.newModifier(ModifierKeyword.PRIVATE_KEYWORD));
 		rootType.bodyDeclarations().add(fd);
@@ -192,10 +186,10 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		 * set its superclass
 		 */
 		if (node.getSuperClassName() != null && !node.getSuperClassName().equals("")) {
-			Type superClassType = createParameterizedType(node.getSuperClassName(), false);
+			Type superClassType = createParameterizedType(node.getSuperClassName());
 			rootType.setSuperclassType(superClassType);
-			
-			//TODO: add empty block of abstract functions
+
+			// TODO: add empty block of abstract functions
 		}
 
 		/*
@@ -205,9 +199,9 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 			Type interfaceType = ast.newSimpleType(getQualifiedName(ClassNameUtils.getSimpleClassName(interfaceName)));
 			rootType.superInterfaceTypes().add(interfaceType);
 		}
-		
-		//TODO: add interface functions
-		
+
+		// TODO: add interface functions
+
 		unit.types().add(rootType);
 	}
 
@@ -233,20 +227,13 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 
 		return qn;
 	}
-	
-	protected Type createParameterizedType(String className, boolean isQualified) {
-		Name name;
-		if (isQualified) {
-			name = getQualifiedName(className);
-		} else {
-			String simpleName = ClassNameUtils.getSimpleClassName(className);
-			name = ast.newSimpleName(simpleName);
-		}
-		
-		List<String> params = ClassNameUtils.getGenericParameterList(className);
+
+	@SuppressWarnings("unchecked")
+	protected Type createParameterizedType(String fullyQualifiedClassName) {
+		Name name = ast.newName(ClassNameUtils.removeGenericParameters(fullyQualifiedClassName));
+		List<String> params = ClassNameUtils.getGenericParameterList(fullyQualifiedClassName);
 
 		Type type = ast.newSimpleType(name);
-
 		if (params.size() == 0) {
 			return type;
 		}
@@ -254,11 +241,11 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		ParameterizedType ptype = ast.newParameterizedType(type);
 
 		for (String paramName : params) {
-			Type paramType = ast.newSimpleType(ast.newSimpleName(paramName));
+			Type paramType = ast.newSimpleType(ast.newName(ClassNameUtils.removeGenericParameters(paramName)));
 			ptype.typeArguments().add(paramType);
 		}
 
 		return ptype;
 	}
-	
+
 }

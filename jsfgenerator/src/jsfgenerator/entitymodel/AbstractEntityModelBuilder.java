@@ -104,7 +104,7 @@ public abstract class AbstractEntityModelBuilder<TEntity, TField> {
 	 * @param listField
 	 * @param genericEntity
 	 */
-	public abstract void addComplexEntityFormList(String viewId, TEntity domainEntity, TField listField, TEntity genericEntity);
+	public abstract void addComplexEntityFormList(TEntity domainEntity, TField listField);
 
 	public void addEntityFormToList(EntityPageModel entityPage, String viewId) {
 

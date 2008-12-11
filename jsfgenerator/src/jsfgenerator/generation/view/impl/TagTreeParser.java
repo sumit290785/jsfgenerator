@@ -2,6 +2,7 @@ package jsfgenerator.generation.view.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -49,9 +50,11 @@ public class TagTreeParser implements ITagTreeProvider {
 
 	// xPATH expression for tagtree domain tags in the xml
 	private static final String TAGTREE_XPATH = "//tagtree[@id='{id}']";
+	
+	private static final String INPUTTAG_XPATH = "//inputtag";
 
 	// xPATH expression for inputtag domain tags in the xml
-	private static final String INPUTTAG_XPATH = "//inputtag[@id='{id}']";
+	private static final String INPUTTAG_ID_XPATH = INPUTTAG_XPATH + "[@id='{id}']";
 
 	private static final String PROXYTAG = "proxytag";
 
@@ -219,6 +222,22 @@ public class TagTreeParser implements ITagTreeProvider {
 	}
 
 	private Node getNode(String exp) throws ParserException {
+		NodeList nodes = getNodes(exp);
+
+		if (nodes.getLength() == 0) {
+			throw new ParserException("Node not found for expression: " + exp);
+		}
+
+		if (nodes.getLength() > 1) {
+			throw new ParserException("Multiple nodes found! Expression: " + exp);
+		}
+
+		Node node = nodes.item(0);
+
+		return node;
+	}
+	
+	private NodeList getNodes(String exp) throws ParserException  {
 		XPath xpath = factory.newXPath();
 		XPathExpression expression;
 		try {
@@ -237,17 +256,7 @@ public class TagTreeParser implements ITagTreeProvider {
 
 		NodeList nodes = (NodeList) result;
 
-		if (nodes.getLength() == 0) {
-			throw new ParserException("Node not found for expression: " + exp);
-		}
-
-		if (nodes.getLength() > 1) {
-			throw new ParserException("Multiple nodes found! Expression: " + exp);
-		}
-
-		Node node = nodes.item(0);
-
-		return node;
+		return nodes;
 	}
 
 	protected TagTree getTagTree(String id) throws ParserException {
@@ -292,7 +301,7 @@ public class TagTreeParser implements ITagTreeProvider {
 			throw new IllegalArgumentException("Input tag id parameter cannot be null!");
 		}
 
-		String exp = INPUTTAG_XPATH.replace("{id}", inputTagId);
+		String exp = INPUTTAG_ID_XPATH.replace("{id}", inputTagId);
 		try {
 			Node inputTagNode = getNode(exp);
 
@@ -365,6 +374,23 @@ public class TagTreeParser implements ITagTreeProvider {
 		}
 
 		return null;
+	}
+
+	public List<String> getInputTagIds() {
+		List<String> ids = new ArrayList<String>();
+		try {
+			NodeList inputTagNodeList = getNodes(INPUTTAG_XPATH + "//@id");
+
+			for (int i = 0; i < inputTagNodeList.getLength(); i++) {
+				Node inputTagNode = inputTagNodeList.item(i);
+				ids.add(inputTagNode.getNodeValue());
+			}
+		} catch (ParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return ids;
 	}
 
 }

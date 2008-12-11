@@ -17,7 +17,8 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 /**
- * Utility class to parse AST elements and find the entities in the java model!
+ * Utility class to parse AST elements and find the entities in the java model! Java model can be a project, package or multiple packages,
+ * maybe only one class.
  * 
  * @author zoltan verebes
  * 
@@ -25,8 +26,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 public final class EntityParser {
 
 	/**
-	 * parses a compilation unit! It can contain multiple classes, so it returns
-	 * with a list of classes!
+	 * parses a compilation unit! It can contain multiple classes, so it returns with a list of classes!
 	 * 
 	 * @param resource
 	 * @return classes declared in the compilatition unit
@@ -47,7 +47,7 @@ public final class EntityParser {
 
 		return findEntities(parser);
 	}
-
+	
 	/**
 	 * TODO
 	 * 
@@ -97,8 +97,8 @@ public final class EntityParser {
 	/**
 	 * method is the getter of fieldName
 	 * 
-	 * A method is getter of a field called xxx if it is called getXxx(), return
-	 * type is the same as the field type and has no formal parameters!
+	 * A method is getter of a field called xxx if it is called getXxx(), return type is the same as the field type and has no formal
+	 * parameters!
 	 * 
 	 * @param method
 	 * @param field
@@ -126,9 +126,8 @@ public final class EntityParser {
 	/**
 	 * method is the setter of fieldName
 	 * 
-	 * A method is setter of a field called xxx if it is called setXxx(), return
-	 * type is void and has exactly one parameter which type is the same as the
-	 * field type
+	 * A method is setter of a field called xxx if it is called setXxx(), return type is void and has exactly one parameter which type is
+	 * the same as the field type
 	 * 
 	 * @param method
 	 * @param field
@@ -164,7 +163,7 @@ public final class EntityParser {
 
 		return visitor.getEntityWizardInputs();
 	}
-
+	
 	protected static String capitalFieldName(String name) {
 		if (name == null || name.length() == 0) {
 			return name;

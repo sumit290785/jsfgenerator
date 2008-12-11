@@ -3,10 +3,14 @@ package jsfgenerator.ui.actions;
 import java.util.List;
 
 import jsfgenerator.entitymodel.utilities.EntityParser;
-import jsfgenerator.ui.wizards.EntityWizard;
+import jsfgenerator.ui.astvisitors.EntityClassParser;
+import jsfgenerator.ui.wizards.EntityDescription;
 import jsfgenerator.ui.wizards.EntityWizardInput;
+import jsfgenerator.ui.wizards.MVCGenerationWizard;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -28,10 +32,13 @@ public class SingleEntityGenerationAction extends Action implements IObjectActio
 	public void run(IAction action) {
 
 		if (selectedResource != null) {
-
 			List<EntityWizardInput> entities = EntityParser.findEntities(selectedResource);
+			List<EntityDescription> entityDescriptions = EntityClassParser.findEntities(selectedResource);
 
-			WizardDialog dialog = new WizardDialog(part.getSite().getShell(), new EntityWizard(entities));
+			// WizardDialog dialog = new WizardDialog(part.getSite().getShell(), new EntityWizard(entities));
+			IJavaProject project = JavaCore.create(selectedResource.getProject());
+			WizardDialog dialog = new WizardDialog(part.getSite().getShell(),
+					new MVCGenerationWizard(project, entityDescriptions));
 			dialog.open();
 		}
 

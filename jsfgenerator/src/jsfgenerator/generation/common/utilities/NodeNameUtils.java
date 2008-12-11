@@ -34,14 +34,14 @@ public final class NodeNameUtils {
 	}
 
 	public static String getControllerFieldNameByCanonicalName(String uniqueName) {
-		if (uniqueName == null  || uniqueName.equals("")) {
+		if (uniqueName == null || uniqueName.equals("")) {
 			return null;
 		}
 
 		Matcher matcher = getMatcher(uniqueName);
 		return matcher.group(matcher.groupCount());
 	}
-	
+
 	public static String getEntityPageClassNameByUniqueName(String uniqueName) {
 
 		if (uniqueName == null || uniqueName.equals("")) {
@@ -58,12 +58,7 @@ public final class NodeNameUtils {
 		}
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(SETTER_PREFIX);
-		buffer.append(fieldName.substring(0, 1).toUpperCase());
-
-		if (fieldName.length() > 1) {
-			buffer.append(fieldName.substring(1));
-		}
-
+		buffer.append(capitalFieldName(fieldName));
 		return buffer.toString();
 	}
 
@@ -73,12 +68,7 @@ public final class NodeNameUtils {
 		}
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(GETTER_PREFIX);
-		buffer.append(fieldName.substring(0, 1).toUpperCase());
-
-		if (fieldName.length() > 1) {
-			buffer.append(fieldName.substring(1));
-		}
-
+		buffer.append(capitalFieldName(fieldName));
 		return buffer.toString();
 	}
 
@@ -96,7 +86,22 @@ public final class NodeNameUtils {
 		return SAVE_FUNCTION_NAME;
 	}
 
-	private static Matcher getMatcher(String name) {
+	protected static String capitalFieldName(String name) {
+		if (name == null || name.length() == 0) {
+			return name;
+		}
+
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(Character.toUpperCase(name.charAt(0)));
+
+		if (name.length() != 1) {
+			buffer.append(name.substring(1));
+		}
+
+		return buffer.toString();
+	}
+
+	protected static Matcher getMatcher(String name) {
 		Matcher matcher = namePattern.matcher(name);
 
 		if (!matcher.matches()) {
