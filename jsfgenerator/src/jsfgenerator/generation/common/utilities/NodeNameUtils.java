@@ -3,18 +3,11 @@ package jsfgenerator.generation.common.utilities;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jsfgenerator.generation.common.INameConstants;
+
 public final class NodeNameUtils {
 
-	private static final Pattern namePattern = Pattern.compile("^(([A-Za-z0-9_]+\\.)*)([A-Za-z0-9_]+)");
-
-	private static final String EDITOR_FIELD_POSTFIX = "Editor";
-
-	private static final String ENTITY_PAGE_POSTFIX = "Page";
-
-	private static final String SAVE_FUNCTION_NAME = "save";
-
-	private static final String SETTER_PREFIX = "set";
-	private static final String GETTER_PREFIX = "get";
+	private static final Pattern namePattern = Pattern.compile("^(([A-Za-z][A-Za-z0-9_]*\\.)*)([A-Za-z][A-Za-z0-9_]*)");
 
 	public static String getCanonicalName(String... args) {
 		StringBuffer buffer = new StringBuffer();
@@ -30,7 +23,7 @@ public final class NodeNameUtils {
 	}
 
 	public static String getControllerEditorFieldNameByCanonicalName(String uniqueName) {
-		return getControllerFieldNameByCanonicalName(uniqueName) + EDITOR_FIELD_POSTFIX;
+		return getControllerFieldNameByCanonicalName(uniqueName) + INameConstants.EDITOR_FIELD_POSTFIX;
 	}
 
 	public static String getControllerFieldNameByCanonicalName(String uniqueName) {
@@ -49,7 +42,20 @@ public final class NodeNameUtils {
 		}
 
 		Matcher matcher = getMatcher(uniqueName);
-		return matcher.group(matcher.groupCount()) + ENTITY_PAGE_POSTFIX;
+		return matcher.group(matcher.groupCount()) + INameConstants.ENTITY_PAGE_POSTFIX;
+	}
+
+	public static String getEntityPageClassFileNameByUniqueName(String uniqueName) {
+		return getEntityPageClassNameByUniqueName(uniqueName) + "." + INameConstants.CLASS_FILENAME_EXTENSION;
+	}
+
+	public static String getEntityPageViewNameByUniqueName(String uniqueName) {
+		if (uniqueName == null || uniqueName.equals("")) {
+			return null;
+		}
+
+		Matcher matcher = getMatcher(uniqueName);
+		return matcher.group(matcher.groupCount()) + "." + INameConstants.VIEW_NAME_EXTENSION;
 	}
 
 	public static String getSetterName(String fieldName) {
@@ -57,7 +63,7 @@ public final class NodeNameUtils {
 			return null;
 		}
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(SETTER_PREFIX);
+		buffer.append(INameConstants.SETTER_PREFIX);
 		buffer.append(capitalFieldName(fieldName));
 		return buffer.toString();
 	}
@@ -67,7 +73,7 @@ public final class NodeNameUtils {
 			return null;
 		}
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(GETTER_PREFIX);
+		buffer.append(INameConstants.GETTER_PREFIX);
 		buffer.append(capitalFieldName(fieldName));
 		return buffer.toString();
 	}
@@ -83,7 +89,17 @@ public final class NodeNameUtils {
 	}
 
 	public static String getSaveFunctionName() {
-		return SAVE_FUNCTION_NAME;
+		return INameConstants.SAVE_FUNCTION_NAME;
+	}
+
+	public static boolean isValidViewId(String viewId) {
+
+		if (viewId.equals("")) {
+			return false;
+		}
+
+		Matcher matcher = namePattern.matcher(viewId);
+		return matcher.matches();
 	}
 
 	protected static String capitalFieldName(String name) {
@@ -110,4 +126,5 @@ public final class NodeNameUtils {
 
 		return matcher;
 	}
+
 }

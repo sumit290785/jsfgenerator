@@ -18,7 +18,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
-public class SingleEntityGenerationAction extends Action implements IObjectActionDelegate {
+public class ViewAndControllerGenerationAction extends Action implements IObjectActionDelegate {
 
 	protected IWorkbenchPart part;
 
@@ -35,13 +35,10 @@ public class SingleEntityGenerationAction extends Action implements IObjectActio
 			ProjectResourceProvider.getInstance().setJavaProject(project);
 			List<EntityDescription> entityDescriptions = EntityClassParser.findEntities(selectedResource);
 
-			// WizardDialog dialog = new WizardDialog(part.getSite().getShell(), new EntityWizard(entities));
-
-			WizardDialog dialog = new WizardDialog(part.getSite().getShell(),
-					new MVCGenerationWizard(project, entityDescriptions));
+			WizardDialog dialog = new WizardDialog(part.getSite().getShell(), new MVCGenerationWizard(entityDescriptions));
 			dialog.open();
 		} else {
-			ProjectResourceProvider.getInstance().setJavaProject(null);	
+			ProjectResourceProvider.getInstance().setJavaProject(null);
 		}
 
 	}
