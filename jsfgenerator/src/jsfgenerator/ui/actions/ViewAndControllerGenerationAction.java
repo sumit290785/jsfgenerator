@@ -36,6 +36,7 @@ public class ViewAndControllerGenerationAction extends Action implements IObject
 			List<EntityDescription> entityDescriptions = EntityClassParser.findEntities(selectedResource);
 
 			WizardDialog dialog = new WizardDialog(part.getSite().getShell(), new MVCGenerationWizard(entityDescriptions));
+			dialog.setMinimumPageSize(800, 550);
 			dialog.open();
 		} else {
 			ProjectResourceProvider.getInstance().setJavaProject(null);

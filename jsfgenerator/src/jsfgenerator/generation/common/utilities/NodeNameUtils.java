@@ -44,6 +44,10 @@ public final class NodeNameUtils {
 		Matcher matcher = getMatcher(uniqueName);
 		return matcher.group(matcher.groupCount()) + INameConstants.ENTITY_PAGE_POSTFIX;
 	}
+	
+	public static String removePostfixFromEntityPageClassName(String className) {
+		return className.replace(INameConstants.ENTITY_PAGE_POSTFIX, "");
+	}
 
 	public static String getEntityPageClassFileNameByUniqueName(String uniqueName) {
 		return getEntityPageClassNameByUniqueName(uniqueName) + "." + INameConstants.CLASS_FILENAME_EXTENSION;
