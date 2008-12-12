@@ -37,6 +37,7 @@
 	<xs:complexType name="attributetype">
 		<xs:attribute name="type" type="attributetypename" use="required"/>
 		<xs:attribute name="value" type="xs:string" use="required"/>
+		<xs:attribute name="key" type="xs:string" use="optional"/>
 	</xs:complexType>
 	
 	<xs:complexType name="statictagtype">
@@ -59,10 +60,20 @@
 	
 	<!-- Definition of input tags -->
 	
+	<xs:complexType name="inptutagtype">
+		<xs:sequence>
+			<xs:element name="statictag" type="statictagtype" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:string" use="required"/>
+	</xs:complexType>
+	
+	<!-- root -->
+	
 	<xs:element name="view">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="tagtree" type="tagtreetype" maxOccurs="unbounded" />
+				<xs:element name="tagtree" type="tagtreetype" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element name="inputtag" type="inptutagtype" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
