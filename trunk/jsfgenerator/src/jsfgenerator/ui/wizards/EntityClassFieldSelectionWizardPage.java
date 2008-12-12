@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Text;
 @SuppressWarnings("restriction")
 public class EntityClassFieldSelectionWizardPage extends WizardPage {
 
-	private static final String COLLECTION_FIELD = "Complex entity form...";
+	private static final String COLLECTION_FIELD = "Entity list of forms...";
 
 	private static final Image IMG_CLASS = JavaPluginImages.get(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_CLASS);
 
@@ -248,7 +248,7 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 		masterPart.setContentProvider(new MasterTreeContentProvider());
 		final GridData gridData = new GridData();
 		gridData.verticalAlignment = SWT.FILL;
-		gridData.widthHint = 150;
+		gridData.widthHint = 250;
 		masterPart.getControl().setLayoutData(gridData);
 
 		detailsPart = new Composite(composite, SWT.NONE);
@@ -333,7 +333,8 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 					EntityDescription selectedEntityDescription = (EntityDescription) ((StructuredSelection) event.getSelection())
 							.getFirstElement();
 					refreshFieldTable(selectedEntityDescription);
-					viewIdText.setText(selectedEntityDescription.getViewId());
+					viewIdText.setText(selectedEntityDescription.getViewId() == selectedEntityDescription.getViewId() ? ""
+							: selectedEntityDescription.getViewId());
 				}
 			}
 		});

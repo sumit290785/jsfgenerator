@@ -1,0 +1,4 @@
+#Fri Dec 12 12:50:29 CET 2008
+eclipse.preferences.version=1
+gmf_dashboard/domainGenerationModel=platform\:/resource/NoteEditorEMF/model/note.genmodel
+gmf_dashboard/domainModel=platform\:/resource/NoteEditorEMF/model/Note.ecore

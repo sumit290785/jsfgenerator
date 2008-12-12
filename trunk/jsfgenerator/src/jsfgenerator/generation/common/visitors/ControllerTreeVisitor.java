@@ -1,12 +1,15 @@
 package jsfgenerator.generation.common.visitors;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
+import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.generation.controller.ControllerTree;
 import jsfgenerator.generation.controller.nodes.BlockImplementationFactory;
 import jsfgenerator.generation.controller.nodes.ClassControllerNode;
@@ -27,6 +30,7 @@ import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TagElement;
+import org.eclipse.jdt.core.dom.TextElement;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
@@ -165,14 +169,25 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		unit.setPackage(packageDeclaration);
 
 		rootType = ast.newTypeDeclaration();
+		rootName = ClassNameUtils.getSimpleClassName(node.getClassName());
 
 		/*
 		 * add comment
 		 */
 		Javadoc doc = ast.newJavadoc();
-		TagElement comment = ast.newTagElement();
-		comment.setTagName("Generated code:  Controller class for view: TODO");
-		doc.tags().add(comment);
+		TagElement tag = ast.newTagElement();
+		TextElement commentGenCode = ast.newTextElement();
+		commentGenCode.setText("Generated code<br>");
+		tag.fragments().add(commentGenCode);
+
+		TextElement commentControllerClass = ast.newTextElement();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		commentControllerClass.setText("Controller class for view: "
+				+ NodeNameUtils.removePostfixFromEntityPageClassName(rootName) + "<br>\n* Date of generation: "
+				+ dateFormat.format(new Date()));
+		tag.fragments().add(commentControllerClass);
+		doc.tags().add(tag);
+
 		rootType.setJavadoc(doc);
 
 		// it sets the flag if the compilation unit is an interface or a class
@@ -180,7 +195,6 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		// class is public
 		rootType.modifiers().add(ast.newModifier(ModifierKeyword.PUBLIC_KEYWORD));
 		rootType.setName(ast.newSimpleName(ClassNameUtils.getSimpleClassName(node.getClassName())));
-		rootName = ClassNameUtils.getSimpleClassName(node.getClassName());
 
 		/*
 		 * set its superclass
