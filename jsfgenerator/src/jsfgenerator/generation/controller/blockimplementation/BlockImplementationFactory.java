@@ -1,13 +1,24 @@
 package jsfgenerator.generation.controller.blockimplementation;
 
+import java.util.List;
+
+import jsfgenerator.generation.common.INameConstants;
+import jsfgenerator.generation.common.utilities.ClassNameUtils;
+import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.generation.controller.FunctionType;
+import jsfgenerator.generation.controller.blockimplementation.InitStatementWrapper.EditorType;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.FieldAccess;
+import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SuperMethodInvocation;
+import org.eclipse.jdt.core.dom.Type;
 
 /**
  * It services EJB3 specific code. It implies that if the generated application is dropped into a JEE container it can operate on the
@@ -18,6 +29,7 @@ import org.eclipse.jdt.core.dom.SimpleName;
  */
 public final class BlockImplementationFactory {
 
+	@SuppressWarnings("unchecked")
 	public static Block createBlock(AST ast, FunctionType type, Object[] args) {
 		if (FunctionType.EMPTY.equals(type)) {
 			return createEmptyBlock(ast);
@@ -37,8 +49,13 @@ public final class BlockImplementationFactory {
 				return createSetterBlock(ast, (String) args[0]);
 			}
 
-		} else if (FunctionType.SAVE.equals(type)) {
-			return createSaveBlock(ast);
+		} else if (FunctionType.INIT.equals(type)) {
+
+			if (args.length != 1) {
+				throw new IllegalArgumentException("Number of arguments is not satisfying");
+			}
+
+			return createInitBlock(ast, (List<InitStatementWrapper>) args[0]);
 		}
 
 		return null;
@@ -98,15 +115,57 @@ public final class BlockImplementationFactory {
 		return block;
 	}
 
-	/**
-	 * creates a save block which is applicable for EJB3 specification. It implies that if the generated application is dropped into a JEE
-	 * container it can operate on the database with good data source configuration
-	 * 
-	 * @param ast
-	 * @return
-	 */
-	protected static Block createSaveBlock(AST ast) {
-		// TODO: implement
-		return createEmptyBlock(ast);
+	@SuppressWarnings("unchecked")
+	protected static Block createInitBlock(AST ast, List<InitStatementWrapper> wrappers) {
+		Block block = createEmptyBlock(ast);
+
+		SuperMethodInvocation superMethod = ast.newSuperMethodInvocation();
+		superMethod.setName(ast.newSimpleName(INameConstants.ENTIT_PAGE_INIT_FUNCTION));
+
+		block.statements().add(ast.newExpressionStatement(superMethod));
+
+		for (InitStatementWrapper wrapper : wrappers) {
+			Assignment statement = ast.newAssignment();
+			FieldAccess left = ast.newFieldAccess();
+			left.setName(ast.newSimpleName(wrapper.getFieldName()));
+			left.setExpression(ast.newThisExpression());
+			statement.setLeftHandSide(left);
+
+			Type type;
+			if (EditorType.EDIT_HELPER.equals(wrapper.getEditorType())) {
+				String editHelperClassName = ClassNameUtils.getSimpleClassName(INameConstants.SIMPLE_FORM_FIELD_CLASS);
+				type = ast.newSimpleType(ast.newSimpleName(editHelperClassName));
+			} else {
+				String listEditHelperClassName = ClassNameUtils.getSimpleClassName(INameConstants.COMPLEX_FORM_FIELD_CLASS);
+				type = ast.newSimpleType(ast.newSimpleName(listEditHelperClassName));
+			}
+
+			String simpleGenericName = ClassNameUtils.getSimpleClassName(wrapper.getEntityClass());
+			ParameterizedType ptype = ast.newParameterizedType(type);
+			ptype.typeArguments().add(ast.newSimpleType(ast.newSimpleName(simpleGenericName)));
+			ClassInstanceCreation classInstance = ast.newClassInstanceCreation();
+			classInstance.setType(ptype);
+
+			// entity manager parameter
+			classInstance.arguments().add(ast.newSimpleName(INameConstants.ENTITY_PAGE_FIELD_ENTITY_MANAGER));
+
+			// field parameter
+			MethodInvocation methodInvocation = ast.newMethodInvocation();
+			methodInvocation.setExpression(ast.newSimpleName(INameConstants.DOMAIN_ENTITY_EDIT_HELPER));
+			methodInvocation.setName(ast.newSimpleName("getInstance"));
+			
+			MethodInvocation methodInvocationOuter = ast.newMethodInvocation();
+			methodInvocationOuter.setExpression(methodInvocation);
+			String entityFieldName = NodeNameUtils.getGetterName(wrapper.getEntityFieldName());
+			methodInvocationOuter.setName(ast.newSimpleName(entityFieldName));
+			classInstance.arguments().add(methodInvocationOuter);
+
+			statement.setRightHandSide(classInstance);
+
+			block.statements().add(ast.newExpressionStatement(statement));
+		}
+
+		return block;
 	}
+
 }

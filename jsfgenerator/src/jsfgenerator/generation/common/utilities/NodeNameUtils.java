@@ -82,20 +82,6 @@ public final class NodeNameUtils {
 		return buffer.toString();
 	}
 
-	public static String getAddFunctionName(String collectionFieldName) {
-		// TODO
-		return "addToAkarmi";
-	}
-
-	public static String getRemoveFunctionName(String collectionFieldName) {
-		// TODO
-		return "removeFromAkarmi";
-	}
-
-	public static String getSaveFunctionName() {
-		return INameConstants.SAVE_FUNCTION_NAME;
-	}
-
 	public static boolean isValidViewId(String viewId) {
 
 		if (viewId.equals("")) {

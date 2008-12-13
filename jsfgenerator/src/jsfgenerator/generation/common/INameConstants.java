@@ -10,6 +10,8 @@ public interface INameConstants {
 
 	public static final String SIMPLE_FORM_FIELD_CLASS = "jsfgenerator.backingbeans.EditHelper";
 	
+	public static final String COMPLEX_FORM_FIELD_CLASS = "jsfgenerator.backingbeans.ListEditHelper";
+	
 	public static final String ENTITY_PAGE_SUPER_CLASS = "jsfgenerator.backingbeans.AbstractEntityPage";
 	
 	public static final String ENTITY_PAGE_FIELD_ENTITY_MANAGER = "entityManager";
@@ -21,10 +23,12 @@ public interface INameConstants {
 	public static final String CLASS_CLASS_NAME = "java.lang.Class";
 	
 	public static final String EDITOR_FIELD_POSTFIX = "EditHelper";
+	
+	public static final String DOMAIN_ENTITY_EDIT_HELPER = "entity" + EDITOR_FIELD_POSTFIX;
+	
+	public static final String ENTIT_PAGE_INIT_FUNCTION = "init";
 
 	public static final String ENTITY_PAGE_POSTFIX = "Page";
-
-	public static final String SAVE_FUNCTION_NAME = "save";
 
 	public static final String SETTER_PREFIX = "set";
 
@@ -37,5 +41,5 @@ public interface INameConstants {
 	public static final String STATELESS_ANNOTATION = "@javax.ejb.Stateless";
 	
 	public static final String PERSISTENCE_CONTEXT_ANNOTATION = "@javax.persistence.PersistenceContext";
-
+	
 }
