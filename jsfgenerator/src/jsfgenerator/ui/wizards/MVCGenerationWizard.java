@@ -83,7 +83,7 @@ public class MVCGenerationWizard extends Wizard {
 			if (entity.isEntityPage()) {
 				String viewId = entity.getViewId();
 				if (!builder.isViewSpecified(viewId)) {
-					builder.createEntityPageModel(viewId);
+					builder.createEntityPageModel(viewId, entity.getEntityClassName());
 				}
 
 				// if (hasSimpleField(entity)) {

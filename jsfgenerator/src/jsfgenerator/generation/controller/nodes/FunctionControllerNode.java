@@ -2,10 +2,11 @@ package jsfgenerator.generation.controller.nodes;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import jsfgenerator.generation.controller.FunctionType;
 
 /**
  * 
@@ -13,10 +14,6 @@ import java.util.Set;
  * 
  */
 public class FunctionControllerNode extends ControllerNode {
-
-	public enum FunctionType {
-		GETTER, SETTER, SAVE, UPDATE, DELETE, EMPTY, ADD, REMOVE
-	}
 
 	private String functionName;
 
@@ -42,13 +39,11 @@ public class FunctionControllerNode extends ControllerNode {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * jsfgenerator.generation.controller.nodes.ControllerNode#getRequiredImports
-	 * ()
+	 * @see jsfgenerator.generation.controller.nodes.ControllerNode#getRequiredImports ()
 	 */
 	@Override
 	public Set<String> getRequiredImports() {
-		Set<String> imports = new HashSet<String>();
+		Set<String> imports = super.getRequiredImports();
 		return imports;
 	}
 

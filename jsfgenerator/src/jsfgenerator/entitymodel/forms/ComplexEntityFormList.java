@@ -12,9 +12,8 @@ public class ComplexEntityFormList extends EntityForm {
 	private SimpleEntityForm simpleForm;
 
 	public ComplexEntityFormList(String entityName, String genericEntityName, String genericEntityClassName, List<EntityField> fields) {
-		super(entityName, fields);
-		addCommand(Command.ADD);
-		addCommand(Command.REMOVE);
+		// TODO: gather the entity relationship from instantiation
+		super(entityName, fields, EntityRelationship.ONE_TO_MANY);
 
 		simpleForm = new SimpleEntityForm(entityName + "." + genericEntityName, genericEntityClassName, fields);
 	}

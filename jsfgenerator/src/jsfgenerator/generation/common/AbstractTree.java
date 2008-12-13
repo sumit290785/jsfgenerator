@@ -19,11 +19,11 @@ public abstract class AbstractTree<T extends Node<T>> {
 	private List<T> nodes = new ArrayList<T>();
 
 	public void addNode(T node) {
-		nodes.add(node);
+		getNodes().add(node);
 	}
 
 	public void apply(AbstractVisitor<T> visitor) {
-		for (T node : nodes) {
+		for (T node : getNodes()) {
 			apply(node, visitor);
 		}
 	}

@@ -65,13 +65,12 @@ public abstract class AbstractEntityModelBuilder<TEntity, TField> {
 	 * @param entity
 	 * @param viewId
 	 */
-	public void createEntityPageModel(String viewId) {
+	public void createEntityPageModel(String viewId, String entityClassName) {
 		if (pages.containsKey(viewId)) {
 			throw new IllegalArgumentException("View already in the model: " + viewId);
 		}
 
-		AbstractPageModel page = new EntityPageModel();
-		page.setViewId(viewId);
+		AbstractPageModel page = new EntityPageModel(viewId, entityClassName);
 		pages.put(viewId, page);
 	}
 
@@ -80,13 +79,12 @@ public abstract class AbstractEntityModelBuilder<TEntity, TField> {
 	 * 
 	 * @param viewId
 	 */
-	public void createEntityListPageModel(String viewId) {
+	public void createEntityListPageModel(String viewId, String entityClassName) {
 		if (pages.containsKey(viewId)) {
 			throw new IllegalArgumentException("View already in the model: " + viewId);
 		}
 
-		AbstractPageModel page = new EntityListPageModel();
-		page.setViewId(viewId);
+		AbstractPageModel page = new EntityListPageModel(viewId, entityClassName);
 		pages.put(viewId, page);
 	}
 

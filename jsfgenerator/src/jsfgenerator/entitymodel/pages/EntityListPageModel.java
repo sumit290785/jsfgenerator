@@ -11,6 +11,10 @@ import java.util.List;
  */
 public class EntityListPageModel extends AbstractPageModel {
 
+	public EntityListPageModel(String viewId, String entityClassName) {
+		super(viewId, entityClassName);
+	}
+
 	private List<EntityPageModel> entityPages = new ArrayList<EntityPageModel>();
 
 	public void setEntityPages(List<EntityPageModel> entityPages) {
