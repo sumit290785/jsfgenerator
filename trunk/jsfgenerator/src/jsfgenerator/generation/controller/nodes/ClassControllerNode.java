@@ -23,9 +23,6 @@ public class ClassControllerNode extends ControllerNode {
 
 	// set of fully qualified names of the interfaces implemented by the controller
 	private Set<String> interfaces = new HashSet<String>();
-	
-	// there will be an annotated extra field after generation if it is required. Its type is EntityManager and name is 'em'.
-	private boolean persistenceContextRequired = false;
 
 	public ClassControllerNode(String packageName, String className) {
 		this.className = className;
@@ -34,8 +31,8 @@ public class ClassControllerNode extends ControllerNode {
 
 	public ClassControllerNode(String packageName, String className, String superClassName) {
 		this.className = className;
-		this.superClassName = superClassName;
 		this.packageName = packageName;
+		this.superClassName = superClassName;
 	}
 
 	public String getClassName() {
@@ -60,34 +57,36 @@ public class ClassControllerNode extends ControllerNode {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see jsfgenerator.generation.controller.nodes.ControllerNode#getRequiredImports()
 	 */
 	@Override
 	public Set<String> getRequiredImports() {
-		Set<String> imports = new HashSet<String>();
-		
+		Set<String> imports = super.getRequiredImports();
+
 		/*
 		 * superclass import
 		 */
 		if (superClassName != null) {
 			imports.add(ClassNameUtils.removeGenericParameters(superClassName));
+
+			for (String genericName : ClassNameUtils.getGenericParameterList(superClassName)) {
+				imports.add(genericName);
+			}
 		}
-		
+
 		/*
 		 * interface imports
 		 */
 		for (String interfaceName : getInterfaces()) {
 			imports.add(ClassNameUtils.removeGenericParameters(interfaceName));
+
+			for (String genericName : ClassNameUtils.getGenericParameterList(interfaceName)) {
+				imports.add(genericName);
+			}
 		}
-		
+
 		return imports;
 	}
 
-	public void setPersistenceContextRequired(boolean persistenceContextRequired) {
-		this.persistenceContextRequired = persistenceContextRequired;
-	}
-
-	public boolean isPersistenceContextRequired() {
-		return persistenceContextRequired;
-	}
 }

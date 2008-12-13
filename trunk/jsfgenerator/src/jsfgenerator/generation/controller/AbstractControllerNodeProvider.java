@@ -4,6 +4,8 @@ import java.util.List;
 
 import jsfgenerator.entitymodel.forms.ComplexEntityFormList;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
+import jsfgenerator.entitymodel.pages.EntityListPageModel;
+import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.controller.nodes.ClassControllerNode;
 import jsfgenerator.generation.controller.nodes.ControllerNode;
 
@@ -13,37 +15,12 @@ import jsfgenerator.generation.controller.nodes.ControllerNode;
  */
 public abstract class AbstractControllerNodeProvider {
 
-	/**
-	 * NONE bit mask means that neither getter nor setter function will be
-	 * generated
-	 */
-	public static final int NONE = 0;
-
-	/**
-	 * SETTER bit mask causes setter function generated for the field
-	 */
-	public static final int SETTER = 1 << 1;
-
-	/**
-	 * SETTER bit mask causes getter function generated for the field
-	 */
-	public static final int GETTER = 1 << 2;
+	public abstract ClassControllerNode createEntityPageClassNode(EntityPageModel model);
 	
-	public abstract ClassControllerNode createEntityPageClassNode(String viewId);
+	public abstract ClassControllerNode createEntityListPageClassNode(EntityListPageModel model);
 
-	public abstract List<ControllerNode> createSimpleFormControllerNodes(SimpleEntityForm form, int flag);
+	public abstract List<ControllerNode> createSimpleFormControllerNodes(SimpleEntityForm form);
 	
 	public abstract List<ControllerNode> createComplexFormControllerNodes(ComplexEntityFormList form);
-
-	/**
-	 * checks if the style flag is 1 or 0
-	 * 
-	 * @param source
-	 * @param target
-	 * @return true when the particular flag is 1 else it is false
-	 */
-	protected boolean isFlagOn(int source, int target) {
-		return (source & target) == target;
-	}
 
 }

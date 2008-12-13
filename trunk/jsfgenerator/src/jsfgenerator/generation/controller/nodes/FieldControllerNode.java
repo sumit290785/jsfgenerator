@@ -1,6 +1,5 @@
 package jsfgenerator.generation.controller.nodes;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
@@ -61,7 +60,7 @@ public class FieldControllerNode extends ControllerNode {
 	 */
 	@Override
 	public Set<String> getRequiredImports() {
-		Set<String> imports = new HashSet<String>();
+		Set<String> imports = super.getRequiredImports();
 		imports.add(ClassNameUtils.removeGenericParameters(className));
 		
 		if (concreteClassName != null) {

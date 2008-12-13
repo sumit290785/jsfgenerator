@@ -2,6 +2,7 @@ package jsfgenerator.ui.wizards;
 
 import java.io.File;
 
+import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.ui.composites.ResourceSelectionComposite;
 import jsfgenerator.ui.providers.ResourceLabelProvider;
 import jsfgenerator.ui.providers.ResourceSelectionContentProvider;
@@ -36,7 +37,7 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 			if (element instanceof IFile) {
 				IFile file = (IFile) element;
 				// is Xml file
-				if (file.getFileExtension().equalsIgnoreCase("xml")) {
+				if (file.getFileExtension().equalsIgnoreCase(INameConstants.VIEW_XML_EXTENSION)) {
 					return true;
 				}
 			}

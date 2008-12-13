@@ -1,6 +1,6 @@
-package jsfgenerator.generation.controller.nodes;
+package jsfgenerator.generation.controller.blockimplementation;
 
-import jsfgenerator.generation.controller.nodes.FunctionControllerNode.FunctionType;
+import jsfgenerator.generation.controller.FunctionType;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.Assignment;
@@ -9,6 +9,13 @@ import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
 
+/**
+ * It services EJB3 specific code. It implies that if the generated application is dropped into a JEE container it can operate on the
+ * database with good data source configuration.
+ * 
+ * @author zoltan verebes
+ * 
+ */
 public final class BlockImplementationFactory {
 
 	public static Block createBlock(AST ast, FunctionType type, Object[] args) {
@@ -31,7 +38,7 @@ public final class BlockImplementationFactory {
 			}
 
 		} else if (FunctionType.SAVE.equals(type)) {
-			return createEmptyBlock(ast);
+			return createSaveBlock(ast);
 		}
 
 		return null;
@@ -61,7 +68,6 @@ public final class BlockImplementationFactory {
 		ReturnStatement returnStatement = ast.newReturnStatement();
 		SimpleName name = ast.newSimpleName(fieldName);
 		returnStatement.setExpression(name);
-
 		block.statements().add(returnStatement);
 
 		return block;
@@ -92,4 +98,15 @@ public final class BlockImplementationFactory {
 		return block;
 	}
 
+	/**
+	 * creates a save block which is applicable for EJB3 specification. It implies that if the generated application is dropped into a JEE
+	 * container it can operate on the database with good data source configuration
+	 * 
+	 * @param ast
+	 * @return
+	 */
+	protected static Block createSaveBlock(AST ast) {
+		// TODO: implement
+		return createEmptyBlock(ast);
+	}
 }

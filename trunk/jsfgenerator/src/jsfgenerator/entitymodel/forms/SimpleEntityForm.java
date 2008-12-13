@@ -16,9 +16,9 @@ public class SimpleEntityForm extends EntityForm {
 	private String entityClassName;
 	
 	public SimpleEntityForm(String entityName, String entityClassName, List<EntityField> fields) {
-		super(entityName, fields);
+		// TODO: gather the entity relationship from instantiation
+		super(entityName, fields, EntityRelationship.DOMAIN_ENTITY);
 		this.entityClassName = entityClassName;
-		addCommand(Command.SAVE);
 	}
 
 	public String getEntityClassName() {

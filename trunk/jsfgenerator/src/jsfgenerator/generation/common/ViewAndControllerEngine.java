@@ -100,7 +100,7 @@ public class ViewAndControllerEngine {
 
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-		EntityPageTreeBuilder treeBuilder = new EntityPageTreeBuilder(pageModel.getViewId(), tagTreeProvider, controllerNodeProvider);
+		EntityPageTreeBuilder treeBuilder = new EntityPageTreeBuilder(pageModel, tagTreeProvider, controllerNodeProvider);
 
 		for (EntityForm form : pageModel.getForms()) {
 			if (form instanceof SimpleEntityForm) {

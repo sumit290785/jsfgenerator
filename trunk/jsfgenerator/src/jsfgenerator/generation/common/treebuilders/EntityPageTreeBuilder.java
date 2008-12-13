@@ -6,6 +6,7 @@ import jsfgenerator.entitymodel.forms.ComplexEntityFormList;
 import jsfgenerator.entitymodel.forms.EntityField;
 import jsfgenerator.entitymodel.forms.EntityForm;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
+import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.common.visitors.ProxyTagVisitor;
 import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.ControllerTree;
@@ -33,15 +34,15 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	// default root element of the controller tree
 	private ControllerNode classNode;
 
-	// used for view name generation and controller class name generation.
-	private String viewId;
+	private EntityPageModel model;
 
 	// the only form proxy tag in the tag tree
 	private ProxyTag formProxyTag;
 
-	public EntityPageTreeBuilder(String viewId, ITagTreeProvider tagTreeProvider, AbstractControllerNodeProvider controllerNodeProvider) {
+	public EntityPageTreeBuilder(EntityPageModel model, ITagTreeProvider tagTreeProvider,
+			AbstractControllerNodeProvider controllerNodeProvider) {
 		super(tagTreeProvider, controllerNodeProvider);
-		this.viewId = viewId;
+		this.model = model;
 		init();
 	}
 
@@ -52,7 +53,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		/*
 		 * add the root CLASS to the controller tree it will keep all of its elements as children in the tree
 		 */
-		classNode = controllerNodeProvider.createEntityPageClassNode(viewId);
+		classNode = controllerNodeProvider.createEntityPageClassNode(model);
 		controllerTree.addNode(classNode);
 	}
 
@@ -67,19 +68,18 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		 * add the info to the tag tree for the view
 		 */
 		TagTree simpleFormTagTree = tagTreeProvider.getSimpleFormTagTree();
-		simpleFormTagTree.applyReferenceName(form.getFormName());
+		simpleFormTagTree.applyReferenceName(form.getEntityName());
 		getFormProxyTag().addAllChildren(simpleFormTagTree.getNodes());
 
 		/*
 		 * add the info to the controller tree for the backing bean
 		 */
-		classNode.addAllChildren(controllerNodeProvider.createSimpleFormControllerNodes(form, AbstractControllerNodeProvider.GETTER
-				| AbstractControllerNodeProvider.SETTER));
+		classNode.addAllChildren(controllerNodeProvider.createSimpleFormControllerNodes(form));
 
 	}
 
 	public void addSimpleForm(ComplexEntityFormList form) {
-		TagNode formProxyTag = getProxyTagByType(getFormTagByName(form.getFormName()), ProxyTagType.FORM);
+		TagNode formProxyTag = getProxyTagByType(getFormTagByName(form.getEntityName()), ProxyTagType.FORM);
 
 		if (formProxyTag == null) {
 			throw new IllegalArgumentException("Complex form tag tree does not contain proxy tag: FORM");
@@ -88,24 +88,25 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		TagTree simpleFormTagTree = tagTreeProvider.getSimpleFormTagTree();
 		formProxyTag.addAllChildren(simpleFormTagTree.getNodes());
 
-	//	classNode.addAllChildren(controllerNodeProvider.createSimpleFormControllerNodes(form.getSimpleForm(), AbstractControllerNodeProvider.GETTER | AbstractControllerNodeProvider.SETTER));
+		// classNode.addAllChildren(controllerNodeProvider.createSimpleFormControllerNodes(form.getSimpleForm(),
+		// AbstractControllerNodeProvider.GETTER | AbstractControllerNodeProvider.SETTER));
 
 	}
 
 	public void addComplexFormTagTree(ComplexEntityFormList form) {
 		TagTree complexFormList = tagTreeProvider.getComplexFormListTagTree();
-		complexFormList.applyReferenceName(form.getFormName());
+		complexFormList.applyReferenceName(form.getEntityName());
 		getFormProxyTag().addAllChildren(complexFormList.getNodes());
 
 		classNode.addAllChildren(controllerNodeProvider.createComplexFormControllerNodes(form));
 	}
 
 	public void addInputField(EntityForm form, EntityField field) {
-		TagNode inputProxyTag = getProxyTagByType(getFormTagByName(form.getFormName()), ProxyTagType.INPUT);
+		TagNode inputProxyTag = getProxyTagByType(getFormTagByName(form.getEntityName()), ProxyTagType.INPUT);
 
 		if (inputProxyTag == null) {
-			throw new IllegalArgumentException("INPUT Proxy tag node is not found on the form passed to the function! Form name: "
-					+ form.getFormName());
+			throw new IllegalArgumentException(
+					"INPUT Proxy tag node is not found on the form passed to the function! Form name: " + form.getEntityName());
 		}
 
 		StaticTag inputTag = tagTreeProvider.getInputTag(field.getInputTagId());
@@ -203,5 +204,13 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		tagTree.addNode(node);
 		return getProxyTagByType(tagTree, type);
 	}
-	
+
+	public void setModel(EntityPageModel model) {
+		this.model = model;
+	}
+
+	public EntityPageModel getModel() {
+		return model;
+	}
+
 }
