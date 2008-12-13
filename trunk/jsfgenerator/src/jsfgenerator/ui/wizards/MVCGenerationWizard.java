@@ -16,7 +16,6 @@ import jsfgenerator.generation.common.GenerationException;
 import jsfgenerator.generation.common.ViewAndControllerDTO;
 import jsfgenerator.generation.common.ViewAndControllerEngine;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
-import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.impl.TagTreeParser;
@@ -107,7 +106,8 @@ public class MVCGenerationWizard extends Wizard {
 		ITagTreeProvider tagFactory = new TagTreeParser(is);
 
 		IPackageFragment fragment = controllerTargetPackageSelectionWizardPage.getSelectedPackageFragment();
-		AbstractControllerNodeProvider controllerNodeProvider = new ControllerNodeFactory(fragment.getElementName());
+		ControllerNodeFactory controllerNodeProvider = ControllerNodeFactory.getInstance();
+		controllerNodeProvider.setPackageName(fragment.getElementName());
 
 		ViewAndControllerEngine engine = ViewAndControllerEngine.getInstance();
 		engine.generateViewsAndControllers(entityModel, tagFactory, controllerNodeProvider);
