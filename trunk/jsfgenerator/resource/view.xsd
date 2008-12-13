@@ -24,7 +24,8 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="template" />
 			<xs:enumeration value="xmlnamespace" />
-			<xs:enumeration value="normal" />
+			<xs:enumeration value="static" />
+			<xs:enumeration value="expression" />
 		</xs:restriction>
 	</xs:simpleType>
 	
