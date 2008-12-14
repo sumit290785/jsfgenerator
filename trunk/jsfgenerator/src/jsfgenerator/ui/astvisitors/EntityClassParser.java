@@ -12,10 +12,8 @@ import jsfgenerator.ui.model.EntityFieldDescription;
 import jsfgenerator.ui.model.ProjectResourceProvider;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IRegion;
 import org.eclipse.jdt.core.IType;
@@ -111,23 +109,6 @@ public final class EntityClassParser {
 		}
 
 		return entityFields;
-	}
-
-	// TODO
-	public static List<EntityDescription> findEntities(IPackageFragment resource) {
-		return null;
-	}
-
-	public static List<EntityDescription> findEntities(IPackageFragment[] resources) {
-		return null;
-	}
-
-	public static List<EntityDescription> findEntities(IProject[] projects) {
-		return null;
-	}
-
-	public static List<EntityDescription> findEntities(IProject project) {
-		return null;
 	}
 
 	public static List<String> findPackageNames(String simpleClassName, IJavaProject project) {

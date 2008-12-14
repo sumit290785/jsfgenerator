@@ -43,6 +43,7 @@ import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
 public class MVCGenerationWizard extends Wizard {
+
 	private List<EntityDescription> entityDescriptions;
 
 	private TagDescriptorSelectionWizardPage tagDescriptorSelectionWizardPage;
