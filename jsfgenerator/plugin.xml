@@ -6,26 +6,23 @@
          point="org.eclipse.ui.popupMenus">
           <objectContribution
                 adaptable="true"
-                id="jsfgenerator.ui.actions.singleentitygenerationaction"
+                id="jsfgenerator.ui.actions.generationaction"
                 objectClass="org.eclipse.core.resources.IFile">
      <menu
            id="jsfgenerator.ui.actions.menu"
            label="JSF Tools"
            path="jsfgenerator.ui.actions.groupmaker">
-        <groupMarker
-              name="jsfgenerator.ui.actions.groupmaker">
-        </groupMarker>
         <separator
               name="jsfgenerator.ui.menus.separator">
         </separator>
      </menu>
 	    <action
-           class="jsfgenerator.ui.actions.ViewAndControllerGenerationAction"
-           definitionId="jsfgenerator.ui.singleentitygenerationaction"
+           class="jsfgenerator.ui.actions.GenerationAction"
+           definitionId="jsfgenerator.ui.generationaction"
            enablesFor="1"
            id="jsfgenerator.ui.generationaction"
-           label="View and controller generation"
-           menubarPath="jsfgenerator.ui.actions.menu/group1">
+           label="Generate view and controller"
+           menubarPath="jsfgenerator.ui.actions.menu">
 	    </action>
 	 </objectContribution>
           

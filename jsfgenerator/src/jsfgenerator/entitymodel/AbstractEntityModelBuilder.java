@@ -90,10 +90,11 @@ public abstract class AbstractEntityModelBuilder<TEntity, TField> {
 
 	/**
 	 * 
-	 * @param entity
 	 * @param viewId
+	 * @param entity
+	 * @param field
 	 */
-	public abstract void addSimpleEntityForm(String viewId, TEntity entity);
+	public abstract void addSimpleEntityForm(String viewId, TEntity entity, TField field);
 
 	/**
 	 * 

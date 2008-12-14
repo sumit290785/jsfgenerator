@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import jsfgenerator.generation.common.utilities.ClassNameUtils;
+import jsfgenerator.entitymodel.forms.EntityRelationship;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.ui.model.EntityDescription;
 import jsfgenerator.ui.model.EntityFieldDescription;
@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Text;
 @SuppressWarnings("restriction")
 public class EntityClassFieldSelectionWizardPage extends WizardPage {
 
-	private static final String COLLECTION_FIELD = "Entity list of forms...";
+	private static final String NON_FIELD_TEXT = "Generate external form";
 
 	private static final Image IMG_CLASS = JavaPluginImages.get(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_CLASS);
 
@@ -73,8 +73,10 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 			// refresh the drop down
 			ArrayList<String> input = new ArrayList<String>();
 			input.addAll(inputTagIds);
-			if (((EntityFieldDescription) element).isCollectionOfEntity() && !selectedEntityDescription.isEmbedded()) {
-				input.add(COLLECTION_FIELD);
+			EntityFieldDescription entityField = (EntityFieldDescription) element;
+			if (!EntityRelationship.FIELD.equals(entityField.getRelationshipToEntity())
+					&& !selectedEntityDescription.isEmbedded()) {
+				input.add(NON_FIELD_TEXT);
 			}
 			editor.setInput(input);
 
@@ -85,8 +87,8 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 		protected Object getValue(Object element) {
 			EntityFieldDescription entityField = ((EntityFieldDescription) element);
 
-			if (entityField.isCollectionInComplexForm()) {
-				return COLLECTION_FIELD;
+			if (entityField.getEntityDescription() != null) {
+				return NON_FIELD_TEXT;
 			} else {
 				return entityField.getInputTagId();
 			}
@@ -96,11 +98,11 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 		protected void setValue(Object element, Object value) {
 
 			EntityFieldDescription entityField = ((EntityFieldDescription) element);
-			if (value != null && COLLECTION_FIELD.equals((String) value) && !selectedEntityDescription.isEmbedded()) {
-				entityField.setCollectionInComplexForm(ClassNameUtils.getGenericParameterList(entityField.getClassName()).get(0));
+			if (value != null && NON_FIELD_TEXT.equals((String) value) && !selectedEntityDescription.isEmbedded()) {
+				entityField.setExternalForm(entityField.getRelationshipToEntity());
 				entityField.setInputTagId(null);
 			} else {
-				entityField.setCollectionInComplexForm(null);
+				entityField.setExternalForm(null);
 				entityField.setInputTagId((String) value);
 			}
 
@@ -108,7 +110,6 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 			getViewer().refresh();
 			validate();
 		}
-
 	}
 
 	protected class MasterTreeContentProvider implements ITreeContentProvider {
@@ -119,7 +120,7 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 				EntityDescription entityDescription = (EntityDescription) parentElement;
 				List<EntityDescription> embeddedEntityDescription = new ArrayList<EntityDescription>();
 				for (EntityFieldDescription entityField : entityDescription.getEntityFieldDescriptions()) {
-					if (entityField.isCollectionInComplexForm()) {
+					if (entityField.getEntityDescription() != null) {
 						embeddedEntityDescription.add(entityField.getEntityDescription());
 					}
 				}
@@ -138,7 +139,7 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 			if (element instanceof EntityDescription) {
 				EntityDescription entityDescription = (EntityDescription) element;
 				for (EntityFieldDescription entityField : entityDescription.getEntityFieldDescriptions()) {
-					if (entityField.isCollectionInComplexForm()) {
+					if (entityField.getEntityDescription() != null) {
 						return true;
 					}
 				}
@@ -176,7 +177,7 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 			setContentProvider(new ArrayContentProvider());
 
 			// field
-			TableViewerColumn fieldNameColumn = new TableViewerColumn(this, SWT.NONE);
+			final TableViewerColumn fieldNameColumn = new TableViewerColumn(this, SWT.NONE);
 			fieldNameColumn.setLabelProvider(new ColumnLabelProvider() {
 
 				public String getText(Object element) {
@@ -188,7 +189,7 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 			fieldNameColumn.getColumn().setWidth(100);
 
 			// type
-			TableViewerColumn typeColumn = new TableViewerColumn(this, SWT.NONE);
+			final TableViewerColumn typeColumn = new TableViewerColumn(this, SWT.NONE);
 			typeColumn.setLabelProvider(new ColumnLabelProvider() {
 
 				public String getText(Object element) {
@@ -197,16 +198,28 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 
 			});
 			typeColumn.getColumn().setText("Type");
-			typeColumn.getColumn().setWidth(100);
+			typeColumn.getColumn().setWidth(200);
+
+			// entity relationship
+			final TableViewerColumn entityRelationshipColumn = new TableViewerColumn(this, SWT.NONE);
+			entityRelationshipColumn.setLabelProvider(new ColumnLabelProvider() {
+
+				public String getText(Object element) {
+					return ((EntityFieldDescription) element).getRelationshipToEntity().getLabel();
+				}
+
+			});
+			entityRelationshipColumn.getColumn().setText("Entity relationship");
+			entityRelationshipColumn.getColumn().setWidth(120);
 
 			// inputtag id
-			TableViewerColumn inputTagColumn = new TableViewerColumn(this, SWT.NONE);
+			final TableViewerColumn inputTagColumn = new TableViewerColumn(this, SWT.NONE);
 			inputTagColumn.setLabelProvider(new ColumnLabelProvider() {
 
 				public String getText(Object element) {
 					EntityFieldDescription entityField = (EntityFieldDescription) element;
-					if (entityField.isCollectionInComplexForm()) {
-						return COLLECTION_FIELD;
+					if (entityField.getEntityDescription() != null) {
+						return NON_FIELD_TEXT;
 					} else {
 						return ((EntityFieldDescription) element).getInputTagId();
 					}
@@ -214,7 +227,7 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 
 			});
 			inputTagColumn.getColumn().setText("Input tag id");
-			inputTagColumn.getColumn().setWidth(100);
+			inputTagColumn.getColumn().setWidth(200);
 			inputTagColumn.setEditingSupport(new InputTagEditingSupport(this));
 		}
 
@@ -333,8 +346,10 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 					EntityDescription selectedEntityDescription = (EntityDescription) ((StructuredSelection) event.getSelection())
 							.getFirstElement();
 					refreshFieldTable(selectedEntityDescription);
-					viewIdText.setText(selectedEntityDescription.getViewId() == selectedEntityDescription.getViewId() ? ""
-							: selectedEntityDescription.getViewId());
+
+					viewIdComposite.setVisible(!selectedEntityDescription.isEmbedded());
+					viewIdText
+							.setText(selectedEntityDescription.getViewId() == null ? "" : selectedEntityDescription.getViewId());
 				}
 			}
 		});
@@ -384,7 +399,7 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 
 	private EntityDescription checkEntityDescription(EntityDescription entityDescription) {
 		for (EntityFieldDescription entityField : entityDescription.getEntityFieldDescriptions()) {
-			if (entityField.isCollectionInComplexForm()) {
+			if (entityField.getEntityDescription() != null) {
 				EntityDescription result = checkEntityDescription(entityField.getEntityDescription());
 				if (result != null) {
 					return result;

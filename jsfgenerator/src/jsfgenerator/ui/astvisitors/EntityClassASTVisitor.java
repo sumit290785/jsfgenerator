@@ -3,6 +3,8 @@ package jsfgenerator.ui.astvisitors;
 import java.util.ArrayList;
 import java.util.List;
 
+import jsfgenerator.generation.common.INameConstants;
+import jsfgenerator.generation.common.utilities.AnnotationNameUtils;
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.ui.model.EntityDescription;
 
@@ -30,8 +32,6 @@ public class EntityClassASTVisitor extends ASTVisitor {
 	 * 
 	 */
 	protected static class EntityAnnotationASTVisitor extends ASTVisitor {
-
-		private final static String ENTITY = "Entity";
 
 		private boolean isEntity = false;
 
@@ -63,7 +63,7 @@ public class EntityClassASTVisitor extends ASTVisitor {
 
 		private boolean isEntityAnnotation(Annotation node) {
 			String className = ClassNameUtils.getSimpleClassName(node.getTypeName().getFullyQualifiedName());
-			return className.equals(ENTITY);
+			return className.equals(AnnotationNameUtils.getSimpleAnnotationName(INameConstants.ENTITY_ANNOTATION));
 		}
 	}
 
@@ -86,7 +86,7 @@ public class EntityClassASTVisitor extends ASTVisitor {
 			if (className == null) {
 				entityDescriptions.add(new EntityDescription(node));
 				return true;
-			} else if (className.equals( EntityClassParser.getFullyQualifiedName(node))) {
+			} else if (className.equals(EntityClassParser.getFullyQualifiedName(node))) {
 				singleTypeDeclaration = node;
 				return false;
 			}

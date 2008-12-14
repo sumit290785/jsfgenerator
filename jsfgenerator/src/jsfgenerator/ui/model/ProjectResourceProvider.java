@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import jsfgenerator.generation.common.GenerationException;
 import jsfgenerator.ui.astvisitors.EntityClassASTVisitor;
 
 import org.eclipse.jdt.core.IClasspathEntry;
@@ -79,6 +80,11 @@ public class ProjectResourceProvider {
 
 		try {
 			ICompilationUnit unit = javaProject.findType(fullyQualifiedClassName).getCompilationUnit();
+			
+			if (unit == null) {
+				throw new GenerationException("Entity source not found! Reason: " + fullyQualifiedClassName + " is not an entity!");
+			}
+			
 			parser.setSource(unit);
 			CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 			EntityClassASTVisitor visitor = new EntityClassASTVisitor();

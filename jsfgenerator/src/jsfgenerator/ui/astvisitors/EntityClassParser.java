@@ -1,11 +1,10 @@
 package jsfgenerator.ui.astvisitors;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+import jsfgenerator.entitymodel.forms.EntityRelationship;
+import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.ui.model.EntityDescription;
@@ -14,7 +13,6 @@ import jsfgenerator.ui.model.ProjectResourceProvider;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
@@ -50,10 +48,6 @@ import org.eclipse.jdt.core.dom.WildcardType;
  */
 public final class EntityClassParser {
 
-	private static final String ENTITY_ANNOTATION = "Entity";
-	private static final String JAVA_UTIL_COLLECTION = "java.util.Collection";
-	private static final String DEFAULT_JAVA_PACKAGE = "java.lang";
-
 	/**
 	 * looks up all of the entities from a single file, including embedded classes
 	 * 
@@ -87,7 +81,7 @@ public final class EntityClassParser {
 	}
 
 	/**
-	 * <
+	 * 
 	 * 
 	 * @param entityDescription
 	 * @return
@@ -105,12 +99,12 @@ public final class EntityClassParser {
 				if (obj instanceof VariableDeclarationFragment) {
 					VariableDeclarationFragment fragment = (VariableDeclarationFragment) obj;
 
-					// check if the field has getter and setter and create EntityField
-					if (hasGetter(node.getMethods(), fragment, field.getType())
-							&& hasSetter(node.getMethods(), fragment, field.getType())) {
-						EntityFieldDescription entityField = createEntityField(fragment.getName().getFullyQualifiedName(),
-								typeName);
-						entityFields.add(entityField);
+					if ( hasSetter(node.getMethods(), fragment, field.getType())) {
+						MethodDeclaration getterMethod = getGetter(node.getMethods(), fragment, field.getType());
+						if (getterMethod != null) {
+							EntityRelationship rType= getRelationshipType(getterMethod);
+							entityFields.add(new EntityFieldDescription(fragment.getName().getFullyQualifiedName(), typeName, rType));
+						}
 					}
 				}
 			}
@@ -281,7 +275,7 @@ public final class EntityClassParser {
 				}
 
 				// try to find it in the java.lang package
-				foundType = project.findType(DEFAULT_JAVA_PACKAGE, sType.getName().getFullyQualifiedName());
+				foundType = project.findType(INameConstants.JAVA_DEFAULT_PACKAGE, sType.getName().getFullyQualifiedName());
 
 				if (foundType != null) {
 					return foundType.getFullyQualifiedName();
@@ -295,63 +289,10 @@ public final class EntityClassParser {
 		return null;
 	}
 
-	/**
-	 * Checks if the passed type name is an implementation of java.util.Collection class
-	 * 
-	 * @param fullyQualifiedTypeName
-	 * @return
-	 */
-	public static boolean isCollection(String fullyQualifiedTypeName) {
-		IJavaProject project = getProject();
-
-		IType foundType;
-		try {
-			foundType = project.findType(fullyQualifiedTypeName);
-
-			if (foundType == null) {
-				return false;
-			}
-			return Arrays.asList(foundType.getSuperInterfaceNames()).contains(JAVA_UTIL_COLLECTION);
-
-		} catch (JavaModelException e) {
-			throw new IllegalArgumentException("FullyQualifiedTypeName parameter could not be parsed!");
-		}
-	}
-
-	/**
-	 * Checks if the passed type name is an annotated by any @Entity annotation
-	 * 
-	 * @param fullyQualifiedTypeName
-	 * @return
-	 */
-	public static boolean isEntity(String fullyQualifiedTypeName) {
-		IJavaProject project = getProject();
-
-		IType foundType;
-		try {
-			foundType = project.findType(fullyQualifiedTypeName);
-
-			if (foundType == null) {
-				return false;
-			}
-
-			Set<String> annotations = new HashSet<String>();
-			for (IAnnotation annotation : foundType.getAnnotations()) {
-				String lastFragment = ClassNameUtils.getSimpleClassName(annotation.getElementName());
-				annotations.add(lastFragment);
-
-				// TODO: use full name, find the type and check if it is a real entity annotation
-				/*
-				 * gather its super types
-				 */
-				// String fullAnnotationName = getTypeName(annotation.ElementName(), getImports(node));
-			}
-
-			return annotations.contains(ENTITY_ANNOTATION);
-
-		} catch (JavaModelException e) {
-			throw new IllegalArgumentException("FullyQualifiedTypeName parameter could not be parsed!");
-		}
+	protected static EntityRelationship getRelationshipType(MethodDeclaration method) {
+		AnnotationASTVisitor visitor = new AnnotationASTVisitor();
+		method.accept(visitor);
+		return visitor.getEntityRelationship();
 	}
 
 	public static String getParentTypeDeclarationsName(ASTNode node) {
@@ -366,27 +307,27 @@ public final class EntityClassParser {
 
 		return buf.toString();
 	}
-	
+
 	public static String getFullyQualifiedName(TypeDeclaration node) {
 		String packageName = getPackageName(node);
 		String parentClassName = getParentTypeDeclarationsName(node);
 		String name = node.getName().getFullyQualifiedName();
-		
+
 		StringBuffer buf = new StringBuffer();
-		
+
 		if (!packageName.equals("")) {
 			buf.append(packageName);
 			buf.append(".");
-			
-		} 
-		
+
+		}
+
 		if (!parentClassName.equals("")) {
 			buf.append(parentClassName);
 			buf.append(".");
 		}
-		
+
 		buf.append(name);
-		
+
 		return buf.toString();
 	}
 
@@ -438,13 +379,13 @@ public final class EntityClassParser {
 		return visitor.getEntityDescriptions();
 	}
 
-	protected static boolean hasGetter(MethodDeclaration[] methods, VariableDeclarationFragment fragment, Type type) {
+	protected static MethodDeclaration getGetter(MethodDeclaration[] methods, VariableDeclarationFragment fragment, Type type) {
 		for (MethodDeclaration method : methods) {
 			if (EntityClassParser.isGetterOf(method, fragment, type)) {
-				return true;
+				return method;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	protected static boolean hasSetter(MethodDeclaration[] methods, VariableDeclarationFragment fragment, Type type) {
@@ -454,25 +395,6 @@ public final class EntityClassParser {
 			}
 		}
 		return false;
-	}
-
-	protected static EntityFieldDescription createEntityField(String fieldName, String fieldClass) {
-		boolean isColleactionOfEntity = true;
-		if (ClassNameUtils.getGenericParameterList(fieldClass).size() != 1) {
-			isColleactionOfEntity = false;
-		}
-
-		if (isColleactionOfEntity) {
-			String baseClassName = ClassNameUtils.removeGenericParameters(fieldClass);
-			isColleactionOfEntity &= isCollection(baseClassName);
-		}
-
-		if (isColleactionOfEntity) {
-			String genericClassName = ClassNameUtils.getGenericParameterList(fieldClass).get(0);
-			isColleactionOfEntity &= isEntity(genericClassName);
-		}
-
-		return new EntityFieldDescription(fieldName, fieldClass, isColleactionOfEntity);
 	}
 
 	/**

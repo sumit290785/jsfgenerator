@@ -18,7 +18,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
-public class ViewAndControllerGenerationAction extends Action implements IObjectActionDelegate {
+public class GenerationAction extends Action implements IObjectActionDelegate {
 
 	protected IWorkbenchPart part;
 
