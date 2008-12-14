@@ -7,7 +7,7 @@
           <objectContribution
                 adaptable="true"
                 id="jsfgenerator.ui.actions.generationaction"
-                objectClass="org.eclipse.core.resources.IFile">
+                objectClass="org.eclipse.core.resources.IResource">
      <menu
            id="jsfgenerator.ui.actions.menu"
            label="JSF Tools"
@@ -19,7 +19,8 @@
 	    <action
            class="jsfgenerator.ui.actions.GenerationAction"
            definitionId="jsfgenerator.ui.generationaction"
-           enablesFor="1"
+           enablesFor="+"
+           icon="resource/images/applications-system.png"
            id="jsfgenerator.ui.generationaction"
            label="Generate view and controller"
            menubarPath="jsfgenerator.ui.actions.menu">
