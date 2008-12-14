@@ -23,7 +23,7 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 
 	private String packageName;
 
-	private List<InitStatementWrapper> initStatementWrapper;
+	private List<InitStatementWrapper> initStatementWrappers;
 
 	public static ControllerNodeFactory getInstance() {
 		if (instance == null) {
@@ -62,12 +62,13 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 	}
 
 	public List<ControllerNode> createSimpleFormControllerNodes(SimpleEntityForm form) {
-		if (EntityRelationship.DOMAIN_ENTITY.equals(form.getRelationshipToEntity())) {
+		if (form.getRelationshipToEntity() == null || EntityRelationship.FIELD.equals(form.getRelationshipToEntity())) {
 			// all of the required functionalities are in the super class
 			return Collections.emptyList();
 		}
 
-		if (!EntityRelationship.ONE_TO_ONE.equals(form.getRelationshipToEntity())
+		if (!EntityRelationship.EMBEDDED.equals(form.getRelationshipToEntity())
+				&& !EntityRelationship.ONE_TO_ONE.equals(form.getRelationshipToEntity())
 				&& !EntityRelationship.MANY_TO_ONE.equals(form.getRelationshipToEntity())) {
 			return Collections.emptyList();
 		}
@@ -76,13 +77,13 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 		 * add an edit helper and its getter
 		 */
 		String fieldType = ClassNameUtils.addGenericParameter(INameConstants.SIMPLE_FORM_FIELD_CLASS, form.getEntityClassName());
-		String fieldName = NodeNameUtils.getControllerEditorFieldNameByCanonicalName(form.getEntityName());
-		nodes.add(new FieldControllerNode(fieldName, fieldType, fieldType));
-		nodes.add(createGetterFunctionControllerNode(fieldName, fieldType));
+		String editorFieldName = NodeNameUtils.getControllerEditorFieldNameByCanonicalName(form.getEntityName());
+		nodes.add(new FieldControllerNode(editorFieldName, fieldType, fieldType));
+		nodes.add(createGetterFunctionControllerNode(editorFieldName, fieldType));
 
+		String fieldName = NodeNameUtils.getControllerFieldNameByCanonicalName(form.getEntityName());
 		// add it to the init function to get it initialized
-		initStatementWrapper.add(new InitStatementWrapper(EditorType.EDIT_HELPER, fieldName, form.getEntityClassName(),
-				ClassNameUtils.getSimpleClassName(form.getEntityClassName())));
+		initStatementWrappers.add(new InitStatementWrapper(EditorType.EDIT_HELPER, editorFieldName, form.getEntityClassName(), fieldName));
 
 		return nodes;
 	}
@@ -109,13 +110,14 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 		 */
 		String fieldType = ClassNameUtils.addGenericParameter(INameConstants.COMPLEX_FORM_FIELD_CLASS, form.getSimpleForm()
 				.getEntityClassName());
-		String fieldName = NodeNameUtils.getControllerEditorFieldNameByCanonicalName(form.getEntityName());
-		nodes.add(new FieldControllerNode(fieldName, fieldType, fieldType));
-		nodes.add(createGetterFunctionControllerNode(fieldName, fieldType));
+		String editorFieldName = NodeNameUtils.getControllerEditorFieldNameByCanonicalName(form.getEntityName());
+		nodes.add(new FieldControllerNode(editorFieldName, fieldType, fieldType));
+		nodes.add(createGetterFunctionControllerNode(editorFieldName, fieldType));
 
+		String fieldName = NodeNameUtils.getControllerFieldNameByCanonicalName(form.getEntityName());
 		// add it to the init function to get it initialized
-		initStatementWrapper.add(new InitStatementWrapper(EditorType.LIST_EDIT_HELPER, form.getEntityName(), form.getSimpleForm()
-				.getEntityClassName(), ClassNameUtils.getSimpleClassName(form.getSimpleForm().getEntityName())));
+		initStatementWrappers.add(new InitStatementWrapper(EditorType.LIST_EDIT_HELPER, editorFieldName, form.getSimpleForm()
+				.getEntityClassName(), fieldName));
 
 		return nodes;
 	}
@@ -141,8 +143,8 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 	}
 
 	protected FunctionControllerNode createInitFunctionNode() {
-		initStatementWrapper = new ArrayList<InitStatementWrapper>();
-		return new FunctionControllerNode(INameConstants.ENTIT_PAGE_INIT_FUNCTION, FunctionType.INIT, initStatementWrapper);
+		initStatementWrappers = new ArrayList<InitStatementWrapper>();
+		return new FunctionControllerNode(INameConstants.ENTIT_PAGE_INIT_FUNCTION, FunctionType.INIT, initStatementWrappers);
 	}
 
 	protected FunctionControllerNode createGetterFunctionControllerNode(String fieldName, String fieldType) {

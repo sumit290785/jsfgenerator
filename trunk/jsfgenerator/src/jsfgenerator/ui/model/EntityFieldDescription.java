@@ -1,7 +1,11 @@
 package jsfgenerator.ui.model;
 
-import org.eclipse.jdt.core.dom.TypeDeclaration;
+import java.util.List;
 
+import jsfgenerator.entitymodel.forms.EntityRelationship;
+import jsfgenerator.generation.common.utilities.ClassNameUtils;
+
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 public class EntityFieldDescription {
 
@@ -9,18 +13,16 @@ public class EntityFieldDescription {
 
 	private String className;
 
-	private boolean isCollectionOfEntity;
+	private EntityRelationship relationshipToEntity;
 
 	private String inputTagId;
 
 	private EntityDescription entityDescription;
 
-	private boolean isCollectionInComplexForm;
-
-	public EntityFieldDescription(String fieldName, String className, boolean isCollectionOfEntity) {
+	public EntityFieldDescription(String fieldName, String className, EntityRelationship relationshipToEntity) {
 		this.fieldName = fieldName;
 		this.className = className;
-		this.isCollectionOfEntity = isCollectionOfEntity;
+		this.relationshipToEntity = relationshipToEntity;
 	}
 
 	public String getFieldName() {
@@ -39,33 +41,37 @@ public class EntityFieldDescription {
 		this.inputTagId = inputTagId;
 	}
 
-	public void setCollectionOfEntity(boolean isCollectionOfEntity) {
-		this.isCollectionOfEntity = isCollectionOfEntity;
-	}
+	public void setExternalForm(EntityRelationship relationship) {
 
-	public boolean isCollectionOfEntity() {
-		return isCollectionOfEntity;
-	}
-
-	public void setCollectionInComplexForm(String genericClassName) {
-		if (genericClassName == null || genericClassName.equals("")) {
-			this.isCollectionInComplexForm = false;
+		if (relationship == null) {
 			this.entityDescription = null;
-		} else {
-			TypeDeclaration typeNode = ProjectResourceProvider.getInstance().findSingleClassTypeDeclaration(genericClassName);
-			this.isCollectionInComplexForm = true;
-			this.entityDescription = new EntityDescription(typeNode);
-			this.entityDescription.setEmbedded(true);
+			return;
 		}
 
-	}
+		String className;
+		if (EntityRelationship.EMBEDDED.equals(relationship) || EntityRelationship.ONE_TO_ONE.equals(relationship)
+				|| EntityRelationship.MANY_TO_ONE.equals(relationship)) {
+			className = ClassNameUtils.removeGenericParameters(getClassName());
+		} else {
+			List<String> genericTypeList = ClassNameUtils.getGenericParameterList(getClassName());
+			className = ClassNameUtils.removeGenericParameters(genericTypeList.get(0));
+		}
 
-	public boolean isCollectionInComplexForm() {
-		return isCollectionInComplexForm;
+		TypeDeclaration typeNode = ProjectResourceProvider.getInstance().findSingleClassTypeDeclaration(className);
+		this.entityDescription = new EntityDescription(typeNode);
+		this.entityDescription.setEmbedded(true);
 	}
 
 	public EntityDescription getEntityDescription() {
 		return entityDescription;
+	}
+
+	public void setRelationshipToEntity(EntityRelationship relationshipToEntity) {
+		this.relationshipToEntity = relationshipToEntity;
+	}
+
+	public EntityRelationship getRelationshipToEntity() {
+		return relationshipToEntity;
 	}
 
 }

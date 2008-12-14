@@ -23,17 +23,21 @@ import jsfgenerator.ui.model.EntityFieldDescription;
  */
 public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityDescription, EntityFieldDescription> {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seejsfgenerator.inspector.entitymodel.AbstractEntityModelBuilder# addSimpleEntityForm(java.lang.String, java.lang.Object)
-	 */
 	@Override
-	public void addSimpleEntityForm(String viewId, EntityDescription entity) {
-		String entityClassSimpleName = ClassNameUtils.getSimpleClassName(entity.getEntityClassName());
-		String formName = NodeNameUtils.getCanonicalName(viewId, entityClassSimpleName);
+	public void addSimpleEntityForm(String viewId, EntityDescription entity, EntityFieldDescription field) {
 
-		EntityForm form = new SimpleEntityForm(formName, entity.getEntityClassName(), getEntityFields(entity));
+		EntityForm form;
+		if (field == null) {
+			String entityClassSimpleName = ClassNameUtils.getSimpleClassName(entity.getEntityClassName());
+			String formName = NodeNameUtils.getCanonicalName(viewId, entityClassSimpleName);
+			form = new SimpleEntityForm(formName, entity.getEntityClassName(), getEntityFields(entity), null);
+		} else {
+			String entityClassSimpleName = ClassNameUtils.getSimpleClassName(entity.getEntityClassName());
+			String formName = NodeNameUtils.getCanonicalName(viewId, entityClassSimpleName, field.getFieldName());
+			form = new SimpleEntityForm(formName, entity.getEntityClassName(), getEntityFields(entity), field
+					.getRelationshipToEntity());
+		}
+
 		getEntityPageModel(viewId).addForm(form);
 	}
 
@@ -46,7 +50,7 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityDesc
 		String formName = NodeNameUtils.getCanonicalName(domainEntity.getViewId(), simpleFormName, simpleListFormName);
 
 		EntityForm form = new ComplexEntityFormList(formName, simpleFormName, genericFieldDescription.getEntityClassName(),
-				getEntityFields(genericFieldDescription));
+				getEntityFields(genericFieldDescription), listField.getRelationshipToEntity());
 		getEntityPageModel(domainEntity.getViewId()).addForm(form);
 	}
 
@@ -64,7 +68,7 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityDesc
 		List<EntityField> fields = new ArrayList<EntityField>();
 		for (EntityFieldDescription entityField : entity.getEntityFieldDescriptions()) {
 
-			if (!entityField.isCollectionInComplexForm()) {
+			if (entityField.getEntityDescription() == null) {
 				EntityField field = new EntityField(entityField.getFieldName(), entityField.getInputTagId());
 				fields.add(field);
 			}

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jsfgenerator.entitymodel.EntityModel;
+import jsfgenerator.entitymodel.forms.EntityRelationship;
 import jsfgenerator.entitymodel.impl.ASTEntityModelBuilder;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.generation.common.GenerationException;
@@ -86,10 +87,14 @@ public class MVCGenerationWizard extends Wizard {
 				}
 
 				// if (hasSimpleField(entity)) {
-				builder.addSimpleEntityForm(viewId, entity);
+				builder.addSimpleEntityForm(viewId, entity, null);
 				// }
 
-				for (EntityFieldDescription entityField : getComplexFields(entity)) {
+				for (EntityFieldDescription entityField : getSimpleEmbeddedFields(entity)) {
+					builder.addSimpleEntityForm(viewId, entityField.getEntityDescription(), entityField);
+				}
+
+				for (EntityFieldDescription entityField : getComplexEmbeddedFields(entity)) {
 					builder.addComplexEntityFormList(entity, entityField);
 				}
 			}
@@ -148,11 +153,11 @@ public class MVCGenerationWizard extends Wizard {
 		ICompilationUnit cu = null;
 		try {
 			String fileName = NodeNameUtils.getEntityPageClassFileNameByUniqueName(className);
-			
+
 			// delete the file if exists
 			IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(fragment.getPath());
 			delete(folder, fileName);
-			
+
 			cu = fragment.createCompilationUnit(fileName, sourceCode, false, null);
 			cu.becomeWorkingCopy(null);
 		} catch (JavaModelException e) {
@@ -182,14 +187,14 @@ public class MVCGenerationWizard extends Wizard {
 		}
 
 	}
-	
+
 	private void delete(IFolder folder, String fileName) {
 		IFile file = folder.getFile(fileName);
 		if (file.exists()) {
 			try {
 				file.delete(IResource.FORCE, null);
 			} catch (CoreException e) {
-				throw new GenerationException("Could not delete the previous version of the view! File name: "+ fileName, e);
+				throw new GenerationException("Could not delete the previous version of the view! File name: " + fileName, e);
 			}
 		}
 	}
@@ -209,11 +214,28 @@ public class MVCGenerationWizard extends Wizard {
 		return document.get();
 	}
 
-	private List<EntityFieldDescription> getComplexFields(EntityDescription entityDescription) {
+	private List<EntityFieldDescription> getComplexEmbeddedFields(EntityDescription entityDescription) {
 		List<EntityFieldDescription> entityFields = new ArrayList<EntityFieldDescription>();
 
 		for (EntityFieldDescription entityFieldDescription : entityDescription.getEntityFieldDescriptions()) {
-			if (entityFieldDescription.isCollectionInComplexForm()) {
+			if (entityFieldDescription.getEntityDescription() != null
+					&& (EntityRelationship.ONE_TO_MANY.equals(entityFieldDescription.getRelationshipToEntity()) || EntityRelationship.MANY_TO_MANY
+							.equals(entityFieldDescription.getRelationshipToEntity()))) {
+				entityFields.add(entityFieldDescription);
+			}
+		}
+
+		return entityFields;
+	}
+
+	private List<EntityFieldDescription> getSimpleEmbeddedFields(EntityDescription entityDescription) {
+		List<EntityFieldDescription> entityFields = new ArrayList<EntityFieldDescription>();
+
+		for (EntityFieldDescription entityFieldDescription : entityDescription.getEntityFieldDescriptions()) {
+			if (entityFieldDescription.getEntityDescription() != null
+					&& (EntityRelationship.EMBEDDED.equals(entityFieldDescription.getRelationshipToEntity())
+							|| EntityRelationship.ONE_TO_ONE.equals(entityFieldDescription.getRelationshipToEntity()) || EntityRelationship.MANY_TO_ONE
+							.equals(entityFieldDescription.getRelationshipToEntity()))) {
 				entityFields.add(entityFieldDescription);
 			}
 		}
