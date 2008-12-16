@@ -1,8 +1,8 @@
 package jsfgenerator.generation.view.parameters;
 
 /**
- * A tag parameter is a key-value pair! A parameter has either a static value or
- * an expression which is changed to an EL value at view generation time
+ * A tag parameter is a key-value pair! A parameter has either a static value or an expression which is changed to an EL value at view
+ * generation time
  * 
  * @author zoltan verebes
  * 
@@ -10,17 +10,11 @@ package jsfgenerator.generation.view.parameters;
 public class TagAttribute {
 
 	/**
-	 * A tag parameter either a static parameter or an expression! Expressions
-	 * are changed to expression language (EL) value at view generation time
+	 * A tag parameter either a static parameter or an expression! Expressions are changed to expression language (EL) value at view
+	 * generation time
 	 */
 	public enum TagParameterType {
 		STATIC, EXPRESSION
-	}
-	
-	public TagAttribute(String name, String value, TagParameterType type) {
-		this.name = name;
-		this.value = value;
-		this.type = type;
 	}
 
 	// left value of the parameter
@@ -31,6 +25,15 @@ public class TagAttribute {
 
 	// type of the parameter which is either a static value or an EL value
 	protected TagParameterType type;
+
+	private boolean index;
+
+	public TagAttribute(String name, String value, TagParameterType type, boolean index) {
+		this.name = name;
+		this.value = value;
+		this.type = type;
+		this.index = index;
+	}
 
 	public void setName(String name) {
 		this.name = name;
@@ -54,6 +57,10 @@ public class TagAttribute {
 
 	public TagParameterType getType() {
 		return type;
+	}
+
+	public boolean isIndex() {
+		return index;
 	}
 
 }

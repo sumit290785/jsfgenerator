@@ -9,13 +9,12 @@ package jsfgenerator.entitymodel.forms;
  */
 public class EntityField {
 
-	private String name;
+	private String fieldName;
 
 	private String inputTagId;
 
 	public EntityField(String name, String inputTagId) {
-		super();
-		this.name = name;
+		this.fieldName = name;
 		this.inputTagId = inputTagId;
 	}
 
@@ -27,7 +26,7 @@ public class EntityField {
 	 * @return
 	 */
 	public String getFieldName() {
-		return name;
+		return fieldName;
 	}
 
 	/**

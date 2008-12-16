@@ -9,19 +9,6 @@ public final class NodeNameUtils {
 
 	private static final Pattern namePattern = Pattern.compile("^(([A-Za-z][A-Za-z0-9_]*\\.)*)([A-Za-z][A-Za-z0-9_]*)");
 
-	public static String getCanonicalName(String... args) {
-		StringBuffer buffer = new StringBuffer();
-
-		for (int i = 0; i < args.length; i++) {
-			buffer.append(args[i]);
-			if (i != args.length - 1) {
-				buffer.append(".");
-			}
-		}
-
-		return buffer.toString();
-	}
-
 	public static String getControllerEditorFieldNameByCanonicalName(String uniqueName) {
 		return getControllerFieldNameByCanonicalName(uniqueName) + INameConstants.EDITOR_FIELD_POSTFIX;
 	}

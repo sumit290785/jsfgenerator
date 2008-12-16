@@ -35,9 +35,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * Parses xml file which contains the tag tree model! It uses DOM, because
- * direct access is required, but it is not a big file, so it is not a horror to
- * store it in the working memory
+ * Parses xml file which contains the tag tree model! It uses DOM, because direct access is required, but it is not a big file, so it is not
+ * a horror to store it in the working memory
  * 
  * TODO: describe the xml file in the comment when there is a final version
  * 
@@ -50,7 +49,7 @@ public class TagTreeParser implements ITagTreeProvider {
 
 	// xPATH expression for tagtree domain tags in the xml
 	private static final String TAGTREE_XPATH = "//tagtree[@id='{id}']";
-	
+
 	private static final String INPUTTAG_XPATH = "//inputtag";
 
 	// xPATH expression for inputtag domain tags in the xml
@@ -138,8 +137,7 @@ public class TagTreeParser implements ITagTreeProvider {
 	}
 
 	/**
-	 * recursive function to parse a static and its inner static and proxy tags
-	 * in the xml file
+	 * recursive function to parse a static and its inner static and proxy tags in the xml file
 	 * 
 	 * @param rootNode
 	 * @param styles
@@ -200,16 +198,18 @@ public class TagTreeParser implements ITagTreeProvider {
 		Node typeNode = attributes.getNamedItem("type");
 		Node keyNode = attributes.getNamedItem("key");
 		Node valueNode = attributes.getNamedItem("value");
+		Node indexNode = attributes.getNamedItem("index");
 
 		if (typeNode == null || typeNode.getTextContent().equals("")) {
 			throw new IllegalArgumentException("Illegal type of node!");
 		}
 
 		String text = typeNode.getTextContent();
+		boolean index = indexNode != null && indexNode.getTextContent().equals("true");
 		TagAttribute attribute = null;
 		if (text.equalsIgnoreCase("static") || text.equalsIgnoreCase("expression")) {
-			attribute = new TagAttribute(keyNode.getTextContent(), valueNode.getTextContent(), TagParameterType.valueOf(typeNode.getTextContent()
-					.toUpperCase()));
+			attribute = new TagAttribute(keyNode.getTextContent(), valueNode.getTextContent(), TagParameterType.valueOf(typeNode
+					.getTextContent().toUpperCase()), index);
 		} else if (text.equalsIgnoreCase("xmlnamespace")) {
 			String valueText = valueNode.getTextContent();
 			int delimiterIndex = valueText.indexOf(":");
@@ -236,8 +236,8 @@ public class TagTreeParser implements ITagTreeProvider {
 
 		return node;
 	}
-	
-	private NodeList getNodes(String exp) throws ParserException  {
+
+	private NodeList getNodes(String exp) throws ParserException {
 		XPath xpath = factory.newXPath();
 		XPathExpression expression;
 		try {
@@ -292,9 +292,7 @@ public class TagTreeParser implements ITagTreeProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * jsfgenerator.generation.view.ITagTreeProvider#getInputTag(java.lang.String
-	 * )
+	 * @see jsfgenerator.generation.view.ITagTreeProvider#getInputTag(java.lang.String )
 	 */
 	public StaticTag getInputTag(String inputTagId) {
 		if (inputTagId == null) {
@@ -325,8 +323,7 @@ public class TagTreeParser implements ITagTreeProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * jsfgenerator.generation.tagmodel.ITagTreeProvider#getEntityPageTagTree()
+	 * @see jsfgenerator.generation.tagmodel.ITagTreeProvider#getEntityPageTagTree()
 	 */
 	public TagTree getEntityPageTagTree() {
 		// TODO
@@ -342,8 +339,7 @@ public class TagTreeParser implements ITagTreeProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * jsfgenerator.generation.tagmodel.ITagTreeProvider#getListPageTagTree()
+	 * @see jsfgenerator.generation.tagmodel.ITagTreeProvider#getListPageTagTree()
 	 */
 	public TagTree getListPageTagTree() {
 		// TODO
@@ -353,8 +349,7 @@ public class TagTreeParser implements ITagTreeProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * jsfgenerator.generation.tagmodel.ITagTreeProvider#getSimpleFormTagTree()
+	 * @see jsfgenerator.generation.tagmodel.ITagTreeProvider#getSimpleFormTagTree()
 	 */
 	public TagTree getSimpleFormTagTree() {
 		try {
@@ -365,7 +360,7 @@ public class TagTreeParser implements ITagTreeProvider {
 
 		return null;
 	}
-	
+
 	public TagTree getComplexFormListTagTree() {
 		try {
 			return getTagTree(COMPLEX_FORM_TAG_NAME);
@@ -389,7 +384,7 @@ public class TagTreeParser implements ITagTreeProvider {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return ids;
 	}
 

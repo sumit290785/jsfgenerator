@@ -7,7 +7,11 @@ import jsfgenerator.entitymodel.forms.EntityField;
 import jsfgenerator.entitymodel.forms.EntityForm;
 import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
+import jsfgenerator.generation.common.INameConstants;
+import jsfgenerator.generation.common.utilities.StringUtils;
+import jsfgenerator.generation.common.visitors.IndexVariableVisitor;
 import jsfgenerator.generation.common.visitors.ProxyTagVisitor;
+import jsfgenerator.generation.common.visitors.ReferenceNameEvaluatorVisitor;
 import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.ControllerTree;
 import jsfgenerator.generation.controller.nodes.ControllerNode;
@@ -19,6 +23,7 @@ import jsfgenerator.generation.view.TagTree;
 import jsfgenerator.generation.view.ProxyTag.ProxyTagType;
 
 /**
+ * TODO: do the same for list page - subclass the same class
  * 
  * @author zoltan verebes
  * 
@@ -69,16 +74,20 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		 */
 		TagTree simpleFormTagTree = tagTreeProvider.getSimpleFormTagTree();
 		simpleFormTagTree.applyReferenceName(form.getEntityName());
+
+		String namespace = form.getEntityName() + INameConstants.EDITOR_FIELD_POSTFIX;
+		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(namespace);
+		simpleFormTagTree.apply(visitor);
+
 		getFormProxyTag().addAllChildren(simpleFormTagTree.getNodes());
 
 		/*
 		 * add the info to the controller tree for the backing bean
 		 */
 		classNode.addAllChildren(controllerNodeProvider.createSimpleFormControllerNodes(form));
-
 	}
 
-	public void addSimpleForm(ComplexEntityFormList form) {
+	public void addSimpleForm(ComplexEntityFormList form, String indexVariableName) {
 		TagNode formProxyTag = getProxyTagByType(getFormTagByName(form.getEntityName()), ProxyTagType.FORM);
 
 		if (formProxyTag == null) {
@@ -86,23 +95,34 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		}
 
 		TagTree simpleFormTagTree = tagTreeProvider.getSimpleFormTagTree();
+		String namespace = form.getEntityName() + INameConstants.EDITOR_FIELD_POSTFIX;
+		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(namespace);
+		visitor.setParams(indexVariableName);
+		simpleFormTagTree.apply(visitor);
+
 		formProxyTag.addAllChildren(simpleFormTagTree.getNodes());
-
-		// classNode.addAllChildren(controllerNodeProvider.createSimpleFormControllerNodes(form.getSimpleForm(),
-		// AbstractControllerNodeProvider.GETTER | AbstractControllerNodeProvider.SETTER));
-
 	}
 
 	public void addComplexFormTagTree(ComplexEntityFormList form) {
 		TagTree complexFormList = tagTreeProvider.getComplexFormListTagTree();
+
+		String namespace = form.getEntityName() + INameConstants.EDITOR_FIELD_POSTFIX;
+		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(namespace, "instances");
+		String indexVariableName = getIndexVariableName(complexFormList);
+		visitor.setParams(indexVariableName);
+		complexFormList.apply(visitor);
+
 		complexFormList.applyReferenceName(form.getEntityName());
 		getFormProxyTag().addAllChildren(complexFormList.getNodes());
+
+		addSimpleForm(form, indexVariableName);
 
 		classNode.addAllChildren(controllerNodeProvider.createComplexFormControllerNodes(form));
 	}
 
 	public void addInputField(EntityForm form, EntityField field) {
-		TagNode inputProxyTag = getProxyTagByType(getFormTagByName(form.getEntityName()), ProxyTagType.INPUT);
+		TagNode formNode = getFormTagByName(form.getEntityName());
+		TagNode inputProxyTag = getProxyTagByType(formNode, ProxyTagType.INPUT);
 
 		if (inputProxyTag == null) {
 			throw new IllegalArgumentException(
@@ -110,6 +130,18 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		}
 
 		StaticTag inputTag = tagTreeProvider.getInputTag(field.getInputTagId());
+
+		String namespace;
+		if (form instanceof SimpleEntityForm) {
+			namespace = StringUtils.toDotSeparatedString(form.getEntityName() + INameConstants.EDITOR_FIELD_POSTFIX, "instance");
+		} else {
+			namespace = StringUtils.toDotSeparatedString(form.getEntityName() + INameConstants.EDITOR_FIELD_POSTFIX, "instance("
+					+ getIndexVariableName(formNode) + ")");
+		}
+
+		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(namespace, field.getFieldName());
+		inputTag.apply(visitor);
+
 		inputTag.setReferenceName(field.getFieldName());
 		if (inputTag != null) {
 			inputProxyTag.addChild(inputTag);
@@ -136,7 +168,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		return tagTree;
 	}
 
-	private ProxyTag getFormProxyTag() {
+	protected ProxyTag getFormProxyTag() {
 		if (formProxyTag == null) {
 			formProxyTag = getProxyTagByType(tagTree, ProxyTagType.FORM);
 		}
@@ -144,7 +176,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		return formProxyTag;
 	}
 
-	private TagNode getFormTagByName(String name) {
+	protected TagNode getFormTagByName(String name) {
 		Iterator<TagNode> it = getFormProxyTag().getChildren().iterator();
 		while (it.hasNext()) {
 			TagNode node = it.next();
@@ -205,12 +237,26 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		return getProxyTagByType(tagTree, type);
 	}
 
-	public void setModel(EntityPageModel model) {
-		this.model = model;
+	protected String getIndexVariableName(TagNode node) {
+		IndexVariableVisitor indexVariableVisitor = new IndexVariableVisitor();
+		node.apply(indexVariableVisitor);
+
+		if (!indexVariableVisitor.isIndexFound()) {
+			return null;
+		}
+
+		return indexVariableVisitor.getIndexVariableName();
 	}
 
-	public EntityPageModel getModel() {
-		return model;
+	protected String getIndexVariableName(TagTree tree) {
+		for (TagNode node : tree.getNodes()) {
+			String indexName = getIndexVariableName(node);
+			if (indexName != null) {
+				return indexName;
+			}
+		}
+
+		return null;
 	}
 
 }

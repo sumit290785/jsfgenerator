@@ -11,7 +11,7 @@ import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
-import jsfgenerator.generation.common.utilities.NodeNameUtils;
+import jsfgenerator.generation.common.utilities.StringUtils;
 import jsfgenerator.ui.model.EntityDescription;
 import jsfgenerator.ui.model.EntityFieldDescription;
 
@@ -28,12 +28,10 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityDesc
 
 		EntityForm form;
 		if (field == null) {
-			String entityClassSimpleName = ClassNameUtils.getSimpleClassName(entity.getEntityClassName());
-			String formName = NodeNameUtils.getCanonicalName(viewId, entityClassSimpleName);
+			String formName = StringUtils.toDotSeparatedString(viewId, "entity");
 			form = new SimpleEntityForm(formName, entity.getEntityClassName(), getEntityFields(entity), null);
 		} else {
-			String entityClassSimpleName = ClassNameUtils.getSimpleClassName(entity.getEntityClassName());
-			String formName = NodeNameUtils.getCanonicalName(viewId, entityClassSimpleName, field.getFieldName());
+			String formName = StringUtils.toDotSeparatedString(viewId, field.getFieldName());
 			form = new SimpleEntityForm(formName, entity.getEntityClassName(), getEntityFields(entity), field
 					.getRelationshipToEntity());
 		}
@@ -45,12 +43,10 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityDesc
 	public void addComplexEntityFormList(EntityDescription domainEntity, EntityFieldDescription listField) {
 		EntityDescription genericFieldDescription = listField.getEntityDescription();
 
-		String simpleFormName = ClassNameUtils.getSimpleClassName(domainEntity.getEntityClassName());
 		String simpleListFormName = ClassNameUtils.getSimpleClassName(listField.getFieldName());
-		String formName = NodeNameUtils.getCanonicalName(domainEntity.getViewId(), simpleFormName, simpleListFormName);
-
-		EntityForm form = new ComplexEntityFormList(formName, simpleFormName, genericFieldDescription.getEntityClassName(),
-				getEntityFields(genericFieldDescription), listField.getRelationshipToEntity());
+		String formName = StringUtils.toDotSeparatedString(domainEntity.getViewId(), simpleListFormName);
+		EntityForm form = new ComplexEntityFormList(formName, domainEntity.getEntityClassName(), genericFieldDescription
+				.getEntityClassName(), getEntityFields(genericFieldDescription), listField.getRelationshipToEntity());
 		getEntityPageModel(domainEntity.getViewId()).addForm(form);
 	}
 
