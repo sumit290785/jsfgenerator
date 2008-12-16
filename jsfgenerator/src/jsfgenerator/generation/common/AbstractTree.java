@@ -24,11 +24,12 @@ public abstract class AbstractTree<T extends Node<T>> {
 
 	public void apply(AbstractVisitor<T> visitor) {
 		for (T node : getNodes()) {
-			apply(node, visitor);
+			node.apply(visitor);
+			//apply(node, visitor);
 		}
 	}
 
-	protected boolean apply(T node, AbstractVisitor<T> visitor) {
+	private boolean apply(T node, AbstractVisitor<T> visitor) {
 		if (!visitor.visit(node)) {
 			visitor.postVisit(node);
 			return false;

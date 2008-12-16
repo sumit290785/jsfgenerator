@@ -12,7 +12,7 @@ public class StaticTag extends TagNode {
 
 	// name of the tag
 	private String name;
-	
+
 	// parameters of the tag
 	private List<TagAttribute> attributess = new ArrayList<TagAttribute>();
 
@@ -52,8 +52,8 @@ public class StaticTag extends TagNode {
 		return xmlNamespaces;
 	}
 
-	public void setAttributes(List<TagAttribute> parameters) {
-		this.attributess = parameters;
+	public void setAttributes(List<TagAttribute> attributes) {
+		this.attributess = attributes;
 	}
 
 	public List<TagAttribute> getAttributes() {
@@ -63,4 +63,5 @@ public class StaticTag extends TagNode {
 	public void addAttribute(TagAttribute tagAttribute) {
 		attributess.add(tagAttribute);
 	}
+	
 }

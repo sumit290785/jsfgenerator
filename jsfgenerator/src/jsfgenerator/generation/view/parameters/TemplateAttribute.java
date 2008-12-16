@@ -12,7 +12,7 @@ public class TemplateAttribute extends TagAttribute {
 	private static final String TEMPLATE = "template";
 
 	public TemplateAttribute(String template) {
-		super(TEMPLATE, template, TagParameterType.STATIC);
+		super(TEMPLATE, template, TagParameterType.STATIC, false);
 	}
 
 	@Override

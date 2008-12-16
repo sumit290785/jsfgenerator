@@ -347,9 +347,11 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 							.getFirstElement();
 					refreshFieldTable(selectedEntityDescription);
 
-					viewIdComposite.setVisible(!selectedEntityDescription.isEmbedded());
-					viewIdText
-							.setText(selectedEntityDescription.getViewId() == null ? "" : selectedEntityDescription.getViewId());
+					if (selectedEntityDescription != null) {
+						viewIdComposite.setVisible(!selectedEntityDescription.isEmbedded());
+						viewIdText.setText(selectedEntityDescription.getViewId() == null ? "" : selectedEntityDescription
+								.getViewId());
+					}
 				}
 			}
 		});
@@ -369,6 +371,8 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 			List<String> inputTagIds = ((MVCGenerationWizard) getWizard()).getInputTagIds();
 			this.inputTagIds = inputTagIds;
 			validate();
+		} else {
+			selectedEntityDescription = null;
 		}
 	}
 

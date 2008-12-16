@@ -113,11 +113,6 @@ public class ViewAndControllerEngine {
 			} else if (form instanceof ComplexEntityFormList) {
 				ComplexEntityFormList complexForm = (ComplexEntityFormList) form;
 				treeBuilder.addComplexFormTagTree(complexForm);
-				
-				/*
-				 * add a simple form to the complex form and input fields to the simple form then
-				 */
-				treeBuilder.addSimpleForm(complexForm);
 				for (EntityField field : complexForm.getFields()) {
 					treeBuilder.addInputField(complexForm, field);
 				}

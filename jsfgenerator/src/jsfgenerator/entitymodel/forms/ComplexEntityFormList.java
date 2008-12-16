@@ -11,9 +11,10 @@ public class ComplexEntityFormList extends EntityForm {
 
 	private SimpleEntityForm simpleForm;
 
-	public ComplexEntityFormList(String entityName, String genericEntityName, String genericEntityClassName, List<EntityField> fields, EntityRelationship relationship) {
+	public ComplexEntityFormList(String entityName, String genericEntityName, String genericEntityClassName,
+			List<EntityField> fields, EntityRelationship relationship) {
 		super(entityName, fields, relationship);
-		simpleForm = new SimpleEntityForm(entityName + "." + genericEntityName, genericEntityClassName, fields, relationship);
+		simpleForm = new SimpleEntityForm(entityName, genericEntityClassName, fields, relationship);
 	}
 
 	public SimpleEntityForm getSimpleForm() {
