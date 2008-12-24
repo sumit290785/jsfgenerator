@@ -39,5 +39,92 @@
          		name="TagFactoryEditor">
          </editor>
    </extension>
+   <extension
+         point="org.eclipse.wst.common.project.facet.core.facets">
+      <project-facet
+            id="jsfgenerator-project-facet">
+         <label>
+            View and controller generation facet
+         </label>
+         <description>
+            Enables to generate JSF views and controllers by the project&apos;s model.
+         </description>
+      </project-facet>
+      <project-facet-version
+            facet="jsfgenerator-project-facet"
+            version="1.0">
+            <constraint>
+         	<or>
+                <requires
+           	         facet="jst.ear"
+       	             version="[5.0">
+   	            </requires>
+                <requires
+           	         facet="jst.ejb"
+       	             version="[3.0">
+   	            </requires>
+                <and>
+	               <requires
+            	         facet="jst.web"
+        	             version="[2.5">
+    	           </requires>
+	               <requires
+            	         facet="jst.jsf"
+        	             version="[1.2">
+    	           </requires>
+	               <requires
+            	         facet="jst.java"
+        	             version="[5.0">
+    	           </requires>
+	            </and>
+         	</or>
+         </constraint>
+            <action
+                  facet="jsfgenerator-project-facet"
+                  id="jsfgenerator-project-facet-1.0.install"
+                  type="install"
+                  version="1.0">
+               <delegate
+                     class="jsfgenerator.ui.wizards.MVCFacetInstallDelegate">
+               </delegate>
+            </action>
+      </project-facet-version>
+   </extension>
+   <extension
+         point="org.eclipse.wst.common.project.facet.core.presets">
+      <static-preset
+            extends="default.configuration"
+            id="jsfgenerator-preset">
+         <label>
+            Dynamic Web Project with JSF generation tools
+         </label>
+         <description>
+            description body text
+         </description>
+         <facet
+               id="jsfgenerator-project-facet"
+               version="1.0">
+         </facet>
+         <facet
+               id="jst.jsf"
+               version="1.2">
+         </facet>
+         <facet
+               id="jst.web"
+               version="2.5">
+         </facet>
+         <facet
+               id="jst.java"
+               version="5.0">
+         </facet>
+      </static-preset>
+   </extension>
+   <extension
+         point="org.eclipse.wst.common.project.facet.ui.images">
+      <image
+            facet="jsfgenerator-project-facet"
+            path="resource/images/applications-system.png">
+      </image>
+   </extension>
 
 </plugin>
