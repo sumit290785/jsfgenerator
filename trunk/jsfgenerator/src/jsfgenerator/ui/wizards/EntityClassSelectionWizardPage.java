@@ -36,9 +36,10 @@ public class EntityClassSelectionWizardPage extends WizardPage {
 		public int flag;
 
 		private ComboBoxViewerCellEditor editor;
-
+		
 		public GenerateEditingSupport(ColumnViewer viewer, int flag) {
 			super(viewer);
+		
 			editor = new ComboBoxViewerCellEditor(((TableViewer) viewer).getTable());
 			editor.setContenProvider(new ArrayContentProvider());
 			editor.setLabelProvider(new LabelProvider() {
