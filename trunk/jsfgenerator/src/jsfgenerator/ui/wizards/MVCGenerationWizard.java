@@ -5,8 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import jsfgenerator.entitymodel.EntityModel;
@@ -22,6 +24,7 @@ import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.impl.TagTreeParser;
 import jsfgenerator.ui.model.EntityDescription;
 import jsfgenerator.ui.model.EntityFieldDescription;
+import jsfgenerator.ui.model.ProjectResourceProvider;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -39,6 +42,13 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jst.jsf.facesconfig.emf.FacesConfigFactory;
+import org.eclipse.jst.jsf.facesconfig.emf.FacesConfigPackage;
+import org.eclipse.jst.jsf.facesconfig.emf.ManagedBeanClassType;
+import org.eclipse.jst.jsf.facesconfig.emf.ManagedBeanNameType;
+import org.eclipse.jst.jsf.facesconfig.emf.ManagedBeanScopeType;
+import org.eclipse.jst.jsf.facesconfig.emf.ManagedBeanType;
+import org.eclipse.jst.jsf.facesconfig.util.FacesConfigArtifactEdit;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
@@ -122,9 +132,54 @@ public class MVCGenerationWizard extends Wizard {
 			ViewAndControllerDTO viewDTO = engine.getViewAndControllerDTO(pageModel.getViewId());
 			saveView(pageModel.getViewId(), viewDTO.getViewStream());
 			saveController(pageModel.getViewId(), viewDTO.getViewClass());
+
+			addManagedBeanToFacesConfig(pageModel.getViewId(), viewDTO.getControllerClassName());
 		}
 
 		return true;
+	}
+
+	private void addManagedBeanToFacesConfig(String viewId, String className) {
+
+		FacesConfigArtifactEdit edit = new FacesConfigArtifactEdit(ProjectResourceProvider.getInstance().getJavaProject()
+				.getProject(), false);
+
+		if (edit.getFacesConfig() == null) {
+			return;
+		}
+
+		Iterator it = edit.getFacesConfig().getManagedBean().iterator();
+		while (it.hasNext()) {
+			ManagedBeanType mbt = (ManagedBeanType) it.next();
+			if (mbt.getManagedBeanName().getTextContent().equals(viewId)) {
+				it.remove();
+				break;
+			}
+		}
+
+		FacesConfigPackage facesConfigPackage = FacesConfigPackage.eINSTANCE;
+		FacesConfigFactory facesConfigFactory = facesConfigPackage.getFacesConfigFactory();
+
+		ManagedBeanType managedBT = facesConfigFactory.createManagedBeanType();
+
+		ManagedBeanNameType managedBeanNameType = facesConfigFactory.createManagedBeanNameType();
+		managedBeanNameType.setTextContent(viewId);
+		managedBT.setManagedBeanName(managedBeanNameType);
+
+		ManagedBeanClassType managedBeanClassType = facesConfigFactory.createManagedBeanClassType();
+		managedBeanClassType.setTextContent(className);
+		managedBT.setManagedBeanClass(managedBeanClassType);
+
+		ManagedBeanScopeType managedBeanScopeType = facesConfigFactory.createManagedBeanScopeType();
+		managedBeanScopeType.setTextContent("request");
+		managedBT.setManagedBeanScope(managedBeanScopeType);
+
+		edit.getFacesConfig().getManagedBean().add(managedBT);
+		try {
+			edit.getDeploymentDescriptorResource().save(null);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public List<EntityDescription> getEntityDescriptions() {
