@@ -3,7 +3,7 @@
 	<tagtree id="entitypage">
 		<statictag name="ui:composition">
 			<statictag name="h:inputText">
-				<attribute type="normal" key="value" value="akarmi" />
+				<attribute type="static" key="value" value="akarmi" />
 			</statictag>
 			<proxytag type="FORM" />
 			
@@ -19,21 +19,21 @@
 		</statictag>
 	</tagtree>
 	
-	<inputtag class="jsfgenerator.entitymodel.fields.TextFieldType">
-		<statictag name="h:inputText" styles="NONE">
-			<attribute type="normal" key="value" value="EXPRESSION"/>
+	<inputtag id="jsfgenerator.entitymodel.fields.TextFieldType">
+		<statictag name="h:inputText">
+			<attribute type="static" key="value" value="EXPRESSION"/>
 		</statictag>
 		
-		<statictag name="h:inputTextArea" styles="MULTILINE">
-			<attribute type="normal" key="value" value="EXPRESSION"/>
-			<attribute type="normal" key="cols" value="10"/>
+		<statictag name="h:inputTextArea">
+			<attribute type="expression" key="value" value="EXPRESSION"/>
+			<attribute type="static" key="cols" value="10"/>
 		</statictag>
 	
 	</inputtag>
 	
-	<inputtag class="jsfgenerator.entitymodel.fields.NumberFieldType">
-		<statictag name="h:inputText" styles="NONE,INTEGER">
-			<attribute type="normal" key="value" value="EXPRESSION"/>
+	<inputtag id="jsfgenerator.entitymodel.fields.NumberFieldType">
+		<statictag name="h:inputText">
+			<attribute type="expression" key="value" value="EXPRESSION"/>
 		</statictag>
 	</inputtag>
 	
