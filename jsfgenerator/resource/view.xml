@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="view.xsd">
+	<tagtree id="entitypage">
+	</tagtree>
+	
+	<tagtree id="simpleform">
+	</tagtree>
+	
+	<tagtree id="complexform">
+	</tagtree>
+	
+</view>

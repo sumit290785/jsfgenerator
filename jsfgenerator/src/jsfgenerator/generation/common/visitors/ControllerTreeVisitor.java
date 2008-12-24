@@ -191,7 +191,13 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		unit.setPackage(packageDeclaration);
 
 		rootType = ast.newTypeDeclaration();
-		rootName = ClassNameUtils.getSimpleClassName(node.getClassName());
+		
+		if (node.getPackageName() == null || node.getPackageName().equals("")) {
+			rootName = node.getClassName();
+		} else {
+			rootName = node.getPackageName() + "." + node.getClassName();
+		}
+		
 
 		/*
 		 * add comment
@@ -229,7 +235,7 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 
 		// class is public
 		rootType.modifiers().add(ast.newModifier(ModifierKeyword.PUBLIC_KEYWORD));
-		rootType.setName(ast.newSimpleName(rootName));
+		rootType.setName(ast.newSimpleName(ClassNameUtils.getSimpleClassName(rootName)));
 
 		/*
 		 * set its superclass
