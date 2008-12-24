@@ -384,6 +384,7 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 			EntityDescription faulty = checkEntityDescription(entityDescription);
 			if (faulty != null) {
 				setErrorMessage("Please, select an input tag id for all of the fields\nEntity: " + faulty.getEntityClassName());
+				setPageComplete(false);
 				return;
 			}
 		}
@@ -394,11 +395,13 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 		for (EntityDescription entityDescription : entityDescirptions) {
 			if (entityDescription.getViewId() == null || !NodeNameUtils.isValidViewId(entityDescription.getViewId())) {
 				setErrorMessage("Incorrect view id! Entity: " + entityDescription.getEntityClassName());
+				setPageComplete(false);
 				return;
 			}
 		}
 
 		setErrorMessage(null);
+		setPageComplete(true);
 	}
 
 	private EntityDescription checkEntityDescription(EntityDescription entityDescription) {

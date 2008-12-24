@@ -41,6 +41,7 @@ import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
@@ -52,8 +53,10 @@ import org.eclipse.jst.jsf.facesconfig.emf.ManagedBeanNameType;
 import org.eclipse.jst.jsf.facesconfig.emf.ManagedBeanScopeType;
 import org.eclipse.jst.jsf.facesconfig.emf.ManagedBeanType;
 import org.eclipse.jst.jsf.facesconfig.util.FacesConfigArtifactEdit;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
+import org.eclipse.ui.PlatformUI;
 
 public class MVCGenerationWizard extends Wizard {
 
@@ -69,6 +72,11 @@ public class MVCGenerationWizard extends Wizard {
 		super();
 		this.entityDescriptions = entityDescriptions;
 		setWindowTitle("View and Controller generation wizard");
+
+		Image img = new Image(PlatformUI.getWorkbench().getDisplay(), getClass().getResourceAsStream(
+				"/resource/images/applications-system40.png"));
+
+		setDefaultPageImageDescriptor(ImageDescriptor.createFromImage(img));
 	}
 
 	@Override
@@ -172,7 +180,7 @@ public class MVCGenerationWizard extends Wizard {
 
 		FacesConfigArtifactEdit edit = new FacesConfigArtifactEdit(ProjectResourceProvider.getInstance().getJavaProject()
 				.getProject(), false);
-		
+
 		if (edit == null) {
 			throw new IllegalArgumentException("faces-config.xml not found in the selected project");
 		}
