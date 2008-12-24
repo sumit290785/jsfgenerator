@@ -2,7 +2,10 @@ package jsfgenerator.ui.composites;
 
 import java.util.Arrays;
 
+import jsfgenerator.ui.model.ProjectResourceProvider;
+
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -62,8 +65,8 @@ public class ResourceSelectionComposite extends Composite {
 
 		viewer.setFilters(Arrays.asList(viewerFilter).toArray(new ViewerFilter[0]));
 
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		filteredTree.getViewer().setInput(root);
+		IProject project = ProjectResourceProvider.getInstance().getProject();
+		filteredTree.getViewer().setInput(project);
 
 		final Label label = new Label(this, SWT.NONE);
 		label.setText("Selected: ");

@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
@@ -38,6 +40,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
@@ -87,65 +90,95 @@ public class MVCGenerationWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 
-		ASTEntityModelBuilder builder = new ASTEntityModelBuilder();
-
-		for (EntityDescription entity : entityDescriptions) {
-
-			if (entity.isEntityPage()) {
-				String viewId = entity.getViewId();
-				if (!builder.isViewSpecified(viewId)) {
-					builder.createEntityPageModel(viewId, entity.getEntityClassName());
-				}
-
-				// if (hasSimpleField(entity)) {
-				builder.addSimpleEntityForm(viewId, entity, null);
-				// }
-
-				for (EntityFieldDescription entityField : getSimpleEmbeddedFields(entity)) {
-					builder.addSimpleEntityForm(viewId, entityField.getEntityDescription(), entityField);
-				}
-
-				for (EntityFieldDescription entityField : getComplexEmbeddedFields(entity)) {
-					builder.addComplexEntityFormList(entity, entityField);
-				}
-			}
-		}
-
-		EntityModel entityModel = builder.createEntityModel();
-		InputStream is = null;
-		File file = tagDescriptorSelectionWizardPage.getSelectedFile();
 		try {
-			is = new FileInputStream(file);
-		} catch (FileNotFoundException e) {
-		}
+			getContainer().run(true, true, new IRunnableWithProgress() {
 
-		ITagTreeProvider tagFactory = new TagTreeParser(is);
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 
-		IPackageFragment fragment = controllerTargetPackageSelectionWizardPage.getSelectedPackageFragment();
-		ControllerNodeFactory controllerNodeProvider = ControllerNodeFactory.getInstance();
-		controllerNodeProvider.setPackageName(fragment.getElementName());
+					monitor.beginTask("JSF View and Controller generation", 4);
+					monitor.subTask("Building the model");
 
-		ViewAndControllerEngine engine = ViewAndControllerEngine.getInstance();
-		engine.generateViewsAndControllers(entityModel, tagFactory, controllerNodeProvider);
+					ASTEntityModelBuilder builder = new ASTEntityModelBuilder();
 
-		for (AbstractPageModel pageModel : entityModel.getPageModels()) {
-			ViewAndControllerDTO viewDTO = engine.getViewAndControllerDTO(pageModel.getViewId());
-			saveView(pageModel.getViewId(), viewDTO.getViewStream());
-			saveController(pageModel.getViewId(), viewDTO.getViewClass());
+					for (EntityDescription entity : entityDescriptions) {
 
-			addManagedBeanToFacesConfig(pageModel.getViewId(), viewDTO.getControllerClassName());
+						if (entity.isEntityPage()) {
+							String viewId = entity.getViewId();
+							if (!builder.isViewSpecified(viewId)) {
+								builder.createEntityPageModel(viewId, entity.getEntityClassName());
+							}
+
+							// if (hasSimpleField(entity)) {
+							builder.addSimpleEntityForm(viewId, entity, null);
+							// }
+
+							for (EntityFieldDescription entityField : getSimpleEmbeddedFields(entity)) {
+								builder.addSimpleEntityForm(viewId, entityField.getEntityDescription(), entityField);
+							}
+
+							for (EntityFieldDescription entityField : getComplexEmbeddedFields(entity)) {
+								builder.addComplexEntityFormList(entity, entityField);
+							}
+						}
+					}
+
+					monitor.subTask("Building the model");
+					monitor.worked(1);
+					EntityModel entityModel = builder.createEntityModel();
+					InputStream is = null;
+					File file = tagDescriptorSelectionWizardPage.getSelectedFile();
+					try {
+						is = new FileInputStream(file);
+					} catch (FileNotFoundException e) {
+					}
+
+					monitor.worked(1);
+					monitor.subTask("Load selected descriptor file");
+
+					ITagTreeProvider tagFactory = new TagTreeParser(is);
+
+					IPackageFragment fragment = controllerTargetPackageSelectionWizardPage.getSelectedPackageFragment();
+					ControllerNodeFactory controllerNodeProvider = ControllerNodeFactory.getInstance();
+					controllerNodeProvider.setPackageName(fragment.getElementName());
+
+					monitor.worked(1);
+					monitor.subTask("Generate views and controllers");
+
+					ViewAndControllerEngine engine = ViewAndControllerEngine.getInstance();
+					engine.generateViewsAndControllers(entityModel, tagFactory, controllerNodeProvider);
+
+					monitor.subTask("Save classes and resources");
+					for (AbstractPageModel pageModel : entityModel.getPageModels()) {
+						ViewAndControllerDTO viewDTO = engine.getViewAndControllerDTO(pageModel.getViewId());
+						saveView(pageModel.getViewId(), viewDTO.getViewStream());
+						saveController(pageModel.getViewId(), viewDTO.getViewClass());
+
+						addManagedBeanToFacesConfig(pageModel.getViewId(), viewDTO.getControllerClassName());
+					}
+
+					monitor.done();
+				}
+
+			});
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addManagedBeanToFacesConfig(String viewId, String className) {
 
 		FacesConfigArtifactEdit edit = new FacesConfigArtifactEdit(ProjectResourceProvider.getInstance().getJavaProject()
 				.getProject(), false);
+		
+		if (edit == null) {
+			throw new IllegalArgumentException("faces-config.xml not found in the selected project");
+		}
 
 		if (edit.getFacesConfig() == null) {
-			return;
+			throw new IllegalArgumentException("faces-config.xml not found in the selected project");
 		}
 
 		Iterator it = edit.getFacesConfig().getManagedBean().iterator();
@@ -297,6 +330,11 @@ public class MVCGenerationWizard extends Wizard {
 		}
 
 		return entityFields;
+	}
+
+	@Override
+	public boolean needsProgressMonitor() {
+		return true;
 	}
 
 }
