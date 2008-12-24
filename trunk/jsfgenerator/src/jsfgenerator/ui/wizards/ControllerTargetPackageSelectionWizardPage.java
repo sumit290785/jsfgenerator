@@ -59,6 +59,7 @@ public class ControllerTargetPackageSelectionWizardPage extends WizardPage {
 
 	private void validate() {
 		setErrorMessage(selectedPackageFragment == null ? "Please, select a target package" : null);
+		setPageComplete(getErrorMessage() == null);
 	}
 
 }

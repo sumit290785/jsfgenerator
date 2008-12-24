@@ -139,13 +139,13 @@ public class EntityClassSelectionWizardPage extends WizardPage {
 
 		});
 		classNameColumn.getColumn().setText("Entity name");
-		classNameColumn.getColumn().setWidth(300);
+		classNameColumn.getColumn().setWidth(500);
 
 		// entity page
 		TableViewerColumn columnEntityPage = new TableViewerColumn(viewer, SWT.FILL);
 		columnEntityPage.setLabelProvider(new GenerateLabelProvider(ENTITY_PAGE));
 		columnEntityPage.getColumn().setText("Entity page");
-		columnEntityPage.getColumn().setWidth(100);
+		columnEntityPage.getColumn().setWidth(200);
 
 		columnEntityPage.setEditingSupport(new GenerateEditingSupport(columnEntityPage.getViewer(), ENTITY_PAGE));
 
@@ -154,7 +154,7 @@ public class EntityClassSelectionWizardPage extends WizardPage {
 		columnListPage.setLabelProvider(new GenerateLabelProvider(LIST_PAGE));
 
 		columnListPage.getColumn().setText("List page");
-		columnListPage.getColumn().setWidth(100);
+		columnListPage.getColumn().setWidth(200);
 
 		columnListPage.setEditingSupport(new GenerateEditingSupport(columnEntityPage.getViewer(), LIST_PAGE));
 
