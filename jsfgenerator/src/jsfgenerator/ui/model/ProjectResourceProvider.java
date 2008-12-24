@@ -1,5 +1,6 @@
 package jsfgenerator.ui.model;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import jsfgenerator.generation.common.GenerationException;
 import jsfgenerator.ui.astvisitors.EntityClassASTVisitor;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -46,6 +48,10 @@ public class ProjectResourceProvider {
 	public IJavaProject getJavaProject() {
 		return javaProject;
 	}
+	
+	public IProject getProject() {
+		return javaProject.getProject();
+	}
 
 	public List<IJavaElement> getProjectPackageFragments() {
 		if (javaProject == null) {
@@ -80,11 +86,12 @@ public class ProjectResourceProvider {
 
 		try {
 			ICompilationUnit unit = javaProject.findType(fullyQualifiedClassName).getCompilationUnit();
-			
+
 			if (unit == null) {
-				throw new GenerationException("Entity source not found! Reason: " + fullyQualifiedClassName + " is not an entity!");
+				throw new GenerationException("Entity source not found! Reason: " + fullyQualifiedClassName
+						+ " is not an entity!");
 			}
-			
+
 			parser.setSource(unit);
 			CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 			EntityClassASTVisitor visitor = new EntityClassASTVisitor();
@@ -99,4 +106,21 @@ public class ProjectResourceProvider {
 
 		return null;
 	}
+	
+	public InputStream getViewSkeletonInputStream() {
+		return getClass().getResourceAsStream("/resource/view.xml");
+	}
+	
+	public InputStream getViewSchemaInputStream() {
+		return getClass().getResourceAsStream("/resource/view.xsd");
+	}
+	
+	public InputStream getJSFGenJar() {
+		return getClass().getResourceAsStream("/resource/jsfgenerator.jar");
+	}
+	
+	public InputStream getViewTemplateInputStream() {
+		return getClass().getResourceAsStream("/resource/template.xhtml");
+	}
+	
 }

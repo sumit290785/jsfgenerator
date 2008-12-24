@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="view.xsd">
 	<tagtree id="entitypage">
+		<statictag name="ui:composition">
+			<attribute type="template" value="layout/template.xhtml" />
+		</statictag>
 	</tagtree>
 	
 	<tagtree id="simpleform">
+		<statictag name=""></statictag>
 	</tagtree>
 	
 	<tagtree id="complexform">
+		<statictag name=""></statictag>
 	</tagtree>
 	
 </view>
