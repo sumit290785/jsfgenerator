@@ -29,7 +29,7 @@ public final class NodeNameUtils {
 		}
 
 		Matcher matcher = getMatcher(uniqueName);
-		return matcher.group(matcher.groupCount()) + INameConstants.ENTITY_PAGE_POSTFIX;
+		return  capitalName(matcher.group(matcher.groupCount())) + INameConstants.ENTITY_PAGE_POSTFIX;
 	}
 	
 	public static String removePostfixFromEntityPageClassName(String className) {
@@ -55,7 +55,7 @@ public final class NodeNameUtils {
 		}
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(INameConstants.SETTER_PREFIX);
-		buffer.append(capitalFieldName(fieldName));
+		buffer.append(capitalName(fieldName));
 		return buffer.toString();
 	}
 
@@ -65,7 +65,7 @@ public final class NodeNameUtils {
 		}
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(INameConstants.GETTER_PREFIX);
-		buffer.append(capitalFieldName(fieldName));
+		buffer.append(capitalName(fieldName));
 		return buffer.toString();
 	}
 
@@ -79,7 +79,7 @@ public final class NodeNameUtils {
 		return matcher.matches();
 	}
 
-	protected static String capitalFieldName(String name) {
+	protected static String capitalName(String name) {
 		if (name == null || name.length() == 0) {
 			return name;
 		}
