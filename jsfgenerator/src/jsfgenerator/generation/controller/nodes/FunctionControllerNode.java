@@ -1,12 +1,14 @@
 package jsfgenerator.generation.controller.nodes;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import jsfgenerator.generation.controller.FunctionType;
+import jsfgenerator.generation.controller.blockimplementation.InitStatementWrapper;
 
 /**
  * 
@@ -41,9 +43,21 @@ public class FunctionControllerNode extends ControllerNode {
 	 * 
 	 * @see jsfgenerator.generation.controller.nodes.ControllerNode#getRequiredImports ()
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public Set<String> getRequiredImports() {
 		Set<String> imports = super.getRequiredImports();
+		
+		for (Object obj : arguments) {
+			if (obj instanceof Collection) {
+				for (Object element : (Collection)obj) {
+					if (element instanceof InitStatementWrapper) {
+						imports.add(((InitStatementWrapper)element).getEntityClass());
+					}
+				}
+			}
+		}
+		
 		return imports;
 	}
 

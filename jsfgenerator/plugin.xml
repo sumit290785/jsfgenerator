@@ -96,10 +96,10 @@
             extends="default.configuration"
             id="jsfgenerator-preset">
          <label>
-            Dynamic Web Project with JSF generation tools
+            Dynamic Web Project with JSFGen
          </label>
          <description>
-            description body text
+            JSFGen enables you to generate JSF views and controllers by the application model via generation tools.
          </description>
          <facet
                id="jsfgenerator-project-facet"
