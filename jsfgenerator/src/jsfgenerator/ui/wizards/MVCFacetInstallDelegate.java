@@ -1,11 +1,15 @@
 package jsfgenerator.ui.wizards;
 
+import java.io.IOException;
+
 import jsfgenerator.ui.model.ProjectResourceProvider;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
@@ -19,38 +23,58 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
  */
 public final class MVCFacetInstallDelegate implements IDelegate {
 
-	public void execute(IProject project, IProjectFacetVersion facetVersion, Object config, IProgressMonitor monitor)
+	public void execute(final IProject project, final IProjectFacetVersion facetVersion, Object config, IProgressMonitor monitor)
 			throws CoreException {
 		monitor.beginTask("Create xml and xsd files", 3);
 
 		try {
-			IFolder folder = project.getFolder("resources");
 
-			if (!folder.exists()) {
-				folder.create(true, true, monitor);
-			}
+			ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
 
-			ProjectResourceProvider resources = ProjectResourceProvider.getInstance();
-			monitor.worked(1);
-			IFile viewfile = folder.getFile("tagtree.view");
-			viewfile.create(resources.getViewSkeletonInputStream(), IResource.FORCE, monitor);
-			monitor.worked(2);
+				public void run(IProgressMonitor monitor) throws CoreException {
+					IFolder folder = project.getFolder("resources");
 
-			IFile xsdfile = folder.getFile("view.xsd");
-			xsdfile.create(resources.getViewSchemaInputStream(), IResource.FORCE, monitor);
+					if (!folder.exists()) {
+						folder.create(true, true, monitor);
+					}
 
-			IFolder webFolder = project.getFolder("WebContent/WEB-INF");
-			IFolder layoutFolder = webFolder.getFolder("layout");
-			if (!layoutFolder.exists()) {
-				layoutFolder.create(true, true, monitor);
-			}
+					try {
+						ProjectResourceProvider resources = ProjectResourceProvider.getInstance();
+						monitor.worked(1);
+						IFile viewfile = folder.getFile("tagtree.view");
 
-			IFile tmpFile = layoutFolder.getFile("template.xhtml");
-			tmpFile.create(resources.getViewTemplateInputStream(), IResource.FORCE, monitor);
+						monitor.worked(2);
 
-			IFolder libFolder = webFolder.getFolder("lib");
-			IFile jarFile = libFolder.getFile("jsfgen.jar");
-			jarFile.create(resources.getViewSchemaInputStream(), IResource.FORCE, monitor);
+						// XML Scheme file
+						IFile xsdfile = folder.getFile("view.xsd");
+						xsdfile.create(resources.getViewSchemaInputStream(), IResource.FORCE, monitor);
+
+						// web folder
+						IFolder webFolder = project.getFolder("WebContent/WEB-INF");
+						IFolder layoutFolder = webFolder.getFolder("layout");
+						if (!layoutFolder.exists()) {
+							layoutFolder.create(true, true, monitor);
+						}
+
+						// template file
+						IFile templateFile = layoutFolder.getFile("template.xhtml");
+						templateFile.create(resources.getViewTemplateInputStream(), IResource.FORCE, monitor);
+
+						// lib folder
+						IFolder libFolder = webFolder.getFolder("lib");
+
+						// jar
+						IFile jarFile = libFolder.getFile("jsfgen.jar");
+						jarFile.create(resources.getJSFGenJar(), IResource.FORCE, monitor);
+
+						// view skeleton
+						viewfile.create(resources.getViewSkeletonInputStream(), IResource.FORCE, monitor);
+					} catch (IOException e) {
+						throw new RuntimeException(e.getMessage(), e);
+					}
+				}
+			}, monitor);
+
 		} finally {
 			monitor.done();
 		}

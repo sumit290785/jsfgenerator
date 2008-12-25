@@ -53,5 +53,7 @@ public interface INameConstants {
 	public static final String MANY_TO_ONE_ANNOTATION = "@javax.persistence.ManyToOne";
 
 	public static final String MANY_TO_MANY_ANNOTATION = "@javax.persistence.ManyToMany";
+	
+	public static final String ID_ANNOTATION = "@javax.persistence.Id";
 
 }

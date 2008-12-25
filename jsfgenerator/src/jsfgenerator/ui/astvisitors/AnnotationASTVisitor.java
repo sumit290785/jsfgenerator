@@ -23,6 +23,8 @@ public class AnnotationASTVisitor extends ASTVisitor {
 	// default value is DomainEntity
 	private EntityRelationship relationshipToEntity = EntityRelationship.FIELD;
 
+	private boolean isId = false;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -64,6 +66,10 @@ public class AnnotationASTVisitor extends ASTVisitor {
 		return relationshipToEntity;
 	}
 
+	public boolean isId() {
+		return isId;
+	}
+
 	private void checkAnnotation(Annotation node) {
 		String className = ClassNameUtils.getSimpleClassName(node.getTypeName().getFullyQualifiedName());
 		if (className.equals(AnnotationNameUtils.getSimpleAnnotationName(INameConstants.EMBEDDED_ANNOTATION))) {
@@ -85,6 +91,8 @@ public class AnnotationASTVisitor extends ASTVisitor {
 		if (className.equals(AnnotationNameUtils.getSimpleAnnotationName(INameConstants.MANY_TO_MANY_ANNOTATION))) {
 			relationshipToEntity = EntityRelationship.MANY_TO_MANY;
 		}
+
+		isId = isId || className.equals(AnnotationNameUtils.getSimpleAnnotationName(INameConstants.ID_ANNOTATION));
 	}
 
 }

@@ -14,7 +14,6 @@ import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.common.treebuilders.EntityPageTreeBuilder;
 import jsfgenerator.generation.common.visitors.ControllerTreeVisitor;
-import jsfgenerator.generation.common.visitors.ExpressionEvaluationTagVisitor;
 import jsfgenerator.generation.common.visitors.WriterTagVisitor;
 import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.ControllerTree;
@@ -127,12 +126,6 @@ public class ViewAndControllerEngine {
 		 */
 		ControllerTreeVisitor treeVisitor = new ControllerTreeVisitor(controllerTree);
 		controllerTree.apply(treeVisitor);
-
-		/*
-		 * TODO: evaluation of expression attributes
-		 */
-		ExpressionEvaluationTagVisitor expVisitor = new ExpressionEvaluationTagVisitor(tagTree);
-		tagTree.apply(expVisitor);
 
 		/*
 		 * tag tree is ready to write it out into the output

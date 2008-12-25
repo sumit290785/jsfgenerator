@@ -12,7 +12,7 @@ public class EntityField {
 	private String fieldName;
 
 	private String inputTagId;
-
+	
 	public EntityField(String name, String inputTagId) {
 		this.fieldName = name;
 		this.inputTagId = inputTagId;

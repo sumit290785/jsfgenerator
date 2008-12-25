@@ -23,5 +23,9 @@ public enum EntityRelationship {
 	public String getLabel() {
 		return label;
 	}
+	
+	public boolean increaseHierarchy() {
+		return !this.equals(FIELD) && !equals(EMBEDDED);
+	}
 
 }

@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Text;
 public class EntityClassFieldSelectionWizardPage extends WizardPage {
 
 	private static final String NON_FIELD_TEXT = "Generate external form";
+	private static final String NO_GENERATION_TEXT = "Do not generate";
 
 	private static final Image IMG_CLASS = JavaPluginImages.get(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_CLASS);
 
@@ -72,6 +73,7 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 
 			// refresh the drop down
 			ArrayList<String> input = new ArrayList<String>();
+			input.add(NO_GENERATION_TEXT);
 			input.addAll(inputTagIds);
 			EntityFieldDescription entityField = (EntityFieldDescription) element;
 			if (!EntityRelationship.FIELD.equals(entityField.getRelationshipToEntity())
@@ -89,6 +91,8 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 
 			if (entityField.getEntityDescription() != null) {
 				return NON_FIELD_TEXT;
+			} else if (entityField.getInputTagId() == null) {
+				return NO_GENERATION_TEXT;
 			} else {
 				return entityField.getInputTagId();
 			}
@@ -100,6 +104,9 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 			EntityFieldDescription entityField = ((EntityFieldDescription) element);
 			if (value != null && NON_FIELD_TEXT.equals((String) value) && !selectedEntityDescription.isEmbedded()) {
 				entityField.setExternalForm(entityField.getRelationshipToEntity());
+				entityField.setInputTagId(null);
+			} else if (value != null && NO_GENERATION_TEXT.equals((String) value)) {
+				entityField.setExternalForm(null);
 				entityField.setInputTagId(null);
 			} else {
 				entityField.setExternalForm(null);
@@ -220,6 +227,8 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 					EntityFieldDescription entityField = (EntityFieldDescription) element;
 					if (entityField.getEntityDescription() != null) {
 						return NON_FIELD_TEXT;
+					} else if (entityField.getInputTagId() == null) {
+						return NO_GENERATION_TEXT;
 					} else {
 						return ((EntityFieldDescription) element).getInputTagId();
 					}
@@ -379,16 +388,6 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 	@SuppressWarnings("unchecked")
 	private void validate() {
 		List<EntityDescription> entityDescirptions = (List<EntityDescription>) masterPart.getInput();
-
-		for (EntityDescription entityDescription : entityDescirptions) {
-			EntityDescription faulty = checkEntityDescription(entityDescription);
-			if (faulty != null) {
-				setErrorMessage("Please, select an input tag id for all of the fields\nEntity: " + faulty.getEntityClassName());
-				setPageComplete(false);
-				return;
-			}
-		}
-
 		/*
 		 * validate for view id
 		 */
@@ -402,21 +401,6 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 
 		setErrorMessage(null);
 		setPageComplete(true);
-	}
-
-	private EntityDescription checkEntityDescription(EntityDescription entityDescription) {
-		for (EntityFieldDescription entityField : entityDescription.getEntityFieldDescriptions()) {
-			if (entityField.getEntityDescription() != null) {
-				EntityDescription result = checkEntityDescription(entityField.getEntityDescription());
-				if (result != null) {
-					return result;
-				}
-			} else if (entityField.getInputTagId() == null || entityField.getInputTagId().equals("")) {
-				return entityDescription;
-			}
-		}
-
-		return null;
 	}
 
 	private List<EntityDescription> getSelectedEntityPageEntityDescriptions() {
@@ -433,7 +417,7 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 	private void refreshFieldTable(EntityDescription entityDescription) {
 		this.selectedEntityDescription = entityDescription;
 		if (entityDescription != null) {
-			fieldTable.setInput(entityDescription.getEntityFieldDescriptions());
+			fieldTable.setInput(getAvailableFields(entityDescription));
 			detailsPart.setVisible(true);
 		} else {
 			fieldTable.setInput(null);
@@ -441,6 +425,18 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 		}
 
 		fieldTable.refresh();
+	}
+
+	private List<EntityFieldDescription> getAvailableFields(EntityDescription entityDescription) {
+		List<EntityFieldDescription> descriptions = new ArrayList<EntityFieldDescription>();
+
+		for (EntityFieldDescription field : entityDescription.getEntityFieldDescriptions()) {
+			if (!field.isId()) {
+				descriptions.add(field);
+			}
+		}
+
+		return descriptions;
 	}
 
 }

@@ -1,15 +1,20 @@
 package jsfgenerator.ui.model;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import jsfgenerator.Activator;
 import jsfgenerator.generation.common.GenerationException;
 import jsfgenerator.ui.astvisitors.EntityClassASTVisitor;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -54,7 +59,7 @@ public class ProjectResourceProvider {
 		if (javaProject == null) {
 			throw new NullPointerException("Java project is not found!");
 		}
-		
+
 		return javaProject.getProject();
 	}
 
@@ -112,20 +117,24 @@ public class ProjectResourceProvider {
 		return null;
 	}
 
-	public InputStream getViewSkeletonInputStream() {
-		return getClass().getResourceAsStream("/resource/view.xml");
+	public InputStream getViewSkeletonInputStream() throws IOException {
+		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/view.xml"), null);
+		return url.openStream();
 	}
 
-	public InputStream getViewSchemaInputStream() {
-		return getClass().getResourceAsStream("/resource/view.xsd");
+	public InputStream getViewSchemaInputStream() throws IOException {
+		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/view.xsd"), null);
+		return url.openStream();
 	}
 
-	public InputStream getJSFGenJar() {
-		return getClass().getResourceAsStream("/resource/jsfgenerator.jar");
+	public InputStream getJSFGenJar() throws IOException {
+		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/jsfgen.jar"), null);
+		return url.openStream();
 	}
 
-	public InputStream getViewTemplateInputStream() {
-		return getClass().getResourceAsStream("/resource/template.xhtml");
+	public InputStream getViewTemplateInputStream() throws IOException {
+		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/template.xhtml"), null);
+		return url.openStream();
 	}
 
 }
