@@ -2,6 +2,7 @@ package jsfgenerator.ui.wizards;
 
 import java.io.IOException;
 
+import jsfgenerator.ui.artifacthandlers.ArtifactEditHandler;
 import jsfgenerator.ui.model.ProjectResourceProvider;
 
 import org.eclipse.core.resources.IFile;
@@ -12,6 +13,7 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
@@ -25,7 +27,10 @@ public final class MVCFacetInstallDelegate implements IDelegate {
 
 	public void execute(final IProject project, final IProjectFacetVersion facetVersion, Object config, IProgressMonitor monitor)
 			throws CoreException {
-		monitor.beginTask("Create xml and xsd files", 3);
+
+		ProjectResourceProvider.getInstance().setJavaProject(JavaCore.create(project));
+
+		monitor.beginTask("Create xml and xsd files", 5);
 
 		try {
 
@@ -43,15 +48,15 @@ public final class MVCFacetInstallDelegate implements IDelegate {
 						monitor.worked(1);
 						IFile viewfile = folder.getFile("tagtree.view");
 
-						monitor.worked(2);
+						monitor.worked(1);
 
 						// XML Scheme file
 						IFile xsdfile = folder.getFile("view.xsd");
 						xsdfile.create(resources.getViewSchemaInputStream(), IResource.FORCE, monitor);
 
 						// web folder
-						IFolder webFolder = project.getFolder("WebContent/WEB-INF");
-						IFolder layoutFolder = webFolder.getFolder("layout");
+						IFolder webContentFolder = project.getFolder("WebContent");
+						IFolder layoutFolder = webContentFolder.getFolder("layout");
 						if (!layoutFolder.exists()) {
 							layoutFolder.create(true, true, monitor);
 						}
@@ -60,15 +65,37 @@ public final class MVCFacetInstallDelegate implements IDelegate {
 						IFile templateFile = layoutFolder.getFile("template.xhtml");
 						templateFile.create(resources.getViewTemplateInputStream(), IResource.FORCE, monitor);
 
-						// lib folder
-						IFolder libFolder = webFolder.getFolder("lib");
+						IFolder webInfFolder = webContentFolder.getFolder("WEB-INF");
 
-						// jar
+						// lib folder
+						IFolder libFolder = webInfFolder.getFolder("lib");
+
+						// jars
 						IFile jarFile = libFolder.getFile("jsfgen.jar");
 						jarFile.create(resources.getJSFGenJar(), IResource.FORCE, monitor);
 
+						IFile faceletsJarFile = libFolder.getFile("jsf-facelets.jar");
+						faceletsJarFile.create(resources.getFacletsJar(), IResource.FORCE, monitor);
+
 						// view skeleton
 						viewfile.create(resources.getViewSkeletonInputStream(), IResource.FORCE, monitor);
+						monitor.worked(1);
+
+						// faclet config and web deployment descriptor files
+						IFile webAppFile = webInfFolder.getFile("web.xml");
+						if (webAppFile.exists()) {
+							webAppFile.delete(true, monitor);
+						}
+						webAppFile.create(resources.getWebAppInputStream(), IResource.FORCE, monitor);
+
+						ArtifactEditHandler.getInstance().setDispayName(project.getName());
+
+						IFile facesConfigFile = webInfFolder.getFile("faces-config.xml");
+						if (facesConfigFile.exists()) {
+							facesConfigFile.delete(true, monitor);
+						}
+						facesConfigFile.create(resources.getFacesConfigInputStream(), IResource.FORCE, monitor);
+						monitor.worked(1);
 					} catch (IOException e) {
 						throw new RuntimeException(e.getMessage(), e);
 					}

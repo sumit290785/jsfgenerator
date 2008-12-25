@@ -132,8 +132,23 @@ public class ProjectResourceProvider {
 		return url.openStream();
 	}
 
+	public InputStream getFacletsJar() throws IOException {
+		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/jsf-facelets.jar"), null);
+		return url.openStream();
+	}
+
 	public InputStream getViewTemplateInputStream() throws IOException {
 		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/template.xhtml"), null);
+		return url.openStream();
+	}
+
+	public InputStream getWebAppInputStream() throws IOException {
+		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/web.xml"), null);
+		return url.openStream();
+	}
+
+	public InputStream getFacesConfigInputStream() throws IOException {
+		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/faces-config.xml"), null);
 		return url.openStream();
 	}
 

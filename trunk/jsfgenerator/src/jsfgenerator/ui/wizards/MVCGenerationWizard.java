@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import jsfgenerator.entitymodel.EntityModel;
@@ -22,9 +21,9 @@ import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
 import jsfgenerator.generation.view.ITagTreeProvider;
 import jsfgenerator.generation.view.impl.TagTreeParser;
+import jsfgenerator.ui.artifacthandlers.ArtifactEditHandler;
 import jsfgenerator.ui.model.EntityDescription;
 import jsfgenerator.ui.model.EntityFieldDescription;
-import jsfgenerator.ui.model.ProjectResourceProvider;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -45,13 +44,6 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.jst.jsf.facesconfig.emf.FacesConfigFactory;
-import org.eclipse.jst.jsf.facesconfig.emf.FacesConfigPackage;
-import org.eclipse.jst.jsf.facesconfig.emf.ManagedBeanClassType;
-import org.eclipse.jst.jsf.facesconfig.emf.ManagedBeanNameType;
-import org.eclipse.jst.jsf.facesconfig.emf.ManagedBeanScopeType;
-import org.eclipse.jst.jsf.facesconfig.emf.ManagedBeanType;
-import org.eclipse.jst.jsf.facesconfig.util.FacesConfigArtifactEdit;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
@@ -174,53 +166,6 @@ public class MVCGenerationWizard extends Wizard {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
-	private void addManagedBeanToFacesConfig(String viewId, String className, IProgressMonitor monitor) {
-
-		FacesConfigArtifactEdit edit = new FacesConfigArtifactEdit(ProjectResourceProvider.getInstance().getJavaProject()
-				.getProject(), false);
-
-		if (edit == null) {
-			throw new IllegalArgumentException("faces-config.xml not found in the selected project");
-		}
-
-		edit.setFilename("/WebContent/WEB-INF/faces-config.xml");
-
-		if (edit.getFacesConfig() == null) {
-			throw new IllegalArgumentException("faces-config.xml not found in the selected project");
-		}
-
-		Iterator it = edit.getFacesConfig().getManagedBean().iterator();
-		while (it.hasNext()) {
-			ManagedBeanType mbt = (ManagedBeanType) it.next();
-			if (mbt.getManagedBeanName().getTextContent().equals(viewId)) {
-				it.remove();
-				break;
-			}
-		}
-
-		FacesConfigPackage facesConfigPackage = FacesConfigPackage.eINSTANCE;
-		FacesConfigFactory facesConfigFactory = facesConfigPackage.getFacesConfigFactory();
-
-		ManagedBeanType managedBT = facesConfigFactory.createManagedBeanType();
-
-		ManagedBeanNameType managedBeanNameType = facesConfigFactory.createManagedBeanNameType();
-		managedBeanNameType.setTextContent(viewId);
-		managedBT.setManagedBeanName(managedBeanNameType);
-
-		ManagedBeanClassType managedBeanClassType = facesConfigFactory.createManagedBeanClassType();
-		managedBeanClassType.setTextContent(className);
-		managedBT.setManagedBeanClass(managedBeanClassType);
-
-		ManagedBeanScopeType managedBeanScopeType = facesConfigFactory.createManagedBeanScopeType();
-		managedBeanScopeType.setTextContent("request");
-		managedBT.setManagedBeanScope(managedBeanScopeType);
-
-		edit.getFacesConfig().getManagedBean().add(managedBT);
-		edit.saveIfNecessary(monitor);
-		edit.dispose();
-	}
-
 	public List<EntityDescription> getEntityDescriptions() {
 		return entityDescriptions;
 	}
@@ -336,6 +281,12 @@ public class MVCGenerationWizard extends Wizard {
 		}
 
 		return entityFields;
+	}
+
+	private void addManagedBeanToFacesConfig(String viewId, String className, IProgressMonitor monitor) {
+		ArtifactEditHandler handler = ArtifactEditHandler.getInstance();
+		handler.setMonitor(monitor);
+		handler.addManagedBeanToFacesConfig(viewId, className);
 	}
 
 	@Override
