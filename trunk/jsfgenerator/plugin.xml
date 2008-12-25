@@ -126,5 +126,16 @@
             path="resource/images/applications-system.png">
       </image>
    </extension>
+   <extension
+         point="org.eclipse.wst.common.project.facet.core.runtimes">
+      <supported>
+         <facet
+               id="jsfgenerator-project-facet"
+               version="[1.0">
+         </facet>
+         <runtime-component
+               any="true"></runtime-component>
+      </supported>
+   </extension>
 
 </plugin>
