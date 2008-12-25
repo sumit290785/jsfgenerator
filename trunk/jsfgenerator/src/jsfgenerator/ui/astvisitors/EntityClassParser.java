@@ -101,7 +101,7 @@ public final class EntityClassParser {
 						MethodDeclaration getterMethod = getGetter(node.getMethods(), fragment, field.getType());
 						if (getterMethod != null) {
 							EntityRelationship rType= getRelationshipType(getterMethod);
-							entityFields.add(new EntityFieldDescription(fragment.getName().getFullyQualifiedName(), typeName, rType));
+							entityFields.add(new EntityFieldDescription(fragment.getName().getFullyQualifiedName(), typeName, rType, isId(getterMethod)));
 						}
 					}
 				}
@@ -274,6 +274,12 @@ public final class EntityClassParser {
 		AnnotationASTVisitor visitor = new AnnotationASTVisitor();
 		method.accept(visitor);
 		return visitor.getEntityRelationship();
+	}
+	
+	protected static boolean isId(MethodDeclaration method) {
+		AnnotationASTVisitor visitor = new AnnotationASTVisitor();
+		method.accept(visitor);
+		return visitor.isId();
 	}
 
 	public static String getParentTypeDeclarationsName(ASTNode node) {

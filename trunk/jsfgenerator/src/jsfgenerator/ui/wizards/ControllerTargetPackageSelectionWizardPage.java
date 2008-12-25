@@ -4,6 +4,7 @@ import jsfgenerator.ui.model.ProjectResourceProvider;
 import jsfgenerator.ui.providers.ResourceLabelProvider;
 
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.ui.actions.OpenNewPackageWizardAction;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -11,13 +12,18 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
 public class ControllerTargetPackageSelectionWizardPage extends WizardPage {
 
 	private IPackageFragment selectedPackageFragment;
+	
+	private TableViewer packageViewer;
 
 	protected ControllerTargetPackageSelectionWizardPage() {
 		super("ControllerTargetPackageSelectionWizardPage");
@@ -31,7 +37,24 @@ public class ControllerTargetPackageSelectionWizardPage extends WizardPage {
 
 		composite.setLayout(new GridLayout(1, false));
 
-		final TableViewer packageViewer = new TableViewer(composite, SWT.BORDER | SWT.V_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION);
+		final Button newPackageButton = new Button(composite, SWT.PUSH);
+		newPackageButton.setText("create package");
+
+		newPackageButton.addSelectionListener(new SelectionAdapter() {
+
+			public void widgetSelected(SelectionEvent event) {
+				OpenNewPackageWizardAction action = new OpenNewPackageWizardAction();
+				action.run();
+				
+				if (packageViewer != null) {
+					packageViewer.setInput(ProjectResourceProvider.getInstance().getProjectPackageFragments());
+					validate();
+				}
+				
+			}
+		});
+
+		packageViewer = new TableViewer(composite, SWT.BORDER | SWT.V_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION);
 		packageViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		packageViewer.setLabelProvider(new ResourceLabelProvider());
 		packageViewer.setContentProvider(new ArrayContentProvider());

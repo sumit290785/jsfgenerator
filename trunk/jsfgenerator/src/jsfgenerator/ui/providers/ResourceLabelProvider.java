@@ -28,6 +28,9 @@ public class ResourceLabelProvider extends LabelProvider {
 
 	private static final Image IMG_PACKAGE_EMPTY = JavaPluginImages.get(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_EMPTY_PACKAGE);
 
+	private static final Image IMG_GEN = new Image(PlatformUI.getWorkbench().getDisplay(), ResourceLabelProvider.class
+			.getResourceAsStream("/resource/images/applications-system.png"));
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -39,6 +42,11 @@ public class ResourceLabelProvider extends LabelProvider {
 		}
 
 		if (element instanceof IFile) {
+
+			if (((IFile) element).getFileExtension().equals("view")) {
+				return IMG_GEN;
+			}
+
 			return IMG_FILE;
 		}
 
