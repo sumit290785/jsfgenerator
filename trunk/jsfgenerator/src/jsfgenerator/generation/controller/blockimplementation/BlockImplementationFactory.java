@@ -19,6 +19,7 @@ import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.TypeLiteral;
 
 /**
  * It services EJB3 specific code. It implies that if the generated application is dropped into a JEE container it can operate on the
@@ -142,7 +143,8 @@ public final class BlockImplementationFactory {
 
 			String simpleGenericName = ClassNameUtils.getSimpleClassName(wrapper.getEntityClass());
 			ParameterizedType ptype = ast.newParameterizedType(type);
-			ptype.typeArguments().add(ast.newSimpleType(ast.newSimpleName(simpleGenericName)));
+			Type paramType = ast.newSimpleType(ast.newSimpleName(simpleGenericName));
+			ptype.typeArguments().add(paramType);
 			ClassInstanceCreation classInstance = ast.newClassInstanceCreation();
 			classInstance.setType(ptype);
 
@@ -153,12 +155,20 @@ public final class BlockImplementationFactory {
 			MethodInvocation methodInvocation = ast.newMethodInvocation();
 			methodInvocation.setExpression(ast.newSimpleName(INameConstants.DOMAIN_ENTITY_EDIT_HELPER));
 			methodInvocation.setName(ast.newSimpleName("getInstance"));
-			
+
 			MethodInvocation methodInvocationOuter = ast.newMethodInvocation();
 			methodInvocationOuter.setExpression(methodInvocation);
 			String entityFieldName = NodeNameUtils.getGetterName(wrapper.getEntityFieldName());
 			methodInvocationOuter.setName(ast.newSimpleName(entityFieldName));
 			classInstance.arguments().add(methodInvocationOuter);
+
+			if (!EditorType.EDIT_HELPER.equals(wrapper.getEditorType())) {
+				// managed class parameter
+				TypeLiteral literal = ast.newTypeLiteral();
+				literal.setType(ast.newSimpleType(ast.newSimpleName(simpleGenericName)));
+				classInstance.arguments().add(literal);
+
+			}
 
 			statement.setRightHandSide(classInstance);
 

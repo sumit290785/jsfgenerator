@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -161,7 +160,7 @@ public class MVCGenerationWizard extends Wizard {
 						saveView(pageModel.getViewId(), viewDTO.getViewStream());
 						saveController(pageModel.getViewId(), viewDTO.getViewClass());
 
-						addManagedBeanToFacesConfig(pageModel.getViewId(), viewDTO.getControllerClassName());
+						addManagedBeanToFacesConfig(pageModel.getViewId(), viewDTO.getControllerClassName(), monitor);
 					}
 
 					monitor.done();
@@ -176,7 +175,7 @@ public class MVCGenerationWizard extends Wizard {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addManagedBeanToFacesConfig(String viewId, String className) {
+	private void addManagedBeanToFacesConfig(String viewId, String className, IProgressMonitor monitor) {
 
 		FacesConfigArtifactEdit edit = new FacesConfigArtifactEdit(ProjectResourceProvider.getInstance().getJavaProject()
 				.getProject(), false);
@@ -184,6 +183,8 @@ public class MVCGenerationWizard extends Wizard {
 		if (edit == null) {
 			throw new IllegalArgumentException("faces-config.xml not found in the selected project");
 		}
+
+		edit.setFilename("/WebContent/WEB-INF/faces-config.xml");
 
 		if (edit.getFacesConfig() == null) {
 			throw new IllegalArgumentException("faces-config.xml not found in the selected project");
@@ -216,11 +217,8 @@ public class MVCGenerationWizard extends Wizard {
 		managedBT.setManagedBeanScope(managedBeanScopeType);
 
 		edit.getFacesConfig().getManagedBean().add(managedBT);
-		try {
-			edit.getDeploymentDescriptorResource().save(null);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		edit.saveIfNecessary(monitor);
+		edit.dispose();
 	}
 
 	public List<EntityDescription> getEntityDescriptions() {
