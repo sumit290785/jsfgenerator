@@ -12,19 +12,19 @@ import jsfgenerator.generation.view.parameters.XMLNamespaceAttribute;
  * @author zoltan verebes
  * 
  */
-public class ProxyTag extends TagNode {
+public class PlaceholderTagNode extends AbstractTagNode {
 
-	public enum ProxyTagType {
-		FORM, INPUT
+	public enum PlaceholderTagNodeType {
+		ENTITY_FORM, ENTITY_LIST_FORM, INPUT;
 	}
 
-	private ProxyTagType type;
+	private PlaceholderTagNodeType type;
 
-	public ProxyTag(ProxyTagType type) {
+	public PlaceholderTagNode(PlaceholderTagNodeType type) {
 		this.type = type;
 	}
 
-	public ProxyTagType getType() {
+	public PlaceholderTagNodeType getType() {
 		return type;
 	}
 

@@ -15,7 +15,7 @@ public class XMLNamespaceAttribute extends TagAttribute {
 	private String prefix;
 
 	public XMLNamespaceAttribute(String prefix, String value) {
-		super(NAME + ":" + prefix, value, TagParameterType.STATIC, false);
+		super((prefix == null ? NAME : NAME + ":" + prefix), value, TagParameterType.STATIC, false);
 		this.prefix = prefix;
 	}
 

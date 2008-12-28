@@ -14,7 +14,7 @@ import jsfgenerator.generation.view.parameters.XMLNamespaceAttribute;
  * @author zoltan verebes
  * 
  */
-public abstract class TagNode extends Node<TagNode> {
+public abstract class AbstractTagNode extends Node<AbstractTagNode> {
 
 	private String referenceName;
 
@@ -29,7 +29,7 @@ public abstract class TagNode extends Node<TagNode> {
 	public Set<XMLNamespaceAttribute> getRequiredNamespaces() {
 		Set<XMLNamespaceAttribute> requiredNamespaces = new HashSet<XMLNamespaceAttribute>();
 
-		for (TagNode child : children) {
+		for (AbstractTagNode child : children) {
 			requiredNamespaces.addAll(child.getRequiredNamespaces());
 		}
 

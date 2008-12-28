@@ -8,7 +8,7 @@ import jsfgenerator.generation.common.AbstractTree;
  * @author zoltan verebes
  * 
  */
-public class TagTree extends AbstractTree<TagNode> {
+public class TagTree extends AbstractTree<AbstractTagNode> {
 
 	/**
 	 * reference name is applied for all of the top level tags of the tag tree
@@ -16,7 +16,7 @@ public class TagTree extends AbstractTree<TagNode> {
 	 * @param referenceName
 	 */
 	public void applyReferenceName(String referenceName) {
-		for (TagNode tag : getNodes()) {
+		for (AbstractTagNode tag : getNodes()) {
 			tag.setReferenceName(referenceName);
 		}
 	}
