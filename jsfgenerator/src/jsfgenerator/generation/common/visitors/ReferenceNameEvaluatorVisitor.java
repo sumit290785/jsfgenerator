@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import jsfgenerator.generation.common.GenerationException;
+import jsfgenerator.generation.common.INameConstants;
+import jsfgenerator.generation.common.treebuilders.ResourceBundleBuilder;
+import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.common.utilities.StringUtils;
 import jsfgenerator.generation.view.PlaceholderTagNode;
 import jsfgenerator.generation.view.StaticTagNode;
@@ -15,32 +18,29 @@ import jsfgenerator.generation.view.parameters.TagAttribute.TagParameterType;
 public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNode> {
 
 	public static enum ExpressionType {
-		ENTITY_FIELD(ViewTemplateConstants.EXPRESSION_ENTITY_FIELD), 
-		ENTITY_FIELD_NAME(ViewTemplateConstants.EXPRESSION_ENTITY_FIELD_NAME), 
-		SAVE(ViewTemplateConstants.EXPRESSION_SAVE), 
-		DELETE(ViewTemplateConstants.EXPRESSION_DELETE),
-		REFRESH(ViewTemplateConstants.EXPRESSION_REFRESH),
-		ADD(ViewTemplateConstants.EXPRESSION_ADD), 
-		REMOVE(ViewTemplateConstants.EXPRESSION_REMOVE), 
-		METHOD_INVOCATION(ViewTemplateConstants.EXPRESSION_METHOD_INVOCATION);
-		
+		ENTITY_FIELD(ViewTemplateConstants.EXPRESSION_ENTITY_FIELD), ENTITY_FIELD_NAME(
+				ViewTemplateConstants.EXPRESSION_ENTITY_FIELD_NAME), SAVE(ViewTemplateConstants.EXPRESSION_SAVE), DELETE(
+				ViewTemplateConstants.EXPRESSION_DELETE), REFRESH(ViewTemplateConstants.EXPRESSION_REFRESH), ADD(
+				ViewTemplateConstants.EXPRESSION_ADD), REMOVE(ViewTemplateConstants.EXPRESSION_REMOVE), METHOD_INVOCATION(
+				ViewTemplateConstants.EXPRESSION_METHOD_INVOCATION);
+
 		private String name;
-		
+
 		private ExpressionType(String name) {
 			this.name = name;
 		}
-		
+
 		public static ExpressionType getTypeByName(String name) {
 			if (name == null || name.equals("")) {
 				return null;
 			}
-			
+
 			for (ExpressionType type : ExpressionType.values()) {
 				if (type.name.equalsIgnoreCase(name)) {
 					return type;
 				}
 			}
-			
+
 			return null;
 		}
 	}
@@ -49,6 +49,8 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 
 	private static final String EXPRESSION_PREFIX = "#{";
 	private static final String EXPRESSION_POSTFIX = "}";
+
+	private static final String MESSAGE_BUNDLE_FUNCTION = "translate";
 
 	private List<String> args;
 
@@ -88,7 +90,7 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 
 		if (ExpressionType.ENTITY_FIELD.equals(type)) {
 
-			if (args.size() != 1) {
+			if (args.size() == 0) {
 				throw new GenerationException("Number of arguments is insufficient!");
 			}
 
@@ -104,7 +106,27 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 			return;
 		}
 
-		if (ExpressionType.SAVE.equals(type) || ExpressionType.DELETE.equals(type) || ExpressionType.ADD.equals(type)
+		if (ExpressionType.ENTITY_FIELD_NAME.equals(type)) {
+
+			if (args.size() != 2) {
+				throw new GenerationException("Number of arguments is insufficient!");
+			}
+
+			String fieldName = args.get(0);
+			String entityClassName = args.get(1);
+
+			StringBuffer buffer = new StringBuffer();
+			buffer.append(EXPRESSION_PREFIX);
+			buffer.append(getTranslateMethodInvocation(ClassNameUtils.getSimpleClassName(entityClassName), fieldName));
+			
+			buffer.append(EXPRESSION_POSTFIX);
+			attribute.setValue(buffer.toString());
+			
+			ResourceBundleBuilder.getInstance().addKey(entityClassName.toLowerCase());
+			return;
+		}
+
+		if (ExpressionType.SAVE.equals(type) || ExpressionType.REMOVE.equals(type) || ExpressionType.ADD.equals(type)
 				|| ExpressionType.REFRESH.equals(type)) {
 			StringBuffer buffer = new StringBuffer();
 			buffer.append(EXPRESSION_PREFIX);
@@ -140,22 +162,38 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 	private String getFunction(ExpressionType type) {
 		StringBuffer buffer = new StringBuffer();
 		if (ExpressionType.SAVE.equals(type)) {
-			buffer.append("save");
+			buffer.append("save(");
+			if (params != null) {
+				buffer.append(StringUtils.toCSV(params));
+			}
 		} else if (ExpressionType.DELETE.equals(type)) {
-			buffer.append("delete");
+			buffer.append("delete(");
+			if (params != null) {
+				buffer.append(StringUtils.toCSV(params));
+			}
+		} else if (ExpressionType.REMOVE.equals(type)) {
+			buffer.append("remove(");
 		} else if (ExpressionType.REFRESH.equals(type)) {
-			buffer.append("reload");
+			buffer.append("reload(");
+			if (params != null) {
+				buffer.append(StringUtils.toCSV(params));
+			}
 		} else if (ExpressionType.ADD.equals(type)) {
-			buffer.append("newInstance");
-		}
-
-		buffer.append("(");
-
-		if (params != null) {
-			buffer.append(StringUtils.toCSV(params));
+			buffer.append("add(");
 		}
 
 		buffer.append(")");
+		return buffer.toString();
+	}
+
+	private String getTranslateMethodInvocation(String... args) {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(INameConstants.JSFGEN_TAGLIB_XMLNS_PREFIX);
+		buffer.append(":");
+		buffer.append(MESSAGE_BUNDLE_FUNCTION);
+		buffer.append("('");
+		buffer.append(StringUtils.toDotSeparatedString(args).toLowerCase());
+		buffer.append("')");
 		return buffer.toString();
 	}
 

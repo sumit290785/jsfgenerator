@@ -55,5 +55,9 @@ public interface INameConstants {
 	public static final String MANY_TO_MANY_ANNOTATION = "@javax.persistence.ManyToMany";
 	
 	public static final String ID_ANNOTATION = "@javax.persistence.Id";
+	
+	public static final String JSFGEN_TAGLIB_XMLNS_PREFIX = "jsfgen";
+	
+	public static final String JSFGEN_TAGLIB_XMLNS = "http://www.jsfgen.com/tags/jsfgen";
 
 }

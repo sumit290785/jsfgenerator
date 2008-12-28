@@ -45,7 +45,7 @@ public final class MVCFacetInstallDelegate implements IDelegate {
 
 					try {
 						ProjectResourceProvider resources = ProjectResourceProvider.getInstance();
-						
+
 						// view skeleton
 						IFile viewfile = folder.getFile("view.xml");
 						viewfile.create(resources.getViewSkeletonInputStream(), IResource.FORCE, monitor);
@@ -93,6 +93,7 @@ public final class MVCFacetInstallDelegate implements IDelegate {
 						if (facesConfigFile.exists()) {
 							facesConfigFile.delete(true, monitor);
 						}
+						
 						facesConfigFile.create(resources.getFacesConfigInputStream(), IResource.FORCE, monitor);
 						monitor.worked(1);
 					} catch (IOException e) {
