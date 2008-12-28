@@ -45,13 +45,16 @@ public final class MVCFacetInstallDelegate implements IDelegate {
 
 					try {
 						ProjectResourceProvider resources = ProjectResourceProvider.getInstance();
+						
+						// view skeleton
+						IFile viewfile = folder.getFile("view.xml");
+						viewfile.create(resources.getViewSkeletonInputStream(), IResource.FORCE, monitor);
 						monitor.worked(1);
-						IFile viewfile = folder.getFile("tagtree.view");
 
 						monitor.worked(1);
 
-						// XML Scheme file
-						IFile xsdfile = folder.getFile("view.xsd");
+						// XML Schema file
+						IFile xsdfile = folder.getFile("annotation.xsd");
 						xsdfile.create(resources.getViewSchemaInputStream(), IResource.FORCE, monitor);
 
 						// web folder
@@ -76,10 +79,6 @@ public final class MVCFacetInstallDelegate implements IDelegate {
 
 						IFile faceletsJarFile = libFolder.getFile("jsf-facelets.jar");
 						faceletsJarFile.create(resources.getFacletsJar(), IResource.FORCE, monitor);
-
-						// view skeleton
-						viewfile.create(resources.getViewSkeletonInputStream(), IResource.FORCE, monitor);
-						monitor.worked(1);
 
 						// faclet config and web deployment descriptor files
 						IFile webAppFile = webInfFolder.getFile("web.xml");

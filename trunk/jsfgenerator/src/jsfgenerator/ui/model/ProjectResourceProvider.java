@@ -123,7 +123,7 @@ public class ProjectResourceProvider {
 	}
 
 	public InputStream getViewSchemaInputStream() throws IOException {
-		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/view.xsd"), null);
+		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/annotations.xsd"), null);
 		return url.openStream();
 	}
 

@@ -1,5 +1,7 @@
 package jsfgenerator.ui.providers;
 
+import jsfgenerator.generation.common.INameConstants;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -43,7 +45,7 @@ public class ResourceLabelProvider extends LabelProvider {
 
 		if (element instanceof IFile) {
 
-			if (((IFile) element).getFileExtension().equals("view")) {
+			if (((IFile) element).getFileExtension().equals(INameConstants.VIEW_XML_EXTENSION)) {
 				return IMG_GEN;
 			}
 

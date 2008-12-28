@@ -2,8 +2,8 @@ package jsfgenerator.generation.controller;
 
 import java.util.List;
 
-import jsfgenerator.entitymodel.forms.ComplexEntityFormList;
-import jsfgenerator.entitymodel.forms.SimpleEntityForm;
+import jsfgenerator.entitymodel.forms.EntityListForm;
+import jsfgenerator.entitymodel.forms.EntityForm;
 import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.controller.nodes.ClassControllerNode;
@@ -19,8 +19,8 @@ public abstract class AbstractControllerNodeProvider {
 	
 	public abstract ClassControllerNode createEntityListPageClassNode(EntityListPageModel model);
 
-	public abstract List<ControllerNode> createEntityFormControllerNodes(SimpleEntityForm form);
+	public abstract List<ControllerNode> createEntityFormControllerNodes(EntityForm form);
 	
-	public abstract List<ControllerNode> createEntityListFormControllerNodes(ComplexEntityFormList form);
+	public abstract List<ControllerNode> createEntityListFormControllerNodes(EntityListForm form);
 
 }

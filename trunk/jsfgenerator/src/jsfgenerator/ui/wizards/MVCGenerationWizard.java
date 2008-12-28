@@ -108,15 +108,15 @@ public class MVCGenerationWizard extends Wizard {
 							}
 
 							// if (hasSimpleField(entity)) {
-							builder.addSimpleEntityForm(viewId, entity, null);
+							builder.addEntityForm(viewId, entity, null);
 							// }
 
 							for (EntityFieldDescription entityField : getSimpleEmbeddedFields(entity)) {
-								builder.addSimpleEntityForm(viewId, entityField.getEntityDescription(), entityField);
+								builder.addEntityForm(viewId, entityField.getEntityDescription(), entityField);
 							}
 
 							for (EntityFieldDescription entityField : getComplexEmbeddedFields(entity)) {
-								builder.addComplexEntityFormList(entity, entityField);
+								builder.addEntityListForm(entity, entityField);
 							}
 						}
 					}

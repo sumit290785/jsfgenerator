@@ -8,13 +8,41 @@ import jsfgenerator.generation.common.utilities.StringUtils;
 import jsfgenerator.generation.view.PlaceholderTagNode;
 import jsfgenerator.generation.view.StaticTagNode;
 import jsfgenerator.generation.view.AbstractTagNode;
+import jsfgenerator.generation.view.impl.ViewTemplateConstants;
 import jsfgenerator.generation.view.parameters.TagAttribute;
 import jsfgenerator.generation.view.parameters.TagAttribute.TagParameterType;
 
 public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNode> {
 
 	public static enum ExpressionType {
-		ENTITY_FIELD, SAVE, DELETE, REFRESH, ADD, REMOVE, METHOD_INVOCATION
+		ENTITY_FIELD(ViewTemplateConstants.EXPRESSION_ENTITY_FIELD), 
+		ENTITY_FIELD_NAME(ViewTemplateConstants.EXPRESSION_ENTITY_FIELD_NAME), 
+		SAVE(ViewTemplateConstants.EXPRESSION_SAVE), 
+		DELETE(ViewTemplateConstants.EXPRESSION_DELETE),
+		REFRESH(ViewTemplateConstants.EXPRESSION_REFRESH),
+		ADD(ViewTemplateConstants.EXPRESSION_ADD), 
+		REMOVE(ViewTemplateConstants.EXPRESSION_REMOVE), 
+		METHOD_INVOCATION(ViewTemplateConstants.EXPRESSION_METHOD_INVOCATION);
+		
+		private String name;
+		
+		private ExpressionType(String name) {
+			this.name = name;
+		}
+		
+		public static ExpressionType getTypeByName(String name) {
+			if (name == null || name.equals("")) {
+				return null;
+			}
+			
+			for (ExpressionType type : ExpressionType.values()) {
+				if (type.name.equalsIgnoreCase(name)) {
+					return type;
+				}
+			}
+			
+			return null;
+		}
 	}
 
 	private static final String SEPARATOR = ".";

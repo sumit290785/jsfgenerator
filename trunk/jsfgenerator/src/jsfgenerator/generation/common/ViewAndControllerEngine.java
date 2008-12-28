@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jsfgenerator.entitymodel.EntityModel;
-import jsfgenerator.entitymodel.forms.ComplexEntityFormList;
+import jsfgenerator.entitymodel.forms.EntityListForm;
 import jsfgenerator.entitymodel.forms.EntityField;
+import jsfgenerator.entitymodel.forms.AbstractEntityForm;
 import jsfgenerator.entitymodel.forms.EntityForm;
-import jsfgenerator.entitymodel.forms.SimpleEntityForm;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
@@ -101,19 +101,19 @@ public final class ViewAndControllerEngine {
 
 		EntityPageTreeBuilder treeBuilder = new EntityPageTreeBuilder(pageModel, tagTreeProvider, controllerNodeProvider);
 
-		for (EntityForm form : pageModel.getForms()) {
-			if (form instanceof SimpleEntityForm) {
-				SimpleEntityForm simpleForm = (SimpleEntityForm) form;
-				treeBuilder.addEntityForm(simpleForm);
+		for (AbstractEntityForm form : pageModel.getForms()) {
+			if (form instanceof EntityForm) {
+				EntityForm entityForm = (EntityForm) form;
+				treeBuilder.addEntityForm(entityForm);
 
-				for (EntityField field : simpleForm.getFields()) {
-					treeBuilder.addInputField(simpleForm, field);
+				for (EntityField field : entityForm.getFields()) {
+					treeBuilder.addInputField(entityForm, field);
 				}
-			} else if (form instanceof ComplexEntityFormList) {
-				ComplexEntityFormList complexForm = (ComplexEntityFormList) form;
-				treeBuilder.addEntityListFormTemplateTree(complexForm);
-				for (EntityField field : complexForm.getFields()) {
-					treeBuilder.addInputField(complexForm, field);
+			} else if (form instanceof EntityListForm) {
+				EntityListForm entityListForm = (EntityListForm) form;
+				treeBuilder.addEntityListFormTemplateTree(entityListForm);
+				for (EntityField field : entityListForm.getFields()) {
+					treeBuilder.addInputField(entityListForm, field);
 				}
 			}
 		}

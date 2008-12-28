@@ -17,6 +17,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import jsfgenerator.generation.common.visitors.ReferenceNameEvaluatorVisitor.ExpressionType;
 import jsfgenerator.generation.view.AbstractTagNode;
 import jsfgenerator.generation.view.IViewTemplateProvider;
 import jsfgenerator.generation.view.PlaceholderTagNode;
@@ -112,7 +113,7 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 
 		return ids;
 	}
-
+	
 	/**
 	 * parses the document with DOM
 	 * 
@@ -158,7 +159,7 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		return templateTree;
 	}
 
-	protected AbstractTagNode parseNode(Node node) {
+	protected AbstractTagNode parseNode(Node node) throws ParserException {
 		if (node.getNodeType() == Node.TEXT_NODE) {
 			return null;
 		}
@@ -200,7 +201,14 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 			Node typeNode = expressionNode.getAttributes().getNamedItem(ViewTemplateConstants.EXPRESSION_TYPE);
 			Node forNode = expressionNode.getAttributes().getNamedItem(ViewTemplateConstants.EXPRESSION_FOR);
 
-			TagAttribute expressionAttribute = new TagAttribute(forNode.getTextContent(), typeNode.getTextContent(),
+			ExpressionType type = null;
+			try {
+				type = ExpressionType.getTypeByName(typeNode.getTextContent());
+			} catch (Exception e) {
+				throw new ParserException("Invalid expression type: " + typeNode.getTextContent(), e);
+			}
+
+			TagAttribute expressionAttribute = new TagAttribute(forNode.getTextContent(), type.toString(),
 					TagParameterType.EXPRESSION, false);
 			tag.addAttribute(expressionAttribute);
 		}
