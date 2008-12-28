@@ -21,8 +21,11 @@ import jsfgenerator.generation.controller.nodes.ControllerNode;
 import jsfgenerator.generation.view.AbstractTagNode;
 import jsfgenerator.generation.view.IViewTemplateProvider;
 import jsfgenerator.generation.view.PlaceholderTagNode;
+import jsfgenerator.generation.view.StaticTagNode;
 import jsfgenerator.generation.view.ViewTemplateTree;
 import jsfgenerator.generation.view.PlaceholderTagNode.PlaceholderTagNodeType;
+import jsfgenerator.generation.view.parameters.TagAttribute;
+import jsfgenerator.generation.view.parameters.XMLNamespaceAttribute;
 
 /**
  * TODO: do the same for list page - subclass the same class
@@ -57,6 +60,14 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 
 	protected void init() {
 		this.templateTree = templateTreeProvider.getEntityPageTemplateTree();
+
+		/*
+		 * add jsfgen xml namespace
+		 */
+		TagAttribute attribute = new XMLNamespaceAttribute(INameConstants.JSFGEN_TAGLIB_XMLNS_PREFIX,
+				INameConstants.JSFGEN_TAGLIB_XMLNS);
+		((StaticTagNode) templateTree.getNodes().get(0)).addAttribute(attribute);
+
 		this.controllerTree = new ControllerTree();
 
 		/*
@@ -64,7 +75,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		 */
 		classNode = controllerNodeProvider.createEntityPageClassNode(model);
 		controllerTree.addNode(classNode);
-		
+
 		entityFormPlaceholderNode = getFirstPlaceholderTagNodeByType(templateTree, PlaceholderTagNodeType.ENTITY_FORM);
 		entityListFormPlaceholderNode = getFirstPlaceholderTagNodeByType(templateTree, PlaceholderTagNodeType.ENTITY_LIST_FORM);
 	}
@@ -118,24 +129,26 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 					"Entity list form template tree does not contain placeholder tag for the entity form");
 		}
 		entityFormPlaceholderNode.addAllChildren(entityFormTree.getNodes());
-		
+
 		entityListFormPlaceholderNode.addAllChildren(entityListFormTree.getNodes());
 
 		classNode.addAllChildren(controllerNodeProvider.createEntityListFormControllerNodes(form));
 	}
-	
+
 	public void addInputField(EntityListForm form, EntityField field) {
 		List<AbstractTagNode> nodes = getNodesByName(form.getEntityName(), entityListFormPlaceholderNode);
-		String namespace = StringUtils.toDotSeparatedString(form.getEntityName() + INameConstants.EDITOR_FIELD_POSTFIX, "instance("
-				+ getIndexVariableName(nodes) + ")");
+		String namespace = StringUtils.toDotSeparatedString(form.getEntityName() + INameConstants.EDITOR_FIELD_POSTFIX,
+				"instance(" + getIndexVariableName(nodes) + ")");
 		addInputField(form, field, entityListFormPlaceholderNode, nodes, namespace);
 	}
 
 	public void addInputField(EntityForm form, EntityField field) {
-		String namespace = StringUtils.toDotSeparatedString(form.getEntityName() + INameConstants.EDITOR_FIELD_POSTFIX, "instance");
-		addInputField(form, field, entityFormPlaceholderNode, getNodesByName(form.getEntityName(), entityFormPlaceholderNode), namespace);
+		String namespace = StringUtils.toDotSeparatedString(form.getEntityName() + INameConstants.EDITOR_FIELD_POSTFIX,
+				"instance");
+		addInputField(form, field, entityFormPlaceholderNode, getNodesByName(form.getEntityName(), entityFormPlaceholderNode),
+				namespace);
 	}
-	
+
 	protected List<AbstractTagNode> getNodesByName(String name, PlaceholderTagNode placeholderNode) {
 		List<AbstractTagNode> nodes = new ArrayList<AbstractTagNode>();
 		Iterator<AbstractTagNode> it = placeholderNode.getChildren().iterator();
@@ -147,8 +160,9 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		}
 		return nodes;
 	}
-	
-	protected void addInputField(AbstractEntityForm form, EntityField field, PlaceholderTagNode placeholderNode, List<AbstractTagNode> nodes, String namespace) {
+
+	protected void addInputField(AbstractEntityForm form, EntityField field, PlaceholderTagNode placeholderNode,
+			List<AbstractTagNode> nodes, String namespace) {
 		AbstractTagNode inputPlaceholder = getFirstPlaceholderTagNodeByType(nodes, PlaceholderTagNodeType.INPUT);
 
 		if (inputPlaceholder == null) {
@@ -158,7 +172,11 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 
 		ViewTemplateTree inputTemplateTree = templateTreeProvider.getInputTemplateTree(field.getInputTagName());
 
-		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(namespace, field.getFieldName());
+		String entityClassName = (form instanceof EntityForm) ? ((EntityForm) form).getEntityClassName()
+				: ((EntityListForm) form).getEntityForm().getEntityClassName();
+
+		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(namespace, field.getFieldName(),
+				entityClassName);
 		for (AbstractTagNode tagNode : inputTemplateTree.getNodes()) {
 			tagNode.apply(visitor);
 
@@ -168,7 +186,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 			}
 		}
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 

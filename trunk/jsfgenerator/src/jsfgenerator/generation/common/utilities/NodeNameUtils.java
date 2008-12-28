@@ -1,5 +1,6 @@
 package jsfgenerator.generation.common.utilities;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,6 +79,11 @@ public final class NodeNameUtils {
 		Matcher matcher = namePattern.matcher(viewId);
 		return matcher.matches();
 	}
+	
+	public static String getResourceBundleName(Locale locale) {
+		return "messages_" + locale.getLanguage() + "_" + locale.getCountry();
+	}
+	
 
 	protected static String capitalName(String name) {
 		if (name == null || name.length() == 0) {

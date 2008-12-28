@@ -8,5 +8,11 @@
 
 	<application>
  		<view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
+ 		<locale-config>
+  			<default-locale>en</default-locale>
+   			<supported-locale>en</supported-locale>
+   			<supported-locale>hu</supported-locale>
+  		</locale-config>
+  		<message-bundle>messages</message-bundle>
 	</application>
 </faces-config>

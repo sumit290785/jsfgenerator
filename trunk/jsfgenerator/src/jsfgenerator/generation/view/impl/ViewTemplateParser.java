@@ -113,7 +113,7 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 
 		return ids;
 	}
-	
+
 	/**
 	 * parses the document with DOM
 	 * 

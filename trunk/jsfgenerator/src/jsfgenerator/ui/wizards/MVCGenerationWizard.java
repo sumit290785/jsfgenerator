@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import jsfgenerator.entitymodel.EntityModel;
 import jsfgenerator.entitymodel.forms.EntityRelationship;
@@ -17,6 +18,7 @@ import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.generation.common.GenerationException;
 import jsfgenerator.generation.common.ViewAndControllerDTO;
 import jsfgenerator.generation.common.ViewAndControllerEngine;
+import jsfgenerator.generation.common.treebuilders.ResourceBundleBuilder;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
 import jsfgenerator.generation.view.IViewTemplateProvider;
@@ -24,6 +26,7 @@ import jsfgenerator.generation.view.impl.ViewTemplateParser;
 import jsfgenerator.ui.artifacthandlers.ArtifactEditHandler;
 import jsfgenerator.ui.model.EntityDescription;
 import jsfgenerator.ui.model.EntityFieldDescription;
+import jsfgenerator.ui.model.ProjectResourceProvider;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -31,6 +34,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
@@ -151,6 +155,7 @@ public class MVCGenerationWizard extends Wizard {
 						ViewAndControllerDTO viewDTO = engine.getViewAndControllerDTO(pageModel.getViewId());
 						saveView(pageModel.getViewId(), viewDTO.getViewStream());
 						saveController(pageModel.getViewId(), viewDTO.getViewClass());
+						saveResourceBundles();
 
 						addManagedBeanToFacesConfig(pageModel.getViewId(), viewDTO.getControllerClassName(), monitor);
 					}
@@ -226,6 +231,24 @@ public class MVCGenerationWizard extends Wizard {
 			throw new GenerationException("Could not save the generated view!", e);
 		}
 
+	}
+
+	private void saveResourceBundles() {
+		InputStream stream = ResourceBundleBuilder.getInstance().getMessageInputStream();
+
+		IFolder srcFolder = ProjectResourceProvider.getInstance().getProject().getFolder("src");
+		String fileNameEN = NodeNameUtils.getResourceBundleName(new Locale("en", "US"));
+		String fileNameHU = NodeNameUtils.getResourceBundleName(new Locale("hu", "HU"));
+
+		delete(srcFolder, fileNameEN);
+		delete(srcFolder, fileNameHU);
+		try {
+			IFile fileEN = srcFolder.getFile(fileNameEN);
+			fileEN.create(stream, IResource.FORCE, null);
+			fileEN.copy(new Path(fileNameHU), IResource.FORCE, null);
+		} catch (CoreException e) {
+			throw new GenerationException("Could not save the generated view!", e);
+		}
 	}
 
 	private void delete(IFolder folder, String fileName) {
