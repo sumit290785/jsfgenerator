@@ -5,7 +5,12 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+import jsfgenerator.generation.common.INameConstants;
+import jsfgenerator.generation.common.utilities.StringUtils;
+
 public class ResourceBundleBuilder {
+
+	private static final String MESSAGE_BUNDLE_FUNCTION = "translate";
 
 	private static ResourceBundleBuilder instance;
 
@@ -44,6 +49,17 @@ public class ResourceBundleBuilder {
 		}
 
 		return new ByteArrayInputStream(buffer.toString().getBytes());
+	}
+
+	public String getTranslateMethodInvocation(String... args) {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(INameConstants.JSFGEN_TAGLIB_XMLNS_PREFIX);
+		buffer.append(":");
+		buffer.append(MESSAGE_BUNDLE_FUNCTION);
+		buffer.append("('");
+		buffer.append(StringUtils.toDotSeparatedString(args).toLowerCase());
+		buffer.append("')");
+		return buffer.toString();
 	}
 
 }

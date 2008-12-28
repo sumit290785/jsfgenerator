@@ -17,6 +17,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import jsfgenerator.generation.common.treebuilders.ResourceBundleBuilder;
 import jsfgenerator.generation.common.visitors.ReferenceNameEvaluatorVisitor.ExpressionType;
 import jsfgenerator.generation.view.AbstractTagNode;
 import jsfgenerator.generation.view.IViewTemplateProvider;
@@ -211,6 +212,17 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 			TagAttribute expressionAttribute = new TagAttribute(forNode.getTextContent(), type.toString(),
 					TagParameterType.EXPRESSION, false);
 			tag.addAttribute(expressionAttribute);
+		}
+
+		/*
+		 * change messages for annotated tags
+		 */
+		for (TagAttribute attribute : tag.getAttributes()) {
+			if (processor.isAnnotationMessage(attribute.getName())) {
+				ResourceBundleBuilder resourceBuilder = ResourceBundleBuilder.getInstance();
+				attribute.setValue("#{" + resourceBuilder.getTranslateMethodInvocation(attribute.getValue().toLowerCase()) + "}");
+				resourceBuilder.addKey(attribute.getValue().toLowerCase());
+			}
 		}
 
 		NodeList children = node.getChildNodes();

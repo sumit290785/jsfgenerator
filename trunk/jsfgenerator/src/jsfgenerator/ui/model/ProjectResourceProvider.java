@@ -152,4 +152,9 @@ public class ProjectResourceProvider {
 		return url.openStream();
 	}
 
+	public InputStream getTaglibInputStream() throws IOException {
+		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/jsfgen.taglib.xml"), null);
+		return url.openStream();
+	}
+
 }
