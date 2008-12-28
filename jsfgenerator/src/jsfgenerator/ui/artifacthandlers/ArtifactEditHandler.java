@@ -85,6 +85,7 @@ public final class ArtifactEditHandler {
 		saveEdit(webEdit);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void addFacletApplicationToWebDeploymentDescriptor() {
 		WebArtifactEdit edit = getWebArtifactEdit();
 

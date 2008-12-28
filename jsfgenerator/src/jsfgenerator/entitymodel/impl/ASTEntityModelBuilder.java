@@ -64,9 +64,9 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityDesc
 		List<EntityField> fields = new ArrayList<EntityField>();
 		for (EntityFieldDescription entityField : entity.getEntityFieldDescriptions()) {
 
-			if (entityField.getEntityDescription() == null && entityField.getInputTagId() != null
-					&& !entityField.getInputTagId().equals("")) {
-				EntityField field = new EntityField(entityField.getFieldName(), entityField.getInputTagId());
+			if (entityField.getEntityDescription() == null && entityField.getInputTagName() != null
+					&& !entityField.getInputTagName().equals("")) {
+				EntityField field = new EntityField(entityField.getFieldName(), entityField.getInputTagName());
 				fields.add(field);
 			}
 

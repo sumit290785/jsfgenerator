@@ -4,19 +4,19 @@ import jsfgenerator.generation.view.AbstractTagNode;
 import jsfgenerator.generation.view.PlaceholderTagNode;
 import jsfgenerator.generation.view.PlaceholderTagNode.PlaceholderTagNodeType;
 
-public class ProxyTagVisitor extends AbstractVisitor<AbstractTagNode> {
+public class PlaceholderTagNodeVisitor extends AbstractVisitor<AbstractTagNode> {
 
-	private PlaceholderTagNode proxyTag;
+	private PlaceholderTagNode placeholderNode;
 
 	private PlaceholderTagNodeType type;
 
 	private String name;
 
-	public ProxyTagVisitor(PlaceholderTagNodeType type) {
+	public PlaceholderTagNodeVisitor(PlaceholderTagNodeType type) {
 		this.type = type;
 	}
 
-	public ProxyTagVisitor(String name, PlaceholderTagNodeType type) {
+	public PlaceholderTagNodeVisitor(String name, PlaceholderTagNodeType type) {
 		this.type = type;
 		this.name = name;
 	}
@@ -32,7 +32,7 @@ public class ProxyTagVisitor extends AbstractVisitor<AbstractTagNode> {
 	public boolean visit(AbstractTagNode tag) {
 		if (tag instanceof PlaceholderTagNode && ((PlaceholderTagNode) tag).getType().equals(type)
 				&& (name == null || (tag.getReferenceName() != null && name.equals(tag.getReferenceName())))) {
-			proxyTag = (PlaceholderTagNode) tag;
+			placeholderNode = (PlaceholderTagNode) tag;
 			return false;
 		}
 
@@ -43,7 +43,7 @@ public class ProxyTagVisitor extends AbstractVisitor<AbstractTagNode> {
 	 * 
 	 * @return first proxy tag in the tree with the specified type
 	 */
-	public PlaceholderTagNode getProxyTag() {
-		return proxyTag;
+	public PlaceholderTagNode getPlaceholderNode() {
+		return placeholderNode;
 	}
 }

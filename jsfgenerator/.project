@@ -40,17 +40,7 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>jdtcoresrc</name>
-			<type>2</type>
-			<location>/home/zoli/dev/np/tools/eclipsesrc/jdtcoresrc</location>
-		</link>
-		<link>
 			<name>source</name>
-			<type>2</type>
-			<location>/home/zoli/dev/tools/source</location>
-		</link>
-		<link>
-			<name>src-1</name>
 			<type>2</type>
 			<location>/home/zoli/dev/tools/source</location>
 		</link>

@@ -8,7 +8,7 @@ import jsfgenerator.generation.common.AbstractTree;
  * @author zoltan verebes
  * 
  */
-public class TagTree extends AbstractTree<AbstractTagNode> {
+public class ViewTemplateTree extends AbstractTree<AbstractTagNode> {
 
 	/**
 	 * reference name is applied for all of the top level tags of the tag tree

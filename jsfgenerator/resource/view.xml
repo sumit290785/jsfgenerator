@@ -1,17 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="view.xsd">
-	<tagtree id="entitypage">
-		<statictag name="ui:composition">
-			<attribute type="template" value="layout/template.xhtml" />
-		</statictag>
-	</tagtree>
+
+<a:view xmlns:a="http://www.example.org/annotations">
+
+	<a:template id="entityPage">
+
+		<ui:composition 
+			xmlns="http://www.w3.org/1999/xhtml"
+			xmlns:ui="http://java.sun.com/jsf/facelets"
+			xmlns:f="http://java.sun.com/jsf/core"
+			xmlns:h="http://java.sun.com/jsf/html">
+			
+			<ui:define name="body">
+				<a:message attribute="value" />
+				<h:outputText value="welcome" />
+				<hr/>
+				<a:placeHolder for="entityForm"/>
+				<a:placeHolder for="entityListForm"/>
+			</ui:define>
+
+		</ui:composition>
+		
+	</a:template>
 	
-	<tagtree id="simpleform">
-		<statictag name=""></statictag>
-	</tagtree>
+	<a:template id="entityForm" 
+		xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:h="http://java.sun.com/jsf/html">
+		
+		<h:form>
+			<table>
+				<a:placeHolder for="input" />
+			</table>
+			<a:expression type="save" for="action" />
+			<a:message attribute="value" />
+			<h:commandButton value="save"/>
+		</h:form>
+	</a:template>
 	
-	<tagtree id="complexform">
-		<statictag name=""></statictag>
-	</tagtree>
+	<a:template id="entityListForm" 
+		xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:h="http://java.sun.com/jsf/html">
+		
+		<hr/>
+		<a:message attribute="value" />
+		<a:expression type="add" for="action" />
+		<h:commandLink value="add" />
+		
+		<a:message attribute="value" />
+		<a:expression type="remove" for="action" />
+		<h:commandLink value="remove" />
+		
+		<a:index attribute="rowKeyVar" />
+		<a:element key="var" />
+		<a:expression type="entityField" for="value" />
+		<ui:repeat var="item" rowKeyVar="index" >
+			<a:placeHolder for="entityForm" />
+		</ui:repeat>
+	</a:template>
 	
-</view>
+	<a:template id="entityListPage" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
+	</a:template>
+	
+	<a:template id="input" name="table row multiline input" 
+		xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:h="http://java.sun.com/jsf/html">
+		
+		<tr>
+			<td>
+				<a:expression type="entityFieldName" for="value"/>
+				<h:outputText value="" />
+			</td>
+			<td>
+				<a:expression type="entityField" for="value"/>
+				<h:inputText cols="5"/>
+			</td>
+		</tr>
+		
+	</a:template>
+	
+	<a:template id="input" name="table row input" 
+		xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html">
+		
+		<tr>
+			<td>
+				<a:expression type="entityFieldName" for="value"/>
+				<h:outputText value="" />
+			</td>
+			<td>
+				<a:expression type="entityField" for="value"/>
+				<h:inputText />
+			</td>
+		</tr>
+		
+	</a:template>
+
+</a:view>

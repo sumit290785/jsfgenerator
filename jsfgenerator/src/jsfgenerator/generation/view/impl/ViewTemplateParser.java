@@ -18,10 +18,10 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import jsfgenerator.generation.view.AbstractTagNode;
-import jsfgenerator.generation.view.ITagTreeProvider;
+import jsfgenerator.generation.view.IViewTemplateProvider;
 import jsfgenerator.generation.view.PlaceholderTagNode;
 import jsfgenerator.generation.view.StaticTagNode;
-import jsfgenerator.generation.view.TagTree;
+import jsfgenerator.generation.view.ViewTemplateTree;
 import jsfgenerator.generation.view.PlaceholderTagNode.PlaceholderTagNodeType;
 import jsfgenerator.generation.view.parameters.TagAttribute;
 import jsfgenerator.generation.view.parameters.TemplateAttribute;
@@ -38,7 +38,7 @@ import org.xml.sax.SAXException;
  * @author zoltan verebes
  * 
  */
-public class ViewTemplateParser implements ITagTreeProvider {
+public class ViewTemplateParser implements IViewTemplateProvider {
 
 	private static final Pattern xmlnsPattern = Pattern.compile("^xmlns($|:([A-Za-z0-9]*))$");
 
@@ -57,7 +57,7 @@ public class ViewTemplateParser implements ITagTreeProvider {
 		factory = XPathFactory.newInstance();
 	}
 
-	public TagTree getComplexFormListTagTree() {
+	public ViewTemplateTree getEntityListFormTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.ENTITY_LIST_FORM);
 		} catch (ParserException e) {
@@ -65,7 +65,7 @@ public class ViewTemplateParser implements ITagTreeProvider {
 		}
 	}
 
-	public TagTree getEntityPageTagTree() {
+	public ViewTemplateTree getEntityPageTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.ENTITY_PAGE);
 		} catch (ParserException e) {
@@ -73,7 +73,7 @@ public class ViewTemplateParser implements ITagTreeProvider {
 		}
 	}
 
-	public TagTree getListPageTagTree() {
+	public ViewTemplateTree getEntityListPageTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.ENTITY_LIST_PAGE);
 		} catch (ParserException e) {
@@ -81,7 +81,7 @@ public class ViewTemplateParser implements ITagTreeProvider {
 		}
 	}
 
-	public TagTree getSimpleFormTagTree() {
+	public ViewTemplateTree getEntityFormTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.ENTITY_FORM);
 		} catch (ParserException e) {
@@ -89,25 +89,15 @@ public class ViewTemplateParser implements ITagTreeProvider {
 		}
 	}
 
-	public StaticTagNode getInputTag(String inputTagId) {
+	public ViewTemplateTree getInputTemplateTree(String inputTagId) {
 		try {
-			TagTree tagTree = getTemplate(ViewTemplateConstants.INPUT, inputTagId);
-
-			if (tagTree == null || tagTree.getNodes().size() == 0) {
-				throw new RuntimeException("Input not found: " + inputTagId);
-			}
-
-			if (tagTree.getNodes().size() > 1) {
-				throw new RuntimeException("Multiple inputs found with id: " + inputTagId);
-			}
-
-			return (StaticTagNode) tagTree.getNodes().get(0);
+			return getTemplate(ViewTemplateConstants.INPUT, inputTagId);
 		} catch (ParserException e) {
 			throw new RuntimeException("Entity form could not be parsed", e);
 		}
 	}
 
-	public List<String> getInputTagIds() {
+	public List<String> getInputTagNames() {
 		List<String> ids = new ArrayList<String>();
 		try {
 			NodeList inputTagNodeList = getNodes(ViewTemplateConstants.getTemplateXPath(ViewTemplateConstants.INPUT) + "/@name");
@@ -139,7 +129,7 @@ public class ViewTemplateParser implements ITagTreeProvider {
 		doc = builder.parse(is);
 	}
 
-	protected TagTree getTemplate(String... args) throws ParserException {
+	protected ViewTemplateTree getTemplate(String... args) throws ParserException {
 
 		if (args.length == 0) {
 			return null;
@@ -155,7 +145,7 @@ public class ViewTemplateParser implements ITagTreeProvider {
 		Node tagTreeNode = getNode(exp);
 		NodeList tagNodes = tagTreeNode.getChildNodes();
 
-		TagTree templateTree = new TagTree();
+		ViewTemplateTree templateTree = new ViewTemplateTree();
 
 		for (int i = 0; i < tagNodes.getLength(); i++) {
 			AbstractTagNode tag = parseNode(tagNodes.item(i));
