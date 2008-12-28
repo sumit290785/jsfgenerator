@@ -3,9 +3,9 @@ package jsfgenerator.generation.common.visitors;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import jsfgenerator.generation.view.ProxyTag;
-import jsfgenerator.generation.view.StaticTag;
-import jsfgenerator.generation.view.TagNode;
+import jsfgenerator.generation.view.PlaceholderTagNode;
+import jsfgenerator.generation.view.StaticTagNode;
+import jsfgenerator.generation.view.AbstractTagNode;
 import jsfgenerator.generation.view.parameters.TagAttribute;
 
 /**
@@ -13,7 +13,7 @@ import jsfgenerator.generation.view.parameters.TagAttribute;
  * @author zoltan verebes
  *
  */
-public class WriterTagVisitor extends AbstractVisitor<TagNode> {
+public class WriterTagVisitor extends AbstractVisitor<AbstractTagNode> {
 	
 	private static final String TAB = "\t";
 	private static final String NEWLINE = "\n";
@@ -27,12 +27,12 @@ public class WriterTagVisitor extends AbstractVisitor<TagNode> {
 	}
 
 	@Override
-	public boolean visit(TagNode tag) {
-		if (tag instanceof ProxyTag) {
+	public boolean visit(AbstractTagNode tag) {
+		if (tag instanceof PlaceholderTagNode) {
 			return true;
 		}
 
-		StaticTag staticTag = (StaticTag) tag;
+		StaticTagNode staticTag = (StaticTagNode) tag;
 
 		if (staticTag.isLeaf()) {
 			StringBuffer buffer = new StringBuffer();
@@ -65,12 +65,12 @@ public class WriterTagVisitor extends AbstractVisitor<TagNode> {
 	}
 	
 	@Override
-	public void postVisit(TagNode tag) {
-		if (tag instanceof ProxyTag) {
+	public void postVisit(AbstractTagNode tag) {
+		if (tag instanceof PlaceholderTagNode) {
 			return;
 		}
 
-		StaticTag staticTag = (StaticTag) tag;
+		StaticTagNode staticTag = (StaticTagNode) tag;
 
 		if (staticTag.isLeaf()) {
 			return;
@@ -102,7 +102,7 @@ public class WriterTagVisitor extends AbstractVisitor<TagNode> {
 		}
 	}
 	
-	private String getTagAsString(StaticTag tag) {
+	private String getTagAsString(StaticTagNode tag) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(tag.getName());
 		for (TagAttribute attribute : tag.getAttributes()) {

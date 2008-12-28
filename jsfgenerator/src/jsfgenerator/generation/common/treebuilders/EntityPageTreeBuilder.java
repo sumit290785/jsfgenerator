@@ -15,12 +15,12 @@ import jsfgenerator.generation.common.visitors.ReferenceNameEvaluatorVisitor;
 import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.ControllerTree;
 import jsfgenerator.generation.controller.nodes.ControllerNode;
+import jsfgenerator.generation.view.AbstractTagNode;
 import jsfgenerator.generation.view.ITagTreeProvider;
-import jsfgenerator.generation.view.ProxyTag;
-import jsfgenerator.generation.view.StaticTag;
-import jsfgenerator.generation.view.TagNode;
+import jsfgenerator.generation.view.PlaceholderTagNode;
+import jsfgenerator.generation.view.StaticTagNode;
 import jsfgenerator.generation.view.TagTree;
-import jsfgenerator.generation.view.ProxyTag.ProxyTagType;
+import jsfgenerator.generation.view.PlaceholderTagNode.PlaceholderTagNodeType;
 
 /**
  * TODO: do the same for list page - subclass the same class
@@ -42,7 +42,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	private EntityPageModel model;
 
 	// the only form proxy tag in the tag tree
-	private ProxyTag formProxyTag;
+	private PlaceholderTagNode formProxyTag;
 
 	public EntityPageTreeBuilder(EntityPageModel model, ITagTreeProvider tagTreeProvider,
 			AbstractControllerNodeProvider controllerNodeProvider) {
@@ -79,7 +79,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(namespace);
 		simpleFormTagTree.apply(visitor);
 
-		getFormProxyTag().addAllChildren(simpleFormTagTree.getNodes());
+		getEntityFormProxyTag().addAllChildren(simpleFormTagTree.getNodes());
 
 		/*
 		 * add the info to the controller tree for the backing bean
@@ -88,7 +88,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	}
 
 	public void addSimpleForm(ComplexEntityFormList form, String indexVariableName) {
-		TagNode formProxyTag = getProxyTagByType(getFormTagByName(form.getEntityName()), ProxyTagType.FORM);
+		AbstractTagNode formProxyTag = getProxyTagByType(getFormTagByName(form.getEntityName()), PlaceholderTagNodeType.ENTITY_FORM);
 
 		if (formProxyTag == null) {
 			throw new IllegalArgumentException("Complex form tag tree does not contain proxy tag: FORM");
@@ -113,7 +113,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		complexFormList.apply(visitor);
 
 		complexFormList.applyReferenceName(form.getEntityName());
-		getFormProxyTag().addAllChildren(complexFormList.getNodes());
+		getEntityListFormProxyTag().addAllChildren(complexFormList.getNodes());
 
 		addSimpleForm(form, indexVariableName);
 
@@ -121,15 +121,15 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	}
 
 	public void addInputField(EntityForm form, EntityField field) {
-		TagNode formNode = getFormTagByName(form.getEntityName());
-		TagNode inputProxyTag = getProxyTagByType(formNode, ProxyTagType.INPUT);
+		AbstractTagNode formNode = getFormTagByName(form.getEntityName());
+		AbstractTagNode inputProxyTag = getProxyTagByType(formNode, PlaceholderTagNodeType.INPUT);
 
 		if (inputProxyTag == null) {
 			throw new IllegalArgumentException(
 					"INPUT Proxy tag node is not found on the form passed to the function! Form name: " + form.getEntityName());
 		}
 
-		StaticTag inputTag = tagTreeProvider.getInputTag(field.getInputTagId());
+		StaticTagNode inputTag = tagTreeProvider.getInputTag(field.getInputTagId());
 
 		String namespace;
 		if (form instanceof SimpleEntityForm) {
@@ -168,18 +168,26 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		return tagTree;
 	}
 
-	protected ProxyTag getFormProxyTag() {
+	protected PlaceholderTagNode getEntityFormProxyTag() {
 		if (formProxyTag == null) {
-			formProxyTag = getProxyTagByType(tagTree, ProxyTagType.FORM);
+			formProxyTag = getProxyTagByType(tagTree, PlaceholderTagNodeType.ENTITY_FORM);
+		}
+
+		return formProxyTag;
+	}
+	
+	protected PlaceholderTagNode getEntityListFormProxyTag() {
+		if (formProxyTag == null) {
+			formProxyTag = getProxyTagByType(tagTree, PlaceholderTagNodeType.ENTITY_LIST_FORM);
 		}
 
 		return formProxyTag;
 	}
 
-	protected TagNode getFormTagByName(String name) {
-		Iterator<TagNode> it = getFormProxyTag().getChildren().iterator();
+	protected AbstractTagNode getFormTagByName(String name) {
+		Iterator<AbstractTagNode> it = getEntityFormProxyTag().getChildren().iterator();
 		while (it.hasNext()) {
-			TagNode node = it.next();
+			AbstractTagNode node = it.next();
 			if (node.getReferenceName().equals(name)) {
 				return node;
 			}
@@ -197,7 +205,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	 *            target type of the proxy tag
 	 * @return proxy tag with the particular type in the tag tree
 	 */
-	protected ProxyTag getProxyTagByType(TagTree tagTree, ProxyTagType type) {
+	protected PlaceholderTagNode getProxyTagByType(TagTree tagTree, PlaceholderTagNodeType type) {
 
 		if (tagTree == null) {
 			throw new IllegalArgumentException("Tag tree parameter cannot be null!");
@@ -222,7 +230,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	 *            target type of the proxy tag
 	 * @return proxy tag with the particular type in the subtree of the node
 	 */
-	protected ProxyTag getProxyTagByType(TagNode node, ProxyTagType type) {
+	protected PlaceholderTagNode getProxyTagByType(AbstractTagNode node, PlaceholderTagNodeType type) {
 
 		if (node == null) {
 			throw new IllegalArgumentException("Node parameter cannot be null!");
@@ -237,7 +245,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		return getProxyTagByType(tagTree, type);
 	}
 
-	protected String getIndexVariableName(TagNode node) {
+	protected String getIndexVariableName(AbstractTagNode node) {
 		IndexVariableVisitor indexVariableVisitor = new IndexVariableVisitor();
 		node.apply(indexVariableVisitor);
 
@@ -249,7 +257,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	}
 
 	protected String getIndexVariableName(TagTree tree) {
-		for (TagNode node : tree.getNodes()) {
+		for (AbstractTagNode node : tree.getNodes()) {
 			String indexName = getIndexVariableName(node);
 			if (indexName != null) {
 				return indexName;

@@ -1,21 +1,21 @@
 package jsfgenerator.generation.common.visitors;
 
-import jsfgenerator.generation.view.StaticTag;
-import jsfgenerator.generation.view.TagNode;
+import jsfgenerator.generation.view.StaticTagNode;
+import jsfgenerator.generation.view.AbstractTagNode;
 import jsfgenerator.generation.view.parameters.TagAttribute;
 
-public class IndexVariableVisitor extends AbstractVisitor<TagNode> {
+public class IndexVariableVisitor extends AbstractVisitor<AbstractTagNode> {
 
 	private String indexVariableName;
 
 	@Override
-	public boolean visit(TagNode node) {
+	public boolean visit(AbstractTagNode node) {
 
-		if (!(node instanceof StaticTag)) {
+		if (!(node instanceof StaticTagNode)) {
 			return true;
 		}
 
-		StaticTag stag = (StaticTag) node;
+		StaticTagNode stag = (StaticTagNode) node;
 
 		for (TagAttribute attribute : stag.getAttributes()) {
 			if (attribute.isIndex()) {

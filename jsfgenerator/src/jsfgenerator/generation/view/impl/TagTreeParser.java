@@ -17,12 +17,12 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import jsfgenerator.generation.view.AbstractTagNode;
 import jsfgenerator.generation.view.ITagTreeProvider;
-import jsfgenerator.generation.view.ProxyTag;
-import jsfgenerator.generation.view.StaticTag;
-import jsfgenerator.generation.view.TagNode;
+import jsfgenerator.generation.view.PlaceholderTagNode;
+import jsfgenerator.generation.view.StaticTagNode;
 import jsfgenerator.generation.view.TagTree;
-import jsfgenerator.generation.view.ProxyTag.ProxyTagType;
+import jsfgenerator.generation.view.PlaceholderTagNode.PlaceholderTagNodeType;
 import jsfgenerator.generation.view.parameters.TagAttribute;
 import jsfgenerator.generation.view.parameters.TemplateAttribute;
 import jsfgenerator.generation.view.parameters.XMLNamespaceAttribute;
@@ -132,7 +132,7 @@ public class TagTreeParser implements ITagTreeProvider {
 	 * @return
 	 * @throws ParserException
 	 */
-	protected StaticTag parseStaticTag(Node rootNode) throws ParserException {
+	protected StaticTagNode parseStaticTag(Node rootNode) throws ParserException {
 		return parseStaticTag(rootNode, null);
 	}
 
@@ -144,29 +144,29 @@ public class TagTreeParser implements ITagTreeProvider {
 	 * @return
 	 * @throws ParserException
 	 */
-	protected StaticTag parseStaticTag(Node rootNode, String[] styles) throws ParserException {
+	protected StaticTagNode parseStaticTag(Node rootNode, String[] styles) throws ParserException {
 		NamedNodeMap attributes = rootNode.getAttributes();
 
 		Node nameNode = attributes.getNamedItem("name");
 
-		StaticTag tag = new StaticTag(nameNode.getTextContent());
+		StaticTagNode tag = new StaticTagNode(nameNode.getTextContent());
 
 		NodeList children = rootNode.getChildNodes();
 		for (int i = 0; i < children.getLength(); i++) {
 			Node node = children.item(i);
 
 			if (node.getNodeName().equalsIgnoreCase(STATICTAG) && stylesMatch(node, styles)) {
-				TagNode childTag = parseStaticTag(node, styles);
+				AbstractTagNode childTag = parseStaticTag(node, styles);
 				tag.addChild(childTag);
 			} else if (node.getNodeName().equalsIgnoreCase(PROXYTAG)) {
-				TagNode childTag = parseProxyTag(node);
+				AbstractTagNode childTag = parseProxyTag(node);
 				tag.addChild(childTag);
 			} else if (node.getNodeName().equalsIgnoreCase(ATTRIBUTE)) {
-				if (!(tag instanceof StaticTag)) {
+				if (!(tag instanceof StaticTagNode)) {
 					throw new IllegalArgumentException("Attribute is legal only for static tags");
 				}
 
-				StaticTag stag = (StaticTag) tag;
+				StaticTagNode stag = (StaticTagNode) tag;
 				TagAttribute attribute = parseTagAttribute(node);
 				if (attribute != null) {
 					stag.addAttribute(attribute);
@@ -177,7 +177,7 @@ public class TagTreeParser implements ITagTreeProvider {
 		return tag;
 	}
 
-	protected ProxyTag parseProxyTag(Node rootNode) throws ParserException {
+	protected PlaceholderTagNode parseProxyTag(Node rootNode) throws ParserException {
 		NamedNodeMap attributes = rootNode.getAttributes();
 		Node typeNode = attributes.getNamedItem("type");
 
@@ -186,8 +186,8 @@ public class TagTreeParser implements ITagTreeProvider {
 		}
 
 		// try to find the type
-		ProxyTagType type = ProxyTagType.valueOf(typeNode.getTextContent());
-		ProxyTag tag = new ProxyTag(type);
+		PlaceholderTagNodeType type = PlaceholderTagNodeType.valueOf(typeNode.getTextContent());
+		PlaceholderTagNode tag = new PlaceholderTagNode(type);
 
 		// there is not any subtree to be parsed for proxy tags
 		return tag;
@@ -274,7 +274,7 @@ public class TagTreeParser implements ITagTreeProvider {
 		for (int i = 0; i < tagNodes.getLength(); i++) {
 			Node node = tagNodes.item(i);
 
-			TagNode tag = null;
+			AbstractTagNode tag = null;
 			if (node.getNodeName().equalsIgnoreCase(STATICTAG)) {
 				tag = parseStaticTag(node);
 			} else if (node.getNodeName().equalsIgnoreCase(PROXYTAG)) {
@@ -294,7 +294,7 @@ public class TagTreeParser implements ITagTreeProvider {
 	 * 
 	 * @see jsfgenerator.generation.view.ITagTreeProvider#getInputTag(java.lang.String )
 	 */
-	public StaticTag getInputTag(String inputTagId) {
+	public StaticTagNode getInputTag(String inputTagId) {
 		if (inputTagId == null) {
 			throw new IllegalArgumentException("Input tag id parameter cannot be null!");
 		}
@@ -308,7 +308,7 @@ public class TagTreeParser implements ITagTreeProvider {
 				Node node = staticTagNodes.item(i);
 
 				if (node.getNodeName().equalsIgnoreCase(STATICTAG)) {
-					StaticTag tag = parseStaticTag(node);
+					StaticTagNode tag = parseStaticTag(node);
 					return tag; // return when the matching tag found
 				}
 			}

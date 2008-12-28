@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<!-- Tag types -->
+
+	<xsd:complexType name="abstractTagType" abstract="true">
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+	</xsd:complexType>
+
+	<!-- elements -->
+
+	<xsd:complexType name="entityPageTagType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractTagType">
+				<xsd:sequence>
+					<xsd:element ref="entityPageTag" maxOccurs="unbounded" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+
+	</xsd:complexType>
+
+	<xsd:element name="entityPageTag" type="entityPageTagType"/>
+
+	<xsd:element name="entityPage">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="entityPageTag"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<!-- root -->
+
+	<xsd:element name="view">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="entityPage" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+</xsd:schema>

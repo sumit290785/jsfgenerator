@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/annotations"
+	xmlns:a="http://www.example.org/annotations" elementFormDefault="qualified">
+
+	<xsd:simpleType name="templateName">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="entityPage" />
+			<xsd:enumeration value="entityListPage" />
+			<xsd:enumeration value="entityForm" />
+			<xsd:enumeration value="entityListForm" />
+			<xsd:enumeration value="listElement" />
+			<xsd:enumeration value="input" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:complexType name="placeHolderType">
+		<xsd:attribute name="for" use="required">
+			<xsd:simpleType>
+				<xsd:restriction base="a:templateName">
+					<xsd:enumeration value="entityForm" />
+					<xsd:enumeration value="entityListForm" />
+					<xsd:enumeration value="listElement" />
+					<xsd:enumeration value="input" />
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:element name="view">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="a:template" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="template">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:any processContents="lax" namespace="##any" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+			<xsd:attribute name="id" type="a:templateName" use="required" />
+			<xsd:attribute name="name" type="xsd:string" use="optional" />
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="expression">
+		<xsd:complexType>
+			<xsd:attribute name="for" type="xsd:string" use="required" />
+			<xsd:attribute name="type" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="save" />
+						<xsd:enumeration value="delete" />
+						<xsd:enumeration value="add" />
+						<xsd:enumeration value="remove" />
+						<xsd:enumeration value="entityField" />
+						<xsd:enumeration value="entityFieldName" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="index">
+		<xsd:complexType>
+			<xsd:attribute name="attribute" type="xsd:string" use="required" />
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="message">
+		<xsd:complexType>
+			<xsd:attribute name="attribute" type="xsd:string" use="required" />
+		</xsd:complexType>
+	</xsd:element>
+
+</xsd:schema>

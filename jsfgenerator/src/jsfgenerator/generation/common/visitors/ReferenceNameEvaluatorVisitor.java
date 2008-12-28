@@ -5,13 +5,13 @@ import java.util.List;
 
 import jsfgenerator.generation.common.GenerationException;
 import jsfgenerator.generation.common.utilities.StringUtils;
-import jsfgenerator.generation.view.ProxyTag;
-import jsfgenerator.generation.view.StaticTag;
-import jsfgenerator.generation.view.TagNode;
+import jsfgenerator.generation.view.PlaceholderTagNode;
+import jsfgenerator.generation.view.StaticTagNode;
+import jsfgenerator.generation.view.AbstractTagNode;
 import jsfgenerator.generation.view.parameters.TagAttribute;
 import jsfgenerator.generation.view.parameters.TagAttribute.TagParameterType;
 
-public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<TagNode> {
+public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNode> {
 
 	public static enum ExpressionType {
 		ENTITY_FIELD, SAVE, DELETE, REFRESH, ADD, REMOVE, METHOD_INVOCATION
@@ -34,13 +34,13 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<TagNode> {
 	}
 
 	@Override
-	public boolean visit(TagNode tag) {
+	public boolean visit(AbstractTagNode tag) {
 
-		if (tag instanceof ProxyTag) {
+		if (tag instanceof PlaceholderTagNode) {
 			return true;
 		}
 
-		StaticTag stag = (StaticTag) tag;
+		StaticTagNode stag = (StaticTagNode) tag;
 		for (TagAttribute attribute : stag.getAttributes()) {
 			if (TagParameterType.EXPRESSION.equals(attribute.getType())) {
 				evaluate(attribute);

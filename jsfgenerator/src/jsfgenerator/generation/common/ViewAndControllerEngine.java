@@ -30,7 +30,7 @@ import jsfgenerator.generation.view.TagTree;
  * @author zoltan verebes
  * 
  */
-public class ViewAndControllerEngine {
+public final class ViewAndControllerEngine {
 
 	// contains the views and controllers by view id
 	private Map<String, ViewAndControllerDTO> views;

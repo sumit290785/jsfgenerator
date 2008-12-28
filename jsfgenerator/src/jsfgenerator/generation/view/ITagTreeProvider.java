@@ -34,7 +34,7 @@ public interface ITagTreeProvider {
 
 	public TagTree getComplexFormListTagTree();
 
-	public StaticTag getInputTag(String inputTagId);
+	public StaticTagNode getInputTag(String inputTagId);
 	
 	public List<String> getInputTagIds();
 

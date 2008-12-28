@@ -1,6 +1,7 @@
 package jsfgenerator.generation.view;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -8,18 +9,18 @@ import java.util.Set;
 import jsfgenerator.generation.view.parameters.TagAttribute;
 import jsfgenerator.generation.view.parameters.XMLNamespaceAttribute;
 
-public class StaticTag extends TagNode {
+public class StaticTagNode extends AbstractTagNode {
 
 	// name of the tag
 	private String name;
 
 	// parameters of the tag
-	private List<TagAttribute> attributess = new ArrayList<TagAttribute>();
+	private List<TagAttribute> attributes = new ArrayList<TagAttribute>();
 
 	// required namespaces for this tag
 	private Set<XMLNamespaceAttribute> xmlNamespaces = new HashSet<XMLNamespaceAttribute>();
 
-	public StaticTag(String name) {
+	public StaticTagNode(String name) {
 		if (name == null) {
 			throw new IllegalArgumentException("Name parameter cannot be null");
 		}
@@ -53,15 +54,19 @@ public class StaticTag extends TagNode {
 	}
 
 	public void setAttributes(List<TagAttribute> attributes) {
-		this.attributess = attributes;
+		this.attributes = attributes;
 	}
 
 	public List<TagAttribute> getAttributes() {
-		return attributess;
+		return attributes;
 	}
 
 	public void addAttribute(TagAttribute tagAttribute) {
-		attributess.add(tagAttribute);
+		attributes.add(tagAttribute);
+	}
+	
+	public void addAllAttributes(Collection<TagAttribute> attributes) {
+		attributes.addAll(attributes);
 	}
 	
 }
