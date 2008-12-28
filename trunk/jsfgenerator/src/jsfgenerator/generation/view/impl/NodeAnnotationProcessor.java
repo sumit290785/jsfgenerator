@@ -3,9 +3,6 @@ package jsfgenerator.generation.view.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.text.View;
-
-import org.eclipse.ui.help.ViewContextComputer;
 import org.w3c.dom.Node;
 
 public class NodeAnnotationProcessor {

@@ -61,7 +61,7 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 		return node;
 	}
 
-	public List<ControllerNode> createSimpleFormControllerNodes(SimpleEntityForm form) {
+	public List<ControllerNode> createEntityFormControllerNodes(SimpleEntityForm form) {
 		if (form.getRelationshipToEntity() == null || EntityRelationship.FIELD.equals(form.getRelationshipToEntity())) {
 			// all of the required functionalities are in the super class
 			return Collections.emptyList();
@@ -96,7 +96,7 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 	 * .ComplexEntityFormList, int)
 	 */
 	@Override
-	public List<ControllerNode> createComplexFormControllerNodes(ComplexEntityFormList form) {
+	public List<ControllerNode> createEntityListFormControllerNodes(ComplexEntityFormList form) {
 
 		if (!EntityRelationship.ONE_TO_MANY.equals(form.getRelationshipToEntity())
 				&& !EntityRelationship.MANY_TO_MANY.equals(form.getRelationshipToEntity())) {

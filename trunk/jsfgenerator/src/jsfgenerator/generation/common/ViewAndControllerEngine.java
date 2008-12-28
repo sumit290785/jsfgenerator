@@ -17,8 +17,8 @@ import jsfgenerator.generation.common.visitors.ControllerTreeVisitor;
 import jsfgenerator.generation.common.visitors.WriterTagVisitor;
 import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
 import jsfgenerator.generation.controller.ControllerTree;
-import jsfgenerator.generation.view.ITagTreeProvider;
-import jsfgenerator.generation.view.TagTree;
+import jsfgenerator.generation.view.IViewTemplateProvider;
+import jsfgenerator.generation.view.ViewTemplateTree;
 
 /**
  * Singleton class that generates views and controllers by iterating through the
@@ -50,7 +50,7 @@ public final class ViewAndControllerEngine {
 		return instance;
 	}
 
-	public void generateViewsAndControllers(EntityModel model, ITagTreeProvider tagTreeProvider, AbstractControllerNodeProvider controllerNodeProvider) {
+	public void generateViewsAndControllers(EntityModel model, IViewTemplateProvider tagTreeProvider, AbstractControllerNodeProvider controllerNodeProvider) {
 
 		if (model == null) {
 			throw new IllegalArgumentException("Model parameter cannot be null!");
@@ -90,7 +90,7 @@ public final class ViewAndControllerEngine {
 		views = new HashMap<String, ViewAndControllerDTO>();
 	}
 
-	protected void generateEntityPageViewAndController(EntityPageModel pageModel, ITagTreeProvider tagTreeProvider,
+	protected void generateEntityPageViewAndController(EntityPageModel pageModel, IViewTemplateProvider tagTreeProvider,
 			AbstractControllerNodeProvider controllerNodeProvider) {
 
 		if (pageModel == null) {
@@ -104,21 +104,21 @@ public final class ViewAndControllerEngine {
 		for (EntityForm form : pageModel.getForms()) {
 			if (form instanceof SimpleEntityForm) {
 				SimpleEntityForm simpleForm = (SimpleEntityForm) form;
-				treeBuilder.addSimpleForm(simpleForm);
+				treeBuilder.addEntityForm(simpleForm);
 
 				for (EntityField field : simpleForm.getFields()) {
 					treeBuilder.addInputField(simpleForm, field);
 				}
 			} else if (form instanceof ComplexEntityFormList) {
 				ComplexEntityFormList complexForm = (ComplexEntityFormList) form;
-				treeBuilder.addComplexFormTagTree(complexForm);
+				treeBuilder.addEntityListFormTemplateTree(complexForm);
 				for (EntityField field : complexForm.getFields()) {
 					treeBuilder.addInputField(complexForm, field);
 				}
 			}
 		}
 
-		TagTree tagTree = treeBuilder.getTagTree();
+		ViewTemplateTree tagTree = treeBuilder.getViewTemplateTree();
 		ControllerTree controllerTree = treeBuilder.getControllerTree();
 
 		/*

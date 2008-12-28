@@ -91,10 +91,10 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 
 			if (entityField.getEntityDescription() != null) {
 				return NON_FIELD_TEXT;
-			} else if (entityField.getInputTagId() == null) {
+			} else if (entityField.getInputTagName() == null) {
 				return NO_GENERATION_TEXT;
 			} else {
-				return entityField.getInputTagId();
+				return entityField.getInputTagName();
 			}
 		}
 
@@ -104,13 +104,13 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 			EntityFieldDescription entityField = ((EntityFieldDescription) element);
 			if (value != null && NON_FIELD_TEXT.equals((String) value) && !selectedEntityDescription.isEmbedded()) {
 				entityField.setExternalForm(entityField.getRelationshipToEntity());
-				entityField.setInputTagId(null);
+				entityField.setInputTagName(null);
 			} else if (value != null && NO_GENERATION_TEXT.equals((String) value)) {
 				entityField.setExternalForm(null);
-				entityField.setInputTagId(null);
+				entityField.setInputTagName(null);
 			} else {
 				entityField.setExternalForm(null);
-				entityField.setInputTagId((String) value);
+				entityField.setInputTagName((String) value);
 			}
 
 			masterPart.refresh();
@@ -227,10 +227,10 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 					EntityFieldDescription entityField = (EntityFieldDescription) element;
 					if (entityField.getEntityDescription() != null) {
 						return NON_FIELD_TEXT;
-					} else if (entityField.getInputTagId() == null) {
+					} else if (entityField.getInputTagName() == null) {
 						return NO_GENERATION_TEXT;
 					} else {
-						return ((EntityFieldDescription) element).getInputTagId();
+						return ((EntityFieldDescription) element).getInputTagName();
 					}
 				}
 

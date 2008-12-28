@@ -19,8 +19,8 @@ public abstract class AbstractControllerNodeProvider {
 	
 	public abstract ClassControllerNode createEntityListPageClassNode(EntityListPageModel model);
 
-	public abstract List<ControllerNode> createSimpleFormControllerNodes(SimpleEntityForm form);
+	public abstract List<ControllerNode> createEntityFormControllerNodes(SimpleEntityForm form);
 	
-	public abstract List<ControllerNode> createComplexFormControllerNodes(ComplexEntityFormList form);
+	public abstract List<ControllerNode> createEntityListFormControllerNodes(ComplexEntityFormList form);
 
 }

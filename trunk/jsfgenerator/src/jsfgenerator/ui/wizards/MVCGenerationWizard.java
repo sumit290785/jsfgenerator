@@ -19,7 +19,7 @@ import jsfgenerator.generation.common.ViewAndControllerDTO;
 import jsfgenerator.generation.common.ViewAndControllerEngine;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
-import jsfgenerator.generation.view.ITagTreeProvider;
+import jsfgenerator.generation.view.IViewTemplateProvider;
 import jsfgenerator.generation.view.impl.ViewTemplateParser;
 import jsfgenerator.ui.artifacthandlers.ArtifactEditHandler;
 import jsfgenerator.ui.model.EntityDescription;
@@ -134,7 +134,7 @@ public class MVCGenerationWizard extends Wizard {
 					monitor.worked(1);
 					monitor.subTask("Load selected descriptor file");
 
-					ITagTreeProvider tagFactory = new ViewTemplateParser(is);
+					IViewTemplateProvider tagFactory = new ViewTemplateParser(is);
 
 					IPackageFragment fragment = controllerTargetPackageSelectionWizardPage.getSelectedPackageFragment();
 					ControllerNodeFactory controllerNodeProvider = ControllerNodeFactory.getInstance();
@@ -179,8 +179,8 @@ public class MVCGenerationWizard extends Wizard {
 			} catch (FileNotFoundException e) {
 			}
 
-			ITagTreeProvider tagFactory = new ViewTemplateParser(is);
-			return tagFactory.getInputTagIds();
+			IViewTemplateProvider tagFactory = new ViewTemplateParser(is);
+			return tagFactory.getInputTagNames();
 		}
 
 		return null;

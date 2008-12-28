@@ -17,7 +17,7 @@ public class EntityFieldDescription {
 	
 	private boolean isId;
 
-	private String inputTagId;
+	private String inputTagName;
 
 	private EntityDescription entityDescription;
 
@@ -36,12 +36,12 @@ public class EntityFieldDescription {
 		return className;
 	}
 
-	public String getInputTagId() {
-		return inputTagId;
+	public String getInputTagName() {
+		return inputTagName;
 	}
 
-	public void setInputTagId(String inputTagId) {
-		this.inputTagId = inputTagId;
+	public void setInputTagName(String inputTagName) {
+		this.inputTagName = inputTagName;
 	}
 
 	public void setExternalForm(EntityRelationship relationship) {
