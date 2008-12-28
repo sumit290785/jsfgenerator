@@ -13,6 +13,8 @@ public class NodeAnnotationProcessor {
 
 	private List<Node> annotations;
 
+	private List<Node> messageNodes;
+
 	public NodeAnnotationProcessor(Node node) {
 		this.node = node;
 		process();
@@ -21,16 +23,16 @@ public class NodeAnnotationProcessor {
 	public String getIndexAttributeKey() {
 		return indexAttributeKey;
 	}
-	
+
 	public List<Node> getExpressionNodes() {
 		List<Node> expressions = new ArrayList<Node>();
-		
+
 		for (Node node : annotations) {
 			if (node.getLocalName().equals(ViewTemplateConstants.EXPRESSION)) {
 				expressions.add(node);
 			}
 		}
-		
+
 		return expressions;
 	}
 
@@ -43,9 +45,13 @@ public class NodeAnnotationProcessor {
 		Node indexNode = getAnnotationByName(ViewTemplateConstants.INDEX);
 		indexAttributeKey = (indexNode != null && indexNode.getAttributes() != null) ? indexNode.getAttributes().getNamedItem(
 				ViewTemplateConstants.INDEX_ATTRIBUTE).getNodeValue() : null;
-				
+
+		/*
+		 * process messages
+		 */
+		messageNodes = getAnnotationsByName(ViewTemplateConstants.MESSAGE);
 	}
-	
+
 	protected List<Node> getAnnotations() {
 		List<Node> annotations = new ArrayList<Node>();
 		Node prevNode = node.getPreviousSibling();
@@ -60,13 +66,24 @@ public class NodeAnnotationProcessor {
 	}
 
 	protected Node getAnnotationByName(String name) {
-		for (Node node : annotations) {
+		List<Node> nodes = getAnnotationsByName(name);
+
+		if (nodes.size() == 0) {
+			return null;
+		}
+
+		return nodes.get(0);
+	}
+
+	protected List<Node> getAnnotationsByName(String name) {
+		List<Node> annotations = new ArrayList<Node>();
+		for (Node node : this.annotations) {
 			if (node.getLocalName().equals(name)) {
-				return node;
+				annotations.add(node);
 			}
 		}
 
-		return null;
+		return annotations;
 	}
 
 	public static boolean isAnnotationNamespaceURI(Node node) {
@@ -74,4 +91,11 @@ public class NodeAnnotationProcessor {
 				&& node.getNamespaceURI().equals(ViewTemplateConstants.ANNOTATION_NS_URI);
 	}
 
+	public boolean isAnnotationMessage(String attributeName) {
+		for (Node node : messageNodes) {
+			return node.getAttributes().getNamedItem("attribute").getNodeValue().equals(attributeName);
+		}
+
+		return false;
+	}
 }

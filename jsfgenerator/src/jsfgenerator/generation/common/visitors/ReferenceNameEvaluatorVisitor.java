@@ -4,13 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import jsfgenerator.generation.common.GenerationException;
-import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.generation.common.treebuilders.ResourceBundleBuilder;
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.common.utilities.StringUtils;
+import jsfgenerator.generation.view.AbstractTagNode;
 import jsfgenerator.generation.view.PlaceholderTagNode;
 import jsfgenerator.generation.view.StaticTagNode;
-import jsfgenerator.generation.view.AbstractTagNode;
 import jsfgenerator.generation.view.impl.ViewTemplateConstants;
 import jsfgenerator.generation.view.parameters.TagAttribute;
 import jsfgenerator.generation.view.parameters.TagAttribute.TagParameterType;
@@ -49,8 +48,6 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 
 	private static final String EXPRESSION_PREFIX = "#{";
 	private static final String EXPRESSION_POSTFIX = "}";
-
-	private static final String MESSAGE_BUNDLE_FUNCTION = "translate";
 
 	private List<String> args;
 
@@ -117,11 +114,12 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 
 			StringBuffer buffer = new StringBuffer();
 			buffer.append(EXPRESSION_PREFIX);
-			buffer.append(getTranslateMethodInvocation(ClassNameUtils.getSimpleClassName(entityClassName), fieldName));
-			
+			buffer.append(ResourceBundleBuilder.getInstance().getTranslateMethodInvocation(
+					ClassNameUtils.getSimpleClassName(entityClassName), fieldName));
+
 			buffer.append(EXPRESSION_POSTFIX);
 			attribute.setValue(buffer.toString());
-			
+
 			ResourceBundleBuilder.getInstance().addKey(entityClassName.toLowerCase());
 			return;
 		}
@@ -183,17 +181,6 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 		}
 
 		buffer.append(")");
-		return buffer.toString();
-	}
-
-	private String getTranslateMethodInvocation(String... args) {
-		StringBuffer buffer = new StringBuffer();
-		buffer.append(INameConstants.JSFGEN_TAGLIB_XMLNS_PREFIX);
-		buffer.append(":");
-		buffer.append(MESSAGE_BUNDLE_FUNCTION);
-		buffer.append("('");
-		buffer.append(StringUtils.toDotSeparatedString(args).toLowerCase());
-		buffer.append("')");
 		return buffer.toString();
 	}
 

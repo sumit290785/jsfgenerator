@@ -30,7 +30,7 @@ public final class MVCFacetInstallDelegate implements IDelegate {
 
 		ProjectResourceProvider.getInstance().setJavaProject(JavaCore.create(project));
 
-		monitor.beginTask("Create xml and xsd files", 5);
+		monitor.beginTask("Create xml and xsd files", 6);
 
 		try {
 
@@ -69,6 +69,16 @@ public final class MVCFacetInstallDelegate implements IDelegate {
 						templateFile.create(resources.getViewTemplateInputStream(), IResource.FORCE, monitor);
 
 						IFolder webInfFolder = webContentFolder.getFolder("WEB-INF");
+						
+						// jsfge.taglib.xml
+						IFolder taglibsFolder = webInfFolder.getFolder("taglibs");
+						if (!taglibsFolder.exists()) {
+							taglibsFolder.create(true, true, monitor);
+						}
+						
+						IFile taglibFile = layoutFolder.getFile("jsfgen.taglib.xml");
+						taglibFile.create(resources.getTaglibInputStream(), IResource.FORCE, monitor);
+						
 
 						// lib folder
 						IFolder libFolder = webInfFolder.getFolder("lib");
@@ -95,6 +105,9 @@ public final class MVCFacetInstallDelegate implements IDelegate {
 						}
 						
 						facesConfigFile.create(resources.getFacesConfigInputStream(), IResource.FORCE, monitor);
+						monitor.worked(1);
+						
+						
 						monitor.worked(1);
 					} catch (IOException e) {
 						throw new RuntimeException(e.getMessage(), e);

@@ -10,6 +10,8 @@ public final class ViewTemplateConstants {
 	public static final String ROOT_XPATH = "/annotation:view";
 
 	public static final String INDEX = "index";
+	
+	public static final String MESSAGE = "message";
 
 	public static final String INDEX_ATTRIBUTE = "attribute";
 
