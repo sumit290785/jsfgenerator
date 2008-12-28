@@ -26,5 +26,5 @@ public interface IViewTemplateProvider {
 	public ViewTemplateTree getInputTemplateTree(String inputTagId);
 
 	public List<String> getInputTagNames();
-
+	
 }

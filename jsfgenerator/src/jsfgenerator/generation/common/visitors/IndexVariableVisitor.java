@@ -27,7 +27,7 @@ public class IndexVariableVisitor extends AbstractVisitor<AbstractTagNode> {
 		return true;
 	}
 
-	public boolean isIndexFound() {
+	public boolean indexFound() {
 		return indexVariableName != null && !indexVariableName.equals("");
 	}
 

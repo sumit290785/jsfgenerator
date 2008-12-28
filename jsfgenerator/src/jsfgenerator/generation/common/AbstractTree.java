@@ -1,6 +1,7 @@
 package jsfgenerator.generation.common;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,6 +21,10 @@ public abstract class AbstractTree<T extends Node<T>> {
 
 	public void addNode(T node) {
 		getNodes().add(node);
+	}
+	
+	public void addAllNodes(Collection<T> nodes) {
+		getNodes().addAll(nodes);
 	}
 
 	public void apply(AbstractVisitor<T> visitor) {

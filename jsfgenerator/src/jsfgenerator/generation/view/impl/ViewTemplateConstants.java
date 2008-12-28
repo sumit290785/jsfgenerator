@@ -8,7 +8,7 @@ public final class ViewTemplateConstants {
 	public static final String TEMPLATE_XPATH = "//annotation:template";
 
 	public static final String ROOT_XPATH = "/annotation:view";
-	
+
 	public static final String INDEX = "index";
 
 	public static final String INDEX_ATTRIBUTE = "attribute";
@@ -18,6 +18,22 @@ public final class ViewTemplateConstants {
 	public static final String EXPRESSION_TYPE = "type";
 
 	public static final String EXPRESSION_FOR = "for";
+
+	public static final String EXPRESSION_ENTITY_FIELD = "entityField";
+
+	public static final String EXPRESSION_ENTITY_FIELD_NAME = "entityFieldName";
+	
+	public static final String EXPRESSION_ADD = "add";
+
+	public static final String EXPRESSION_REMOVE = "remove";
+	
+	public static final String EXPRESSION_SAVE= "save";
+
+	public static final String EXPRESSION_DELETE = "delete";
+	
+	public static final String EXPRESSION_REFRESH = "refresh";
+	
+	public static final String EXPRESSION_METHOD_INVOCATION = "methodInvocation";
 
 	public static final String PLACE_HOLDER = "placeHolder";
 
@@ -48,7 +64,7 @@ public final class ViewTemplateConstants {
 			throw new IllegalArgumentException("Empty id is invalid");
 		}
 
-		StringBuffer buffer = new StringBuffer();
+		StringBuffer buffer = new StringBuffer(TEMPLATE_XPATH);
 		buffer.append("[");
 		buffer.append("@id='");
 		buffer.append(id);
@@ -63,7 +79,7 @@ public final class ViewTemplateConstants {
 
 		buffer.append("]");
 
-		return TEMPLATE_XPATH.replace("{id}", id);
+		return buffer.toString();
 	}
 
 }

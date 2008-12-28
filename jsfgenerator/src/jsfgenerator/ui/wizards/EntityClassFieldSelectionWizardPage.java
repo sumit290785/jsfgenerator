@@ -235,7 +235,7 @@ public class EntityClassFieldSelectionWizardPage extends WizardPage {
 				}
 
 			});
-			inputTagColumn.getColumn().setText("Input tag id");
+			inputTagColumn.getColumn().setText("Input name");
 			inputTagColumn.getColumn().setWidth(200);
 			inputTagColumn.setEditingSupport(new InputTagEditingSupport(this));
 		}

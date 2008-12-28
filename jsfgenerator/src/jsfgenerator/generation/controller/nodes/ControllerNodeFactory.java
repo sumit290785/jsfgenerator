@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import jsfgenerator.entitymodel.forms.ComplexEntityFormList;
+import jsfgenerator.entitymodel.forms.EntityListForm;
 import jsfgenerator.entitymodel.forms.EntityRelationship;
-import jsfgenerator.entitymodel.forms.SimpleEntityForm;
+import jsfgenerator.entitymodel.forms.EntityForm;
 import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.common.INameConstants;
@@ -61,7 +61,7 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 		return node;
 	}
 
-	public List<ControllerNode> createEntityFormControllerNodes(SimpleEntityForm form) {
+	public List<ControllerNode> createEntityFormControllerNodes(EntityForm form) {
 		if (form.getRelationshipToEntity() == null || EntityRelationship.FIELD.equals(form.getRelationshipToEntity())) {
 			// all of the required functionalities are in the super class
 			return Collections.emptyList();
@@ -96,7 +96,7 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 	 * .ComplexEntityFormList, int)
 	 */
 	@Override
-	public List<ControllerNode> createEntityListFormControllerNodes(ComplexEntityFormList form) {
+	public List<ControllerNode> createEntityListFormControllerNodes(EntityListForm form) {
 
 		if (!EntityRelationship.ONE_TO_MANY.equals(form.getRelationshipToEntity())
 				&& !EntityRelationship.MANY_TO_MANY.equals(form.getRelationshipToEntity())) {
@@ -108,7 +108,7 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 		/*
 		 * add an edit helper and its getter
 		 */
-		String fieldType = ClassNameUtils.addGenericParameter(INameConstants.COMPLEX_FORM_FIELD_CLASS, form.getSimpleForm()
+		String fieldType = ClassNameUtils.addGenericParameter(INameConstants.COMPLEX_FORM_FIELD_CLASS, form.getEntityForm()
 				.getEntityClassName());
 		String editorFieldName = NodeNameUtils.getControllerEditorFieldNameByCanonicalName(form.getEntityName());
 		nodes.add(new FieldControllerNode(editorFieldName, fieldType, fieldType));
@@ -116,7 +116,7 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 
 		String fieldName = NodeNameUtils.getControllerFieldNameByCanonicalName(form.getEntityName());
 		// add it to the init function to get it initialized
-		initStatementWrappers.add(new InitStatementWrapper(EditorType.LIST_EDIT_HELPER, editorFieldName, form.getSimpleForm()
+		initStatementWrappers.add(new InitStatementWrapper(EditorType.LIST_EDIT_HELPER, editorFieldName, form.getEntityForm()
 				.getEntityClassName(), fieldName));
 
 		return nodes;

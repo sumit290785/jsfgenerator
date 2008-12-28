@@ -3,7 +3,7 @@ package jsfgenerator.entitymodel.pages;
 import java.util.ArrayList;
 import java.util.List;
 
-import jsfgenerator.entitymodel.forms.EntityForm;
+import jsfgenerator.entitymodel.forms.AbstractEntityForm;
 
 /**
  * It describes a page of a single entity type. Entity is a domain entity, which
@@ -19,21 +19,21 @@ public class EntityPageModel extends AbstractPageModel {
 	}
 
 	// forms of the entity page. they are not necessarily EntityForm of T
-	private List<EntityForm> forms = new ArrayList<EntityForm>();
+	private List<AbstractEntityForm> forms = new ArrayList<AbstractEntityForm>();
 
-	public void setForms(List<EntityForm> forms) {
+	public void setForms(List<AbstractEntityForm> forms) {
 		this.forms = forms;
 	}
 
-	public List<EntityForm> getForms() {
+	public List<AbstractEntityForm> getForms() {
 		return forms;
 	}
 
-	public void addForm(EntityForm form) {
+	public void addForm(AbstractEntityForm form) {
 		forms.add(form);
 	}
 
-	public void removeForm(EntityForm form) {
+	public void removeForm(AbstractEntityForm form) {
 		forms.remove(form);
 	}
 }

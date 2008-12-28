@@ -18,11 +18,16 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
+/**
+ * TODO: validate the selected xml
+ * 
+ * @author zoltan verebes
+ * 
+ */
 public class TagDescriptorSelectionWizardPage extends WizardPage {
 
 	/**
-	 * Filters all of the non container and non xml file type elements of the
-	 * tree viewer content
+	 * Filters all of the non container and non xml file type elements of the tree viewer content
 	 * 
 	 * @author zoltan verebes
 	 * 
@@ -60,9 +65,7 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets
-	 * .Composite)
+	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets .Composite)
 	 */
 	public void createControl(Composite parent) {
 		resourceComposite = new ResourceSelectionComposite(parent, SWT.NONE, new ResourceLabelProvider(),
@@ -88,15 +91,14 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 		});
 		validate();
 	}
-	
+
 	protected void validate() {
-		if (resourceComposite.getSelectionText().getText() == null
-				|| resourceComposite.getSelectionText().getText().equals("")) {
+		if (resourceComposite.getSelectionText().getText() == null || resourceComposite.getSelectionText().getText().equals("")) {
 			setErrorMessage("Please, select a file");
 		} else {
 			setErrorMessage(null);
 		}
-		
+
 		setPageComplete(getErrorMessage() == null);
 	}
 

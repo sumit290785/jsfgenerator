@@ -11,11 +11,11 @@ public class EntityField {
 
 	private String fieldName;
 
-	private String inputTagId;
+	private String inputTagName;
 	
 	public EntityField(String name, String inputTagId) {
 		this.fieldName = name;
-		this.inputTagId = inputTagId;
+		this.inputTagName = inputTagId;
 	}
 
 	/**
@@ -36,8 +36,8 @@ public class EntityField {
 	 * 
 	 * @return input tag id
 	 */
-	public String getInputTagId() {
-		return inputTagId;
+	public String getInputTagName() {
+		return inputTagName;
 	}
 
 }
