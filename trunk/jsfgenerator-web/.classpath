@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/zoli/dev/np/ejb3-persistence.jar"/>
+	<classpathentry kind="lib" path="/home/zoli/dev/np/ejb-3_0-api.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget/JBoss 4.2 Runtime"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jsfgenerator-ejb"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
