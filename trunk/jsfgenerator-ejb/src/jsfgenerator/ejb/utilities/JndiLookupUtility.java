@@ -1,6 +1,9 @@
 package jsfgenerator.ejb.utilities;
 
+import java.net.URL;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -9,6 +12,12 @@ import javax.rmi.PortableRemoteObject;
 
 import jsfgenerator.ejb.sessionbeans.PersistenceContext;
 
+/**
+ * Lookup utility class to retrive persistence context
+ * 
+ * @author zoltan verebes
+ * 
+ */
 public final class JndiLookupUtility {
 
 	private static JndiLookupUtility instance;
@@ -37,9 +46,8 @@ public final class JndiLookupUtility {
 		if (persistenceContext == null) {
 			Context jndiContext;
 			try {
-				//TODO
 				jndiContext = getJndiContext();
-				Object ref = jndiContext.lookup("xxxEAR/PersistenceContextBean/local");
+				Object ref = jndiContext.lookup(getEarName() + "PersistenceContextBean/local");
 				persistenceContext = (PersistenceContext) PortableRemoteObject.narrow(ref, PersistenceContext.class);
 			} catch (NamingException e) {
 				e.printStackTrace();
@@ -56,6 +64,17 @@ public final class JndiLookupUtility {
 		properties.put(Context.PROVIDER_URL, "jnp://localhost:1099");
 
 		return new InitialContext(properties);
+	}
+
+	private static String getEarName() {
+		URL url = Thread.currentThread().getContextClassLoader().getResource("");
+		Pattern p = Pattern.compile("(?i)/([^\\\\/:\\*\\?<>\\|]+)\\.ear/");
+		Matcher m = p.matcher(url.getPath());
+		if (m.find()) {
+			return m.group(1) + "/";
+		} else {
+			return "";
+		}
 	}
 
 }
