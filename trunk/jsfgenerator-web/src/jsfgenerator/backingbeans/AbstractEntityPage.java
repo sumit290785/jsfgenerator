@@ -1,6 +1,5 @@
 package jsfgenerator.backingbeans;
 
-import javax.persistence.EntityManager;
 
 /**
  * Generic abstract superclass for all of the entity page controller classes! It handles an instance of the entity T. Basic CRUD

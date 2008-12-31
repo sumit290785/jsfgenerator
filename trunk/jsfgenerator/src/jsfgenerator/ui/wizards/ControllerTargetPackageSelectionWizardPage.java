@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 public class ControllerTargetPackageSelectionWizardPage extends WizardPage {
 
 	private IPackageFragment selectedPackageFragment;
-	
+
 	private TableViewer packageViewer;
 
 	protected ControllerTargetPackageSelectionWizardPage() {
@@ -45,12 +45,12 @@ public class ControllerTargetPackageSelectionWizardPage extends WizardPage {
 			public void widgetSelected(SelectionEvent event) {
 				OpenNewPackageWizardAction action = new OpenNewPackageWizardAction();
 				action.run();
-				
+
 				if (packageViewer != null) {
-					packageViewer.setInput(ProjectResourceProvider.getInstance().getProjectPackageFragments());
+					packageViewer.setInput(ProjectResourceProvider.getInstance().getJsfProjectPackageFragments());
 					validate();
 				}
-				
+
 			}
 		});
 
@@ -60,7 +60,7 @@ public class ControllerTargetPackageSelectionWizardPage extends WizardPage {
 		packageViewer.setContentProvider(new ArrayContentProvider());
 
 		packageViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		packageViewer.setInput(ProjectResourceProvider.getInstance().getProjectPackageFragments());
+		packageViewer.setInput(ProjectResourceProvider.getInstance().getJsfProjectPackageFragments());
 
 		packageViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 

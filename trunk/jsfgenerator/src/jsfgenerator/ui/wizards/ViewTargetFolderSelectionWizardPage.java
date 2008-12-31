@@ -1,6 +1,7 @@
 package jsfgenerator.ui.wizards;
 
 import jsfgenerator.ui.composites.ResourceSelectionComposite;
+import jsfgenerator.ui.model.ProjectResourceProvider;
 import jsfgenerator.ui.providers.ResourceLabelProvider;
 import jsfgenerator.ui.providers.ResourceSelectionContentProvider;
 
@@ -16,8 +17,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 /**
- * Wizard page implementation for selecting the target folder which is used to
- * generate the view files into.
+ * Wizard page implementation for selecting the target folder which is used to generate the view files into.
  * 
  * @author zoltan verebes
  * 
@@ -25,8 +25,7 @@ import org.eclipse.swt.widgets.Composite;
 public class ViewTargetFolderSelectionWizardPage extends WizardPage {
 
 	/**
-	 * Filters out all of the non-container (folder and project) type elements
-	 * of the tree viewer content
+	 * Filters out all of the non-container (folder and project) type elements of the tree viewer content
 	 * 
 	 * @author zoltan verebes
 	 * 
@@ -56,15 +55,14 @@ public class ViewTargetFolderSelectionWizardPage extends WizardPage {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets
-	 * .Composite)
+	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets .Composite)
 	 */
 	public void createControl(Composite parent) {
 		resourceComposite = new ResourceSelectionComposite(parent, SWT.NONE, new ResourceLabelProvider(),
-				new ResourceSelectionContentProvider(), new FolderViewerFilter());
+				new ResourceSelectionContentProvider(), new FolderViewerFilter(), ProjectResourceProvider.getInstance()
+						.getJsfProject());
 		setControl(resourceComposite);
-		
+
 		resourceComposite.getFilteredTree().getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
 
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -86,13 +84,12 @@ public class ViewTargetFolderSelectionWizardPage extends WizardPage {
 	}
 
 	protected void validate() {
-		if (resourceComposite.getSelectionText().getText() == null
-				|| resourceComposite.getSelectionText().getText().equals("")) {
+		if (resourceComposite.getSelectionText().getText() == null || resourceComposite.getSelectionText().getText().equals("")) {
 			setErrorMessage("Please, select a folder");
 		} else {
 			setErrorMessage(null);
 		}
-		
+
 		setPageComplete(getErrorMessage() == null);
 	}
 

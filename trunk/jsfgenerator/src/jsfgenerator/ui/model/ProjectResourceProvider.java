@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ import jsfgenerator.generation.common.GenerationException;
 import jsfgenerator.ui.astvisitors.EntityClassASTVisitor;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
@@ -20,11 +22,15 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 /**
  * Singleton class to access resources from the project(s) of the generation. Project is registered at the beginning of any generation
@@ -37,7 +43,11 @@ public class ProjectResourceProvider {
 
 	protected static ProjectResourceProvider instance;
 
-	private IJavaProject javaProject;
+	private IProject jsfProject;
+
+	private IProject earProject;
+
+	private IProject ejbProject;
 
 	public static ProjectResourceProvider getInstance() {
 		if (instance == null) {
@@ -47,23 +57,24 @@ public class ProjectResourceProvider {
 		return instance;
 	}
 
-	public void setJavaProject(IJavaProject javaProject) {
-		this.javaProject = javaProject;
-	}
-
-	public IJavaProject getJavaProject() {
-		return javaProject;
-	}
-
-	public IProject getProject() {
-		if (javaProject == null) {
-			throw new NullPointerException("Java project is not found!");
+	private IJavaProject getJavaProject(IProject project) {
+		if (project != null) {
+			return JavaCore.create(project);
 		}
 
-		return javaProject.getProject();
+		return null;
 	}
 
-	public Collection<IJavaElement> getProjectPackageFragments() {
+	public IJavaProject getJsfJavaProject() {
+		return getJavaProject(jsfProject);
+	}
+
+	public IJavaProject getEjbJavaProject() {
+		return getJavaProject(ejbProject);
+	}
+
+	private Collection<IJavaElement> getProjectPackageFragments(IProject project) {
+		IJavaProject javaProject = getJavaProject(project);
 		if (javaProject == null) {
 			throw new NullPointerException("Java project is not found!");
 		}
@@ -85,10 +96,19 @@ public class ProjectResourceProvider {
 		}
 	}
 
-	public TypeDeclaration findSingleClassTypeDeclaration(String fullyQualifiedClassName) {
+	public Collection<IJavaElement> getJsfProjectPackageFragments() {
+		return getProjectPackageFragments(jsfProject);
+	}
 
+	public Collection<IJavaElement> getEjbProjectPackageFragments() {
+		return getProjectPackageFragments(ejbProject);
+	}
+
+	public TypeDeclaration findSingleClassTypeDeclarationInEjbProject(String fullyQualifiedClassName) {
+
+		IJavaProject javaProject = getJsfJavaProject();
 		if (javaProject == null) {
-			throw new NullPointerException("Java project is not registered!");
+			throw new NullPointerException("EJB Java project is not registered!");
 		}
 
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
@@ -110,11 +130,36 @@ public class ProjectResourceProvider {
 
 			return visitor.getSingleClassTypeDeclaration();
 		} catch (JavaModelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException("Error in class type search!", e);
+		}
+	}
+
+	public void findProjectsByEjbProject(IProject ejbProject) {
+		this.ejbProject = ejbProject;
+		for (IProject refProject : ejbProject.getReferencingProjects()) {
+			if (isEarProject(refProject)) {
+				this.earProject = refProject;
+			}
 		}
 
-		return null;
+		if (this.earProject == null) {
+			throw new NullPointerException("EAR project not found");
+		}
+
+		try {
+			for (IProject refProject : earProject.getReferencedProjects()) {
+				if (isJsfProject(refProject)) {
+					this.jsfProject = refProject;
+				}
+			}
+		} catch (CoreException e) {
+			throw new RuntimeException(e);
+		}
+
+		if (this.jsfProject == null) {
+			throw new NullPointerException("JSF project not found");
+		}
+
 	}
 
 	public InputStream getViewSkeletonInputStream() throws IOException {
@@ -157,4 +202,69 @@ public class ProjectResourceProvider {
 		return url.openStream();
 	}
 
+	public void setEjbProject(IProject ejbProject) {
+		this.ejbProject = ejbProject;
+	}
+
+	public IProject getEjbProject() {
+		return ejbProject;
+	}
+
+	public void setEarProject(IProject earProject) {
+		this.earProject = earProject;
+	}
+
+	public IProject getEarProject() {
+		return earProject;
+	}
+
+	public void setJsfProject(IProject jsfProject) {
+		this.jsfProject = jsfProject;
+	}
+
+	public IProject getJsfProject() {
+		return jsfProject;
+	}
+
+	public static boolean isEarProject(IProject project) {
+		for (IProjectFacet facet : getProjectFacets(project)) {
+			if (facet.getId().equals("jst.ear")) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public static boolean isEjbProject(IProject project) {
+		for (IProjectFacet facet : getProjectFacets(project)) {
+			if (facet.getId().equals("jpt.jpa")) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public static boolean isJsfProject(IProject project) {
+		for (IProjectFacet facet : getProjectFacets(project)) {
+			if (facet.getId().equals("jst.web")) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private static Set<IProjectFacet> getProjectFacets(IProject project) {
+		try {
+			IFacetedProject facetedProject = ProjectFacetsManager.create(project);
+			if (facetedProject == null) {
+				return Collections.emptySet();
+			}
+			return facetedProject.getFixedProjectFacets();
+		} catch (CoreException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

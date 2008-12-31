@@ -1,5 +1,7 @@
 package jsfgenerator.ui.providers;
 
+import java.util.Collection;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -16,11 +18,19 @@ public class ResourceSelectionContentProvider implements ITreeContentProvider {
 			return root.getProjects();
 		}
 
+		if (parentElement instanceof Collection) {
+			return ((Collection<?>) parentElement).toArray();
+		}
+
+		if (parentElement instanceof Object[]) {
+			return (Object[]) parentElement;
+		}
+
 		if (parentElement instanceof IContainer) {
 			IContainer container = (IContainer) parentElement;
 			IResource[] members = null;
 			try {
-				members = container.members(IContainer.FOLDER | IContainer.FILE);
+				members = container.members(IContainer.FOLDER | IContainer.FILE | IContainer.PROJECT);
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}
@@ -34,8 +44,7 @@ public class ResourceSelectionContentProvider implements ITreeContentProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang
-	 * .Object)
+	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang .Object)
 	 */
 	public Object getParent(Object element) {
 		if (element instanceof IResource) {

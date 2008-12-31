@@ -14,7 +14,7 @@ public class EntityFieldDescription {
 	private String className;
 
 	private EntityRelationship relationshipToEntity;
-	
+
 	private boolean isId;
 
 	private String inputTagName;
@@ -60,7 +60,7 @@ public class EntityFieldDescription {
 			className = ClassNameUtils.removeGenericParameters(genericTypeList.get(0));
 		}
 
-		TypeDeclaration typeNode = ProjectResourceProvider.getInstance().findSingleClassTypeDeclaration(className);
+		TypeDeclaration typeNode = ProjectResourceProvider.getInstance().findSingleClassTypeDeclarationInEjbProject(className);
 		this.entityDescription = new EntityDescription(typeNode);
 		this.entityDescription.setEmbedded(true);
 	}

@@ -236,7 +236,7 @@ public class MVCGenerationWizard extends Wizard {
 	private void saveResourceBundles() {
 		InputStream stream = ResourceBundleBuilder.getInstance().getMessageInputStream();
 
-		IFolder srcFolder = ProjectResourceProvider.getInstance().getProject().getFolder("src");
+		IFolder srcFolder = ProjectResourceProvider.getInstance().getJsfProject().getFolder("src");
 		String fileNameEN = NodeNameUtils.getResourceBundleName(new Locale("en", "US"));
 		String fileNameHU = NodeNameUtils.getResourceBundleName(new Locale("hu", "HU"));
 

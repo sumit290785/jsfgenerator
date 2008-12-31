@@ -14,11 +14,7 @@ public interface INameConstants {
 
 	public static final String ENTITY_PAGE_SUPER_CLASS = "jsfgenerator.backingbeans.AbstractEntityPage";
 
-	public static final String ENTITY_PAGE_FIELD_ENTITY_MANAGER = "entityManager";
-
 	public static final String ENTITY_PAGE_FIELD_ENTITY_CLASS = "entityClass";
-
-	public static final String ENTITY_MANAGER_CLASS_NAME = "javax.persistence.EntityManager";
 
 	public static final String CLASS_CLASS_NAME = "java.lang.Class";
 
@@ -37,10 +33,6 @@ public interface INameConstants {
 	public static final String VIEW_XML_EXTENSION = "xml";
 
 	public static final String JAVA_DEFAULT_PACKAGE = "java.lang";
-
-	public static final String STATELESS_ANNOTATION = "@javax.ejb.Stateless";
-
-	public static final String PERSISTENCE_CONTEXT_ANNOTATION = "@javax.persistence.PersistenceContext";
 
 	public static final String ENTITY_ANNOTATION = "@javax.persistence.Entity";
 

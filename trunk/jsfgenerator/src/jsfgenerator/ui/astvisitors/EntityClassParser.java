@@ -97,11 +97,12 @@ public final class EntityClassParser {
 				if (obj instanceof VariableDeclarationFragment) {
 					VariableDeclarationFragment fragment = (VariableDeclarationFragment) obj;
 
-					if ( hasSetter(node.getMethods(), fragment, field.getType())) {
+					if (hasSetter(node.getMethods(), fragment, field.getType())) {
 						MethodDeclaration getterMethod = getGetter(node.getMethods(), fragment, field.getType());
 						if (getterMethod != null) {
-							EntityRelationship rType= getRelationshipType(getterMethod);
-							entityFields.add(new EntityFieldDescription(fragment.getName().getFullyQualifiedName(), typeName, rType, isId(getterMethod)));
+							EntityRelationship rType = getRelationshipType(getterMethod);
+							entityFields.add(new EntityFieldDescription(fragment.getName().getFullyQualifiedName(), typeName,
+									rType, isId(getterMethod)));
 						}
 					}
 				}
@@ -275,7 +276,7 @@ public final class EntityClassParser {
 		method.accept(visitor);
 		return visitor.getEntityRelationship();
 	}
-	
+
 	protected static boolean isId(MethodDeclaration method) {
 		AnnotationASTVisitor visitor = new AnnotationASTVisitor();
 		method.accept(visitor);
@@ -490,6 +491,6 @@ public final class EntityClassParser {
 	}
 
 	protected static IJavaProject getProject() {
-		return ProjectResourceProvider.getInstance().getJavaProject();
+		return ProjectResourceProvider.getInstance().getEjbJavaProject();
 	}
 }

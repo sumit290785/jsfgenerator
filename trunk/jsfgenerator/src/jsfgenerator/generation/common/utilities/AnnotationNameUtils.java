@@ -1,7 +1,5 @@
 package jsfgenerator.generation.common.utilities;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,11 +37,6 @@ public final class AnnotationNameUtils {
 		Matcher matcher = getMatcher(annotation);
 
 		return matcher.group(1) + matcher.group(2) + matcher.group(3);
-	}
-
-	public static List<Pair> getKeyValuePairs(String annotation) {
-		// TODO
-		return Collections.emptyList();
 	}
 
 	private static Matcher getMatcher(String annotation) {

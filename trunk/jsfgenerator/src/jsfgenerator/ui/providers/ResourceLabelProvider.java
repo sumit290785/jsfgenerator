@@ -4,6 +4,8 @@ import jsfgenerator.generation.common.INameConstants;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaModelException;
@@ -23,6 +25,8 @@ import org.eclipse.ui.PlatformUI;
 public class ResourceLabelProvider extends LabelProvider {
 
 	private static final Image IMG_FOLDER = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+	
+	private static final Image IMG_PROJECT = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_PROJECT);
 
 	private static final Image IMG_FILE = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE);
 
@@ -39,8 +43,12 @@ public class ResourceLabelProvider extends LabelProvider {
 	 * @see org.eclipse.jface.viewers.LabelProvider#getImage(java.lang.Object)
 	 */
 	public Image getImage(Object element) {
-		if (element instanceof IContainer) {
+		if (element instanceof IFolder) {
 			return IMG_FOLDER;
+		}
+		
+		if (element instanceof IProject) {
+			return IMG_PROJECT;
 		}
 
 		if (element instanceof IFile) {

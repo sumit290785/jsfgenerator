@@ -2,10 +2,7 @@ package jsfgenerator.ui.composites;
 
 import java.util.Arrays;
 
-import jsfgenerator.ui.model.ProjectResourceProvider;
-
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -25,17 +22,20 @@ public class ResourceSelectionComposite extends Composite {
 	protected ILabelProvider labelProvider;
 	protected ITreeContentProvider contentProvider;
 	protected ViewerFilter viewerFilter;
-	
+
 	protected FilteredTree filteredTree;
 
 	protected Text selectionText;
 
+	protected Object input;
+
 	public ResourceSelectionComposite(Composite parent, int style, ILabelProvider labelProvider,
-			ITreeContentProvider contentProvider, ViewerFilter viewerFilter) {
+			ITreeContentProvider contentProvider, ViewerFilter viewerFilter, Object input) {
 		super(parent, style);
 		this.labelProvider = labelProvider;
 		this.contentProvider = contentProvider;
 		this.viewerFilter = viewerFilter;
+		this.input = input;
 		createComposite();
 	}
 
@@ -48,7 +48,7 @@ public class ResourceSelectionComposite extends Composite {
 		TreeViewer viewer = filteredTree.getViewer();
 		viewer.setContentProvider(contentProvider);
 		viewer.setLabelProvider(labelProvider);
-		
+
 		viewer.setComparator(new ViewerComparator() {
 
 			@Override
@@ -63,19 +63,17 @@ public class ResourceSelectionComposite extends Composite {
 
 		viewer.setFilters(Arrays.asList(viewerFilter).toArray(new ViewerFilter[0]));
 
-		IProject project = ProjectResourceProvider.getInstance().getProject();
-		filteredTree.getViewer().setInput(project);
-
+		filteredTree.getViewer().setInput(input);
 		final Label label = new Label(this, SWT.NONE);
 		label.setText("Selected: ");
 		selectionText = new Text(this, SWT.BORDER | SWT.READ_ONLY);
 		selectionText.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 	}
-	
+
 	public FilteredTree getFilteredTree() {
 		return filteredTree;
 	}
-	
+
 	public Text getSelectionText() {
 		return selectionText;
 	}
