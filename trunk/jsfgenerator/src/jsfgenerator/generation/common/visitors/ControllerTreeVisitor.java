@@ -168,17 +168,19 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 	@SuppressWarnings("unchecked")
 	private void addClassDeclaraton(ClassControllerNode node) {
 		PackageDeclaration packageDeclaration = ast.newPackageDeclaration();
-		packageDeclaration.setName(getQualifiedName(node.getPackageName()));
-		unit.setPackage(packageDeclaration);
+		
+		if (node.getPackageName() != null && !node.getPackageName().equals("")) {
+			packageDeclaration.setName(getQualifiedName(node.getPackageName()));
+			unit.setPackage(packageDeclaration);
+		}
 
 		rootType = ast.newTypeDeclaration();
-		
+
 		if (node.getPackageName() == null || node.getPackageName().equals("")) {
 			rootName = node.getClassName();
 		} else {
 			rootName = node.getPackageName() + "." + node.getClassName();
 		}
-		
 
 		/*
 		 * add comment
@@ -243,6 +245,11 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 	}
 
 	private Name getQualifiedName(String name) {
+
+		if (name == null || name.equals("")) {
+			return ast.newSimpleName("");
+		}
+
 		String[] parts = name.split("[.]");
 		if (parts.length == 0) {
 			return null;

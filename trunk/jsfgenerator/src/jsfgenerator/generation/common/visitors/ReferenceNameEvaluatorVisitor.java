@@ -160,27 +160,26 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 	private String getFunction(ExpressionType type) {
 		StringBuffer buffer = new StringBuffer();
 		if (ExpressionType.SAVE.equals(type)) {
-			buffer.append("save(");
+			buffer.append("save");
 			if (params != null) {
 				buffer.append(StringUtils.toCSV(params));
 			}
 		} else if (ExpressionType.DELETE.equals(type)) {
-			buffer.append("delete(");
+			buffer.append("delete");
 			if (params != null) {
 				buffer.append(StringUtils.toCSV(params));
 			}
 		} else if (ExpressionType.REMOVE.equals(type)) {
-			buffer.append("remove(");
+			buffer.append("remove");
 		} else if (ExpressionType.REFRESH.equals(type)) {
-			buffer.append("reload(");
+			buffer.append("reload");
 			if (params != null) {
 				buffer.append(StringUtils.toCSV(params));
 			}
 		} else if (ExpressionType.ADD.equals(type)) {
-			buffer.append("add(");
+			buffer.append("add");
 		}
 
-		buffer.append(")");
 		return buffer.toString();
 	}
 

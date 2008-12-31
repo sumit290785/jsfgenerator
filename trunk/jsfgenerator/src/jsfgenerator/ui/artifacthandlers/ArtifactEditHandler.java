@@ -5,6 +5,10 @@ import java.util.Iterator;
 import jsfgenerator.ui.model.ProjectResourceProvider;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jst.j2ee.application.Application;
+import org.eclipse.jst.j2ee.application.EjbModule;
+import org.eclipse.jst.j2ee.application.WebModule;
+import org.eclipse.jst.j2ee.componentcore.util.EARArtifactEdit;
 import org.eclipse.jst.j2ee.web.componentcore.util.WebArtifactEdit;
 import org.eclipse.jst.j2ee.webapplication.ContextParam;
 import org.eclipse.jst.j2ee.webapplication.Servlet;
@@ -22,7 +26,7 @@ import org.eclipse.jst.jsf.facesconfig.util.FacesConfigArtifactEdit;
 import org.eclipse.wst.common.componentcore.ArtifactEdit;
 
 /**
- * Singleton class to modify faces-config.xml and web.xml artifacts
+ * Singleton class to modify faces-config.xml, web.xml, application.xml via built in artifact edits
  * 
  * @author zoltan verebes
  * 
@@ -77,12 +81,33 @@ public final class ArtifactEditHandler {
 
 		saveEdit(edit);
 	}
-	
+
 	public void setDispayName(String projectName) {
 		WebArtifactEdit webEdit = getWebArtifactEdit();
-		WebApp app = webEdit.getWebApp();
-		app.setDisplayName(projectName);
+		WebApp webApp = webEdit.getWebApp();
+		webApp.setDisplayName(projectName);
 		saveEdit(webEdit);
+	}
+	
+	public void configEarApplication(String webProjectName, String ejbProjectName) {
+		EARArtifactEdit earEdit = getEarArtifactEdit();
+		Application app = earEdit.getApplication();
+		app.setDisplayName(webProjectName + "-ear");
+		
+		for (Object module : app.getModules()) {
+			if (module instanceof WebModule) {
+				WebModule webModule = (WebModule) module;
+				webModule.setContextRoot("/" + webProjectName);
+				webModule.setUri(webProjectName + ".war");
+			}
+			
+			if (module instanceof EjbModule) {
+				EjbModule ejbModule = (EjbModule) module;
+				ejbModule.setUri(ejbProjectName + ".jar");
+			}
+		}
+		
+		saveEdit(earEdit);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -119,14 +144,14 @@ public final class ArtifactEditHandler {
 			}
 			param = null;
 		}
-		
+
 		if (param == null) {
 			param = factory.createContextParam();
 			param.setParamName("javax.faces.DEFAULT_SUFFIX");
 			param.setParamValue(".xhtml");
 			app.getContextParams().add(param);
 		}
-		
+
 		saveEdit(edit);
 	}
 
@@ -156,14 +181,27 @@ public final class ArtifactEditHandler {
 	}
 
 	protected WebArtifactEdit getWebArtifactEdit() {
-		WebArtifactEdit edit = new WebArtifactEdit(ProjectResourceProvider.getInstance().getJsfJavaProject().getProject(), false);
+		WebArtifactEdit edit = new WebArtifactEdit(ProjectResourceProvider.getInstance().getJsfProject(), false);
 
 		if (edit == null) {
 			throw new IllegalArgumentException("web.xml not found in the selected project");
 		}
 
 		if (edit.getWebApp() == null) {
-			throw new IllegalArgumentException("web.xml not found in the selected project");
+			throw new IllegalArgumentException("web.xml not found in the web project");
+		}
+
+		return edit;
+	}
+
+	protected EARArtifactEdit getEarArtifactEdit() {
+		EARArtifactEdit edit = new EARArtifactEdit(ProjectResourceProvider.getInstance().getEarProject(), false);
+		if (edit == null) {
+			throw new IllegalArgumentException("application.xml not found in the ear project");
+		}
+
+		if (edit.getApplication() == null) {
+			throw new IllegalArgumentException("application.xml not found in the ear project");
 		}
 
 		return edit;

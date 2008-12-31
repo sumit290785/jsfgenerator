@@ -73,6 +73,8 @@ public class MVCGenerationWizard extends Wizard {
 
 		setDefaultPageImageDescriptor(ImageDescriptor.createFromImage(img));
 	}
+	
+	
 
 	@Override
 	public void addPages() {
