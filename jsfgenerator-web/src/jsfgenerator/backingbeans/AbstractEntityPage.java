@@ -1,5 +1,6 @@
 package jsfgenerator.backingbeans;
 
+import jsfgenerator.ejb.utilities.JndiLookupUtility;
 
 /**
  * Generic abstract superclass for all of the entity page controller classes! It handles an instance of the entity T. Basic CRUD
@@ -18,6 +19,10 @@ public abstract class AbstractEntityPage<T> {
 
 	protected EditHelper<T> entityEditHelper;
 
+	public AbstractEntityPage() {
+		setEntityId(null);
+	}
+
 	public void setEntityEditHelper(EditHelper<T> entityEditHelper) {
 		this.entityEditHelper = entityEditHelper;
 	}
@@ -35,21 +40,22 @@ public abstract class AbstractEntityPage<T> {
 		return entityId;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void load() {
 
 		if (entityId == null) {
 			createEntityInstance();
 			return;
 		}
-/*
-		T entityInstance = getEntityManager().find(getEntityClass(), entityId);
+
+		T entityInstance = (T) JndiLookupUtility.getInstance().getPersistenceContext().load(entityId, getEntityClass());
 
 		if (entityInstance == null) {
 			throw new NullPointerException("Entity not found! Entity class is " + getEntityClass() + " and entity id is "
 					+ entityId);
 		}
 
-		entityEditHelper = new EditHelper<T>(entityInstance);*/
+		entityEditHelper = new EditHelper<T>(entityInstance);
 		init();
 	}
 
@@ -63,15 +69,14 @@ public abstract class AbstractEntityPage<T> {
 		} catch (IllegalAccessException e) {
 			throw new IllegalArgumentException("Could not instantiate new entity instance!", e);
 		}
-		
+
 		entityEditHelper = new EditHelper<T>(newEntityInstance);
 		init();
 	}
-	
-	public void init() {
-		
-	}
 
+	public void init() {
+
+	}
 
 	public abstract Class<T> getEntityClass();
 

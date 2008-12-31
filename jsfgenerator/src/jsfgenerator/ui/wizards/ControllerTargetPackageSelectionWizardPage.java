@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
 public class ControllerTargetPackageSelectionWizardPage extends WizardPage {
-
+	
 	private IPackageFragment selectedPackageFragment;
 
 	private TableViewer packageViewer;
@@ -44,6 +44,7 @@ public class ControllerTargetPackageSelectionWizardPage extends WizardPage {
 
 			public void widgetSelected(SelectionEvent event) {
 				OpenNewPackageWizardAction action = new OpenNewPackageWizardAction();
+				action.setSelection(new StructuredSelection(ProjectResourceProvider.getInstance().getJsfProject()));
 				action.run();
 
 				if (packageViewer != null) {

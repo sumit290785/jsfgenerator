@@ -3,10 +3,12 @@ package jsfgenerator.ui.model;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jsfgenerator.Activator;
@@ -28,6 +30,9 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -172,8 +177,13 @@ public class ProjectResourceProvider {
 		return url.openStream();
 	}
 
-	public InputStream getJSFGenJar() throws IOException {
-		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/jsfgen.jar"), null);
+	public InputStream getJSFGenWebJar() throws IOException {
+		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/jsfgen-web.jar"), null);
+		return url.openStream();
+	}
+
+	public InputStream getJSFGenEjbJar() throws IOException {
+		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/jsfgen-ejb.jar"), null);
 		return url.openStream();
 	}
 
@@ -199,6 +209,16 @@ public class ProjectResourceProvider {
 
 	public InputStream getTaglibInputStream() throws IOException {
 		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/jsfgen.taglib.xml"), null);
+		return url.openStream();
+	}
+
+	public InputStream getApplicationXmlInputStream() throws IOException {
+		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/application.xml"), null);
+		return url.openStream();
+	}
+	
+	public InputStream getEjbJarXmlInputStream() throws IOException {
+		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/ejb-jar.xml"), null);
 		return url.openStream();
 	}
 
@@ -267,4 +287,33 @@ public class ProjectResourceProvider {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public void addModuleToProject(IProject project, IProject module) {
+		IVirtualComponent component = ComponentCore.createComponent(project);
+		IVirtualReference ref = component.getReference(module.getName());
+
+		if (ref == null) {
+			ref = ComponentCore.createReference(component, ComponentCore.createComponent(module));
+			component.addReferences(new IVirtualReference[] { ref });
+		}
+	}
+	
+
+	public static IProject[] getReferencingEARProjects(IProject project) {
+		if (project != null && isEarProject(project)) {
+			return new IProject[] { project };
+		}
+
+		List<IProject> result = new ArrayList<IProject>();
+		IVirtualComponent component = ComponentCore.createComponent(project);
+		if (component != null) {
+			IVirtualComponent[] refComponents = component.getReferencingComponents();
+			for (int i = 0; i < refComponents.length; i++) {
+				if (isEarProject(refComponents[i].getProject()))
+					result.add(refComponents[i].getProject());
+			}
+		}
+		return (IProject[]) result.toArray(new IProject[result.size()]);
+	}
+
 }
