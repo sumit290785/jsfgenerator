@@ -9,10 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 import jsfgenerator.generation.common.INameConstants;
-import jsfgenerator.generation.common.utilities.AnnotationNameUtils;
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
-import jsfgenerator.generation.common.utilities.AnnotationNameUtils.Pair;
 import jsfgenerator.generation.controller.ControllerTree;
 import jsfgenerator.generation.controller.blockimplementation.BlockImplementationFactory;
 import jsfgenerator.generation.controller.nodes.ClassControllerNode;
@@ -21,7 +19,6 @@ import jsfgenerator.generation.controller.nodes.FieldControllerNode;
 import jsfgenerator.generation.controller.nodes.FunctionControllerNode;
 
 import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
@@ -131,14 +128,6 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		MethodDeclaration methodDeclaration = ast.newMethodDeclaration();
 		methodDeclaration.setConstructor(false);
 
-		/*
-		 * add annotations
-		 */
-		for (String annotationText : node.getAnnotations()) {
-			Annotation annotation = createAnnotation(annotationText);
-			methodDeclaration.modifiers().add(annotation);
-		}
-
 		methodDeclaration.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));
 		methodDeclaration.setName(ast.newSimpleName(ClassNameUtils.getSimpleClassName(node.getFunctionName())));
 
@@ -171,14 +160,6 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 
 		Type type = createParameterizedType(node.getClassName());
 		fd.setType(type);
-
-		/*
-		 * add annotations
-		 */
-		for (String annotationText : node.getAnnotations()) {
-			Annotation annotation = createAnnotation(annotationText);
-			fd.modifiers().add(annotation);
-		}
 
 		fd.modifiers().add(ast.newModifier(ModifierKeyword.PRIVATE_KEYWORD));
 		rootType.bodyDeclarations().add(fd);
@@ -225,14 +206,6 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		// it sets the flag if the compilation unit is an interface or a class
 		rootType.setInterface(false);
 
-		/*
-		 * add annotations
-		 */
-		for (String annotationText : node.getAnnotations()) {
-			Annotation annotation = createAnnotation(annotationText);
-			rootType.modifiers().add(annotation);
-		}
-
 		// class is public
 		rootType.modifiers().add(ast.newModifier(ModifierKeyword.PUBLIC_KEYWORD));
 		rootType.setName(ast.newSimpleName(ClassNameUtils.getSimpleClassName(rootName)));
@@ -254,21 +227,6 @@ public class ControllerTreeVisitor extends AbstractVisitor<ControllerNode> {
 		}
 
 		unit.types().add(rootType);
-	}
-
-	private Annotation createAnnotation(String annotation) {
-
-		// TODO: implement other annotation types
-		List<Pair> keyValuePairs = AnnotationNameUtils.getKeyValuePairs(annotation);
-
-		Annotation ann = null;
-		if (keyValuePairs == null || keyValuePairs.isEmpty()) {
-			ann = ast.newMarkerAnnotation();
-		}
-
-		String typeName = AnnotationNameUtils.getSimpleAnnotationName(annotation);
-		ann.setTypeName(ast.newSimpleName(typeName));
-		return ann;
 	}
 
 	@SuppressWarnings("unchecked")

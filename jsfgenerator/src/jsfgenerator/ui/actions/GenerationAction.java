@@ -15,8 +15,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -25,17 +23,19 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
+/**
+ * This action is called when the user selects the view and controller generation in the context menu. It shows up the wizard
+ * 
+ * @author zoltan verebes
+ * 
+ */
 public class GenerationAction extends Action implements IObjectActionDelegate {
-	
-	/*private static ImageDescriptor imageDescriptor = ImageDescriptor.createFromFile(IFolder.class,
-			"/jsfgenerator/resource/images/applications-system.png");
-	
-	private static Image img = new Image(PlatformUI.getWorkbench().getDisplay(), imageDescriptor.getImageData());*/
+
 	private IWorkbenchPart part;
 
 	private StructuredSelection selection;
 
-	private IProject selectedProject;
+	private IProject selectedEjbProject;
 
 	public void setActivePart(IAction action, IWorkbenchPart part) {
 		this.part = part;
@@ -45,18 +45,14 @@ public class GenerationAction extends Action implements IObjectActionDelegate {
 
 		Set<IFile> resources = collectSelectedFiles();
 
-		if (selectedProject != null && resources.size() != 0) {
-			IJavaProject project = JavaCore.create(selectedProject);
-			ProjectResourceProvider.getInstance().setJavaProject(project);
+		if (selectedEjbProject != null && resources.size() != 0) {
+			ProjectResourceProvider.getInstance().findProjectsByEjbProject(selectedEjbProject);
 			List<EntityDescription> entityDescriptions = EntityClassParser.findEntities(resources.toArray(new IFile[0]));
 
 			WizardDialog dialog = new WizardDialog(part.getSite().getShell(), new MVCGenerationWizard(entityDescriptions));
 			dialog.setMinimumPageSize(800, 550);
 			dialog.open();
-		} else {
-			ProjectResourceProvider.getInstance().setJavaProject(null);
 		}
-
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
@@ -83,13 +79,13 @@ public class GenerationAction extends Action implements IObjectActionDelegate {
 				continue;
 			}
 
-			if (selectedProject == null) {
-				selectedProject = ((IResource) element).getProject();
+			IProject project = ((IResource) element).getProject();
+			if (!ProjectResourceProvider.isEjbProject(project)) {
+				continue;
 			}
-
-			if (selectedProject.equals(((IResource) element).getProject())) {
-				files.addAll(getFiles((IResource) element));
-			}
+			
+			selectedEjbProject = ((IResource) element).getProject();
+			files.addAll(getFiles((IResource) element));
 		}
 
 		return files;

@@ -220,8 +220,8 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		for (TagAttribute attribute : tag.getAttributes()) {
 			if (processor.isAnnotationMessage(attribute.getName())) {
 				ResourceBundleBuilder resourceBuilder = ResourceBundleBuilder.getInstance();
-				attribute.setValue("#{" + resourceBuilder.getTranslateMethodInvocation(attribute.getValue().toLowerCase()) + "}");
 				resourceBuilder.addKey(attribute.getValue().toLowerCase());
+				attribute.setValue("#{" + resourceBuilder.getTranslateMethodInvocation(attribute.getValue().toLowerCase()) + "}");
 			}
 		}
 

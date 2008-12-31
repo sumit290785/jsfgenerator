@@ -16,7 +16,7 @@
               name="jsfgenerator.ui.menus.separator">
         </separator>
      </menu>
-	    <action
+	 	<action
            class="jsfgenerator.ui.actions.GenerationAction"
            definitionId="jsfgenerator.ui.generationaction"
            enablesFor="+"
@@ -87,6 +87,9 @@
                <delegate
                      class="jsfgenerator.ui.wizards.MVCFacetInstallDelegate">
                </delegate>
+               <config-factory
+                     class="jsfgenerator.ui.wizards.JSFGenInstallConfig$Factory">
+               </config-factory>
             </action>
       </project-facet-version>
    </extension>
@@ -136,6 +139,15 @@
          <runtime-component
                any="true"></runtime-component>
       </supported>
+   </extension>
+   <extension
+         point="org.eclipse.wst.common.project.facet.ui.wizardPages">
+      <wizard-pages
+            action="jsfgenerator-project-facet-1.0.install">
+         <page
+               class="jsfgenerator.ui.wizards.EJBProjectSelectionWizardPage">
+         </page>
+      </wizard-pages>
    </extension>
 
 </plugin>

@@ -39,22 +39,13 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 				.getEntityClassName());
 		ClassControllerNode node = new ClassControllerNode(getPackageName(), className, superClassName);
 
-		// annotation
-		node.addAnnotation(INameConstants.STATELESS_ANNOTATION);
-
 		// add implementation of abstract functions
-		final String emFieldType = INameConstants.ENTITY_MANAGER_CLASS_NAME;
-		final String emFieldName = INameConstants.ENTITY_PAGE_FIELD_ENTITY_MANAGER;
 		final String ecFieldType = ClassNameUtils
 				.addGenericParameter(INameConstants.CLASS_CLASS_NAME, model.getEntityClassName());
 		final String ecFieldName = INameConstants.ENTITY_PAGE_FIELD_ENTITY_CLASS;
 
-		FieldControllerNode emNode = new FieldControllerNode(emFieldName, emFieldType, emFieldType);
-		emNode.addAnnotation(INameConstants.PERSISTENCE_CONTEXT_ANNOTATION);
-		node.addChild(emNode);
-		node.addChild(new FieldControllerNode(ecFieldName, ecFieldType, ecFieldType));
-		node.addChild(createGetterFunctionControllerNode(emFieldName, emFieldType));
-		node.addChild(createGetterFunctionControllerNode(ecFieldName, ecFieldType));
+		node.addChild(new FunctionControllerNode(NodeNameUtils.getGetterName(ecFieldName), ecFieldType,
+				FunctionType.CLASS_GETTER, model.getEntityClassName()));
 
 		node.addChild(createInitFunctionNode());
 
@@ -83,7 +74,8 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 
 		String fieldName = NodeNameUtils.getControllerFieldNameByCanonicalName(form.getEntityName());
 		// add it to the init function to get it initialized
-		initStatementWrappers.add(new InitStatementWrapper(EditorType.EDIT_HELPER, editorFieldName, form.getEntityClassName(), fieldName));
+		initStatementWrappers.add(new InitStatementWrapper(EditorType.EDIT_HELPER, editorFieldName, form.getEntityClassName(),
+				fieldName));
 
 		return nodes;
 	}

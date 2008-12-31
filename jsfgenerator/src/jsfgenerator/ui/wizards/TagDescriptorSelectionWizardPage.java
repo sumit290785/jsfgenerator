@@ -4,6 +4,7 @@ import java.io.File;
 
 import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.ui.composites.ResourceSelectionComposite;
+import jsfgenerator.ui.model.ProjectResourceProvider;
 import jsfgenerator.ui.providers.ResourceLabelProvider;
 import jsfgenerator.ui.providers.ResourceSelectionContentProvider;
 
@@ -69,7 +70,8 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 	 */
 	public void createControl(Composite parent) {
 		resourceComposite = new ResourceSelectionComposite(parent, SWT.NONE, new ResourceLabelProvider(),
-				new ResourceSelectionContentProvider(), new XMLViewerFilter());
+				new ResourceSelectionContentProvider(), new XMLViewerFilter(), ProjectResourceProvider.getInstance()
+						.getJsfProject());
 		setControl(resourceComposite);
 
 		resourceComposite.getFilteredTree().getViewer().addSelectionChangedListener(new ISelectionChangedListener() {

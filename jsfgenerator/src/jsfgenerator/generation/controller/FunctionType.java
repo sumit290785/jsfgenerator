@@ -26,5 +26,7 @@ public enum FunctionType {
 	/**
 	 * Init block
 	 */
-	INIT
+	INIT,
+	
+	CLASS_GETTER
 }

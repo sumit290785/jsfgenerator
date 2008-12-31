@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import jsfgenerator.generation.common.Node;
-import jsfgenerator.generation.common.utilities.AnnotationNameUtils;
 
 /**
  * Marker abstract class for tree elements of the controller tree
@@ -17,8 +16,6 @@ import jsfgenerator.generation.common.utilities.AnnotationNameUtils;
  */
 public abstract class ControllerNode extends Node<ControllerNode> {
 
-	protected Set<String> annotations = new HashSet<String>();
-
 	/**
 	 * All the used classes have to be imported into the compilation unit. Used classes are return type, field types, super class,
 	 * implemented interfaces, generic parameters of the types
@@ -26,21 +23,7 @@ public abstract class ControllerNode extends Node<ControllerNode> {
 	 * @return required imports by this node
 	 */
 	public Set<String> getRequiredImports() {
-		Set<String> imports = new HashSet<String>();
-		for (String annotation : annotations) {
-			String annotationFullName = AnnotationNameUtils.getFullyQualifiedAnnotationClassName(annotation);
-			imports.add(annotationFullName);
-		}
-
-		return imports;
-	}
-
-	public Set<String> getAnnotations() {
-		return annotations;
-	}
-
-	public void addAnnotation(String annotation) {
-		annotations.add(annotation);
+		return new HashSet<String>();
 	}
 
 	/*

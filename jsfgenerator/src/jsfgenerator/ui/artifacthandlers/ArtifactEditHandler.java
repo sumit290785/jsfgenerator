@@ -139,7 +139,7 @@ public final class ArtifactEditHandler {
 	}
 
 	protected FacesConfigArtifactEdit getFacesConfigArtifectEdit() {
-		FacesConfigArtifactEdit edit = new FacesConfigArtifactEdit(ProjectResourceProvider.getInstance().getJavaProject()
+		FacesConfigArtifactEdit edit = new FacesConfigArtifactEdit(ProjectResourceProvider.getInstance().getJsfJavaProject()
 				.getProject(), false);
 
 		if (edit == null) {
@@ -156,7 +156,7 @@ public final class ArtifactEditHandler {
 	}
 
 	protected WebArtifactEdit getWebArtifactEdit() {
-		WebArtifactEdit edit = new WebArtifactEdit(ProjectResourceProvider.getInstance().getJavaProject().getProject(), false);
+		WebArtifactEdit edit = new WebArtifactEdit(ProjectResourceProvider.getInstance().getJsfJavaProject().getProject(), false);
 
 		if (edit == null) {
 			throw new IllegalArgumentException("web.xml not found in the selected project");

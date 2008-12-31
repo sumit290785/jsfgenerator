@@ -57,6 +57,16 @@ public final class BlockImplementationFactory {
 			}
 
 			return createInitBlock(ast, (List<InitStatementWrapper>) args[0]);
+		} else if (FunctionType.CLASS_GETTER.equals(type)) {
+			if (args.length != 1) {
+				throw new IllegalArgumentException("Number of arguments is not satisfying");
+			}
+
+			if (!(args[0] instanceof String)) {
+				throw new IllegalArgumentException("Type of the only argument is not correct. Required: String");
+			}
+
+			return createClassGetterBlock(ast, (String) args[0]);
 		}
 
 		return null;
@@ -148,8 +158,7 @@ public final class BlockImplementationFactory {
 			ClassInstanceCreation classInstance = ast.newClassInstanceCreation();
 			classInstance.setType(ptype);
 
-			// entity manager parameter
-			classInstance.arguments().add(ast.newSimpleName(INameConstants.ENTITY_PAGE_FIELD_ENTITY_MANAGER));
+			// classInstance.arguments().add(ast.newSimpleName(INameConstants.ENTITY_PAGE_FIELD_ENTITY_MANAGER));
 
 			// field parameter
 			MethodInvocation methodInvocation = ast.newMethodInvocation();
@@ -175,6 +184,19 @@ public final class BlockImplementationFactory {
 			block.statements().add(ast.newExpressionStatement(statement));
 		}
 
+		return block;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected static Block createClassGetterBlock(AST ast, String className) {
+		Block block = createEmptyBlock(ast);
+		TypeLiteral literal = ast.newTypeLiteral();
+		String simpleName = ClassNameUtils.getSimpleClassName(className);
+		literal.setType(ast.newSimpleType(ast.newSimpleName(simpleName)));
+
+		ReturnStatement returnStatement = ast.newReturnStatement();
+		returnStatement.setExpression(literal);
+		block.statements().add(returnStatement);
 		return block;
 	}
 
