@@ -4,9 +4,9 @@ import jsfgenerator.generation.view.StaticTagNode;
 import jsfgenerator.generation.view.AbstractTagNode;
 import jsfgenerator.generation.view.parameters.TagAttribute;
 
-public class IndexVariableVisitor extends AbstractVisitor<AbstractTagNode> {
+public class VarVariableVisitor extends AbstractVisitor<AbstractTagNode> {
 
-	private String indexVariableName;
+	private String varVariableName;
 
 	@Override
 	public boolean visit(AbstractTagNode node) {
@@ -18,8 +18,8 @@ public class IndexVariableVisitor extends AbstractVisitor<AbstractTagNode> {
 		StaticTagNode stag = (StaticTagNode) node;
 
 		for (TagAttribute attribute : stag.getAttributes()) {
-			if (attribute.isIndex()) {
-				indexVariableName = attribute.getValue();
+			if (attribute.isVarVariable()) {
+				varVariableName = attribute.getValue();
 				return false;
 			}
 		}
@@ -27,12 +27,12 @@ public class IndexVariableVisitor extends AbstractVisitor<AbstractTagNode> {
 		return true;
 	}
 
-	public boolean indexFound() {
-		return indexVariableName != null && !indexVariableName.equals("");
+	public boolean variableFound() {
+		return varVariableName != null && !varVariableName.equals("");
 	}
 
-	public String getIndexVariableName() {
-		return indexVariableName;
+	public String getVarVariableName() {
+		return varVariableName;
 	}
 
 }

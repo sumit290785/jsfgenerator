@@ -6,7 +6,6 @@ import java.util.List;
 import jsfgenerator.generation.common.GenerationException;
 import jsfgenerator.generation.common.treebuilders.ResourceBundleBuilder;
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
-import jsfgenerator.generation.common.utilities.StringUtils;
 import jsfgenerator.generation.view.AbstractTagNode;
 import jsfgenerator.generation.view.PlaceholderTagNode;
 import jsfgenerator.generation.view.StaticTagNode;
@@ -18,10 +17,9 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 
 	public static enum ExpressionType {
 		ENTITY_FIELD(ViewTemplateConstants.EXPRESSION_ENTITY_FIELD), ENTITY_FIELD_NAME(
-				ViewTemplateConstants.EXPRESSION_ENTITY_FIELD_NAME), SAVE(ViewTemplateConstants.EXPRESSION_SAVE), DELETE(
-				ViewTemplateConstants.EXPRESSION_DELETE), REFRESH(ViewTemplateConstants.EXPRESSION_REFRESH), ADD(
-				ViewTemplateConstants.EXPRESSION_ADD), REMOVE(ViewTemplateConstants.EXPRESSION_REMOVE), METHOD_INVOCATION(
-				ViewTemplateConstants.EXPRESSION_METHOD_INVOCATION);
+				ViewTemplateConstants.EXPRESSION_ENTITY_FIELD_NAME), SAVE(ViewTemplateConstants.EXPRESSION_SAVE), REFRESH(
+				ViewTemplateConstants.EXPRESSION_REFRESH), ADD(ViewTemplateConstants.EXPRESSION_ADD), REMOVE(
+				ViewTemplateConstants.EXPRESSION_REMOVE);
 
 		private String name;
 
@@ -53,7 +51,8 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 
 	private String namespace;
 
-	private String[] params;
+	// name of the variable in the repeater
+	private String varVariable;
 
 	public ReferenceNameEvaluatorVisitor(String namespace, String... args) {
 		this.args = Arrays.asList(args);
@@ -95,7 +94,7 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 
 			StringBuffer buffer = new StringBuffer();
 			buffer.append(EXPRESSION_PREFIX);
-			buffer.append(namespace);
+			buffer.append(varVariable == null || varVariable.equals("") ? namespace : varVariable);
 			buffer.append(SEPARATOR);
 			buffer.append(fieldName);
 			buffer.append(EXPRESSION_POSTFIX);
@@ -114,6 +113,8 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 
 			StringBuffer buffer = new StringBuffer();
 			buffer.append(EXPRESSION_PREFIX);
+			ResourceBundleBuilder.getInstance().addKey(
+					(ClassNameUtils.getSimpleClassName(entityClassName) + "." + fieldName).toLowerCase());
 			buffer.append(ResourceBundleBuilder.getInstance().getTranslateMethodInvocation(
 					ClassNameUtils.getSimpleClassName(entityClassName), fieldName));
 
@@ -128,7 +129,11 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 				|| ExpressionType.REFRESH.equals(type)) {
 			StringBuffer buffer = new StringBuffer();
 			buffer.append(EXPRESSION_PREFIX);
-			buffer.append(namespace);
+
+			buffer.append((ExpressionType.SAVE.equals(type) && namespace != null && namespace.lastIndexOf(".") != -1 && namespace
+					.substring(namespace.lastIndexOf(".") + 1).equals("entityEditHelper")) ? namespace.substring(0, namespace
+					.lastIndexOf(".")) : namespace);
+
 			buffer.append(SEPARATOR);
 			buffer.append(getFunction(type));
 			buffer.append(EXPRESSION_POSTFIX);
@@ -136,46 +141,29 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 			return;
 		}
 
-		if (ExpressionType.METHOD_INVOCATION.equals(type)) {
-			if (params.length != 2) {
-				throw new GenerationException(
-						"Number of params is insufficient! Method incocation requires 2 params: viewId and function name");
-			}
+	}
 
-			String viewId = params[0];
-			String methodName = params[1];
-
-			StringBuffer buffer = new StringBuffer();
-			buffer.append(EXPRESSION_PREFIX);
-			buffer.append(viewId);
+	private void addIndex(StringBuffer buffer) {
+		if (varVariable != null) {
+			buffer.append("elements");
+			buffer.append("[");
+			buffer.append(varVariable);
+			buffer.append("]");
 			buffer.append(SEPARATOR);
-			buffer.append(methodName + "()");
-			buffer.append(EXPRESSION_POSTFIX);
-			attribute.setValue(buffer.toString());
-			return;
 		}
-
 	}
 
 	private String getFunction(ExpressionType type) {
 		StringBuffer buffer = new StringBuffer();
 		if (ExpressionType.SAVE.equals(type)) {
+			addIndex(buffer);
 			buffer.append("save");
-			if (params != null) {
-				buffer.append(StringUtils.toCSV(params));
-			}
-		} else if (ExpressionType.DELETE.equals(type)) {
-			buffer.append("delete");
-			if (params != null) {
-				buffer.append(StringUtils.toCSV(params));
-			}
 		} else if (ExpressionType.REMOVE.equals(type)) {
+			addIndex(buffer);
 			buffer.append("remove");
 		} else if (ExpressionType.REFRESH.equals(type)) {
+			addIndex(buffer);
 			buffer.append("reload");
-			if (params != null) {
-				buffer.append(StringUtils.toCSV(params));
-			}
 		} else if (ExpressionType.ADD.equals(type)) {
 			buffer.append("add");
 		}
@@ -183,12 +171,12 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 		return buffer.toString();
 	}
 
-	public void setParams(String... params) {
-		this.params = params;
+	public void setVarVariable(String varVariable) {
+		this.varVariable = varVariable;
 	}
 
-	public String[] getParams() {
-		return params;
+	public String getVarVariable() {
+		return varVariable;
 	}
 
 }

@@ -251,9 +251,9 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		} else if ("template".equalsIgnoreCase(key)) {
 			attribute = new TemplateAttribute(value);
 		} else {
-			boolean index = annotationProcessor.getIndexAttributeKey() != null
-					&& annotationProcessor.getIndexAttributeKey().equals(key);
-			attribute = new TagAttribute(key, value, TagParameterType.STATIC, index);
+			boolean varVariable = annotationProcessor.getVarAttributeKey() != null
+					&& annotationProcessor.getVarAttributeKey().equals(key);
+			attribute = new TagAttribute(key, value, TagParameterType.STATIC, varVariable);
 		}
 
 		return attribute;

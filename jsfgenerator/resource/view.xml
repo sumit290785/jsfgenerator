@@ -40,16 +40,12 @@
 		<a:expression type="add" for="action" />
 		<h:commandLink value="add" />
 
-		<a:index attribute="rowKeyVar" />
-		<a:element key="var" />
+		<a:variable attribute="var" />
 		<a:expression type="entityField" for="value" />
-		<ui:repeat var="item" rowKeyVar="index">
+		<ui:repeat var="item">
 			<a:message attribute="value" />
 			<a:expression type="remove" for="action" />
-			<h:commandLink value="remove">
-				<f:param name="index" value="#{index}" />
-			</h:commandLink>
-			
+			<h:commandLink value="remove" />
 			<a:placeHolder for="entityForm" />
 		</ui:repeat>
 	</a:template>

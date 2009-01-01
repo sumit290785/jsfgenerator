@@ -9,11 +9,11 @@ public final class ViewTemplateConstants {
 
 	public static final String ROOT_XPATH = "/annotation:view";
 
-	public static final String INDEX = "index";
+	public static final String VARIABLE = "variable";
 	
 	public static final String MESSAGE = "message";
 
-	public static final String INDEX_ATTRIBUTE = "attribute";
+	public static final String VAR_ATTRIBUTE = "attribute";
 
 	public static final String EXPRESSION = "expression";
 
@@ -31,12 +31,8 @@ public final class ViewTemplateConstants {
 	
 	public static final String EXPRESSION_SAVE= "save";
 
-	public static final String EXPRESSION_DELETE = "delete";
-	
 	public static final String EXPRESSION_REFRESH = "refresh";
 	
-	public static final String EXPRESSION_METHOD_INVOCATION = "methodInvocation";
-
 	public static final String PLACE_HOLDER = "placeHolder";
 
 	public static final String PLACE_HOLDER_FOR = "for";

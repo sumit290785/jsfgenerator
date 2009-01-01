@@ -1,17 +1,48 @@
 package jsfgenerator.backingbeans;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import jsfgenerator.ejb.utilities.JndiLookupUtility;
 
 public class ListEditHelper<T> {
+
+	public static class EditHelperElementDelegate<T> {
+
+		private int index;
+
+		private ListEditHelper<T> editHelper;
+
+		public EditHelperElementDelegate(int index, ListEditHelper<T> editHelper) {
+			this.index = index;
+			this.editHelper = editHelper;
+		}
+
+		public void save() {
+			editHelper.save(index);
+		}
+
+		public void delete() {
+			editHelper.delete(index);
+		}
+
+		public T getInstance() {
+			return editHelper.getInstance(index);
+		}
+	}
 
 	protected Class<T> entityClass;
 
 	protected List<T> instances;
 
+	protected Map<T, EditHelperElementDelegate<T>> elements;
+
 	public ListEditHelper(List<T> instances, Class<T> entityClass) {
 
 		if (instances == null) {
-			throw new IllegalArgumentException("Instance list parameter cannot be null!");
+			instances = new ArrayList<T>();
 		}
 
 		if (entityClass == null) {
@@ -21,28 +52,41 @@ public class ListEditHelper<T> {
 
 		this.entityClass = entityClass;
 		this.instances = instances;
+
+		this.elements = new HashMap<T, EditHelperElementDelegate<T>>();
+		for (int i = 0; i < instances.size(); i++) {
+			elements.put(instances.get(i), new EditHelperElementDelegate<T>(i, this));
+		}
 	}
 
-	public T getInstance(int index) {
+	protected T getInstance(int index) {
 		if (index < 0 && index >= instances.size()) {
 			throw new IllegalArgumentException("Illegal index, no such element!");
 		}
 		return instances.get(index);
 	}
 
-	public void save(int index) {
+	@SuppressWarnings("unchecked")
+	protected void save(int index) {
 		T instance = getInstance(index);
+		if (instance != null) {
+			elements.remove(instance);
+			instance = (T) JndiLookupUtility.getInstance().getPersistenceContext().save(instance);
+		}
+		elements.put(instance, new EditHelperElementDelegate<T>(index, this));
 		instances.set(index, instance);
 	}
 
-	public void delete(int index) {
+	protected void delete(int index) {
 		T instance = getInstance(index);
 		if (instance != null) {
 			instances.remove(index);
+			elements.remove(index);
+			JndiLookupUtility.getInstance().getPersistenceContext().delete(instance);
 		}
 	}
 
-	public void newInstance() {
+	public void add() {
 		T instance = null;
 		try {
 			instance = entityClass.newInstance();
@@ -53,6 +97,15 @@ public class ListEditHelper<T> {
 		}
 
 		instances.add(instance);
+		elements.put(instance, new EditHelperElementDelegate<T>(elements.size(), this));
+	}
+
+	public Map<T, EditHelperElementDelegate<T>> getElements() {
+		return elements;
+	}
+	
+	public List<T> getInstances() {
+		return instances;
 	}
 
 }
