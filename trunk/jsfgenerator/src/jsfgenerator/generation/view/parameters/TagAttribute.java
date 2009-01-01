@@ -26,13 +26,13 @@ public class TagAttribute {
 	// type of the parameter which is either a static value or an EL value
 	protected TagParameterType type;
 
-	private boolean index;
+	private boolean varVariable;
 
-	public TagAttribute(String name, String value, TagParameterType type, boolean index) {
+	public TagAttribute(String name, String value, TagParameterType type, boolean varVariable) {
 		this.name = name;
 		this.value = value;
 		this.type = type;
-		this.index = index;
+		this.varVariable = varVariable;
 	}
 
 	public void setName(String name) {
@@ -59,8 +59,8 @@ public class TagAttribute {
 		return type;
 	}
 
-	public boolean isIndex() {
-		return index;
+	public boolean isVarVariable() {
+		return varVariable;
 	}
 
 }

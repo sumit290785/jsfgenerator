@@ -75,9 +75,15 @@ public abstract class AbstractEntityPage<T> {
 	}
 
 	public void init() {
-
+	}
+	
+	public void save() {
+		wire();
+		entityEditHelper.save();
 	}
 
 	public abstract Class<T> getEntityClass();
+
+	public abstract void wire();
 
 }

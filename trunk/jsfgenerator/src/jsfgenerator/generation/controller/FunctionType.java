@@ -28,5 +28,7 @@ public enum FunctionType {
 	 */
 	INIT,
 	
-	CLASS_GETTER
+	CLASS_GETTER,
+	
+	WIRE
 }

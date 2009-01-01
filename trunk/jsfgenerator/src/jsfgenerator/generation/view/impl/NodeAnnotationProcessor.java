@@ -9,7 +9,7 @@ public class NodeAnnotationProcessor {
 
 	private Node node;
 
-	private String indexAttributeKey;
+	private String varAttributeKey;
 
 	private List<Node> annotations;
 
@@ -20,8 +20,8 @@ public class NodeAnnotationProcessor {
 		process();
 	}
 
-	public String getIndexAttributeKey() {
-		return indexAttributeKey;
+	public String getVarAttributeKey() {
+		return varAttributeKey;
 	}
 
 	public List<Node> getExpressionNodes() {
@@ -42,9 +42,9 @@ public class NodeAnnotationProcessor {
 		/*
 		 * index attribute
 		 */
-		Node indexNode = getAnnotationByName(ViewTemplateConstants.INDEX);
-		indexAttributeKey = (indexNode != null && indexNode.getAttributes() != null) ? indexNode.getAttributes().getNamedItem(
-				ViewTemplateConstants.INDEX_ATTRIBUTE).getNodeValue() : null;
+		Node varNode = getAnnotationByName(ViewTemplateConstants.VARIABLE);
+		varAttributeKey = (varNode != null && varNode.getAttributes() != null) ? varNode.getAttributes().getNamedItem(
+				ViewTemplateConstants.VAR_ATTRIBUTE).getNodeValue() : null;
 
 		/*
 		 * process messages

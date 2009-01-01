@@ -12,7 +12,7 @@ import jsfgenerator.entitymodel.forms.EntityListForm;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.generation.common.utilities.StringUtils;
-import jsfgenerator.generation.common.visitors.IndexVariableVisitor;
+import jsfgenerator.generation.common.visitors.VarVariableVisitor;
 import jsfgenerator.generation.common.visitors.PlaceholderTagNodeVisitor;
 import jsfgenerator.generation.common.visitors.ReferenceNameEvaluatorVisitor;
 import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
@@ -111,14 +111,13 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		String namespace = form.getEntityName() + INameConstants.EDITOR_FIELD_POSTFIX;
 		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(namespace, "instances");
 
-		String indexVariableName = getIndexVariableName(entityListFormTree);
-		visitor.setParams(indexVariableName);
 		entityListFormTree.apply(visitor);
 		entityListFormTree.applyReferenceName(form.getEntityName());
 
+		String varVariableName = getVarVariableName(entityListFormTree);
 		ViewTemplateTree entityFormTree = templateTreeProvider.getEntityFormTemplateTree();
 		visitor = new ReferenceNameEvaluatorVisitor(namespace);
-		visitor.setParams(indexVariableName);
+		visitor.setVarVariable(varVariableName);
 		entityFormTree.apply(visitor);
 
 		AbstractTagNode entityFormPlaceholderNode = getFirstPlaceholderTagNodeByType(entityListFormTree,
@@ -137,9 +136,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 
 	public void addInputField(EntityListForm form, EntityField field) {
 		List<AbstractTagNode> nodes = getNodesByName(form.getEntityName(), entityListFormPlaceholderNode);
-		String namespace = StringUtils.toDotSeparatedString(form.getEntityName() + INameConstants.EDITOR_FIELD_POSTFIX,
-				"instance(" + getIndexVariableName(nodes) + ")");
-		addInputField(form, field, entityListFormPlaceholderNode, nodes, namespace);
+		addInputField(form, field, entityListFormPlaceholderNode, nodes, getVarVariableName(nodes));
 	}
 
 	public void addInputField(EntityForm form, EntityField field) {
@@ -256,20 +253,20 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		return getFirstPlaceholderTagNodeByType(tagTree, type);
 	}
 
-	protected String getIndexVariableName(AbstractTagNode node) {
-		IndexVariableVisitor indexVariableVisitor = new IndexVariableVisitor();
+	protected String getVarVariableName(AbstractTagNode node) {
+		VarVariableVisitor indexVariableVisitor = new VarVariableVisitor();
 		node.apply(indexVariableVisitor);
 
-		if (!indexVariableVisitor.indexFound()) {
+		if (!indexVariableVisitor.variableFound()) {
 			return null;
 		}
 
-		return indexVariableVisitor.getIndexVariableName();
+		return indexVariableVisitor.getVarVariableName();
 	}
 
-	protected String getIndexVariableName(Collection<AbstractTagNode> nodes) {
+	protected String getVarVariableName(Collection<AbstractTagNode> nodes) {
 		for (AbstractTagNode node : nodes) {
-			String indexName = getIndexVariableName(node);
+			String indexName = getVarVariableName(node);
 			if (indexName != null) {
 				return indexName;
 			}
@@ -278,8 +275,8 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		return null;
 	}
 
-	protected String getIndexVariableName(ViewTemplateTree tree) {
-		return getIndexVariableName(tree.getNodes());
+	protected String getVarVariableName(ViewTemplateTree tree) {
+		return getVarVariableName(tree.getNodes());
 	}
 
 }

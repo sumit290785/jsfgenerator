@@ -48,6 +48,7 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 				FunctionType.CLASS_GETTER, model.getEntityClassName()));
 
 		node.addChild(createInitFunctionNode());
+		node.addChild(createWireFunctionNode());
 
 		return node;
 	}
@@ -137,6 +138,11 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 	protected FunctionControllerNode createInitFunctionNode() {
 		initStatementWrappers = new ArrayList<InitStatementWrapper>();
 		return new FunctionControllerNode(INameConstants.ENTIT_PAGE_INIT_FUNCTION, FunctionType.INIT, initStatementWrappers);
+	}
+	
+	protected FunctionControllerNode createWireFunctionNode() {
+		initStatementWrappers = new ArrayList<InitStatementWrapper>();
+		return new FunctionControllerNode(INameConstants.ENTIT_PAGE_WIRE_FUNCTION, FunctionType.WIRE, initStatementWrappers);
 	}
 
 	protected FunctionControllerNode createGetterFunctionControllerNode(String fieldName, String fieldType) {

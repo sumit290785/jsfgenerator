@@ -67,6 +67,13 @@ public final class BlockImplementationFactory {
 			}
 
 			return createClassGetterBlock(ast, (String) args[0]);
+		} else if (FunctionType.WIRE.equals(type)) {
+
+			if (args.length != 1) {
+				throw new IllegalArgumentException("Number of arguments is not satisfying");
+			}
+
+			return createWireBlock(ast, (List<InitStatementWrapper>) args[0]);
 		}
 
 		return null;
@@ -182,6 +189,32 @@ public final class BlockImplementationFactory {
 			statement.setRightHandSide(classInstance);
 
 			block.statements().add(ast.newExpressionStatement(statement));
+		}
+
+		return block;
+	}
+
+	protected static Block createWireBlock(AST ast, List<InitStatementWrapper> wrappers) {
+		Block block = createEmptyBlock(ast);
+
+		// entityEditHelper.getInstance().setAuthors(authorsEditHelper.getInstances());
+		for (InitStatementWrapper wrapper : wrappers) {
+			MethodInvocation methodInvocation = ast.newMethodInvocation();
+
+			methodInvocation.setExpression(ast.newSimpleName(INameConstants.DOMAIN_ENTITY_EDIT_HELPER));
+			methodInvocation.setName(ast.newSimpleName("getInstance"));
+			
+			MethodInvocation innerInvocation = ast.newMethodInvocation();
+			innerInvocation.setExpression(methodInvocation);
+			innerInvocation.setName(ast.newSimpleName(NodeNameUtils.getSetterName(wrapper.getEntityFieldName())));
+			
+			MethodInvocation parameter = ast.newMethodInvocation();
+			parameter.setExpression(ast.newSimpleName(wrapper.getFieldName()));
+			parameter.setName(ast.newSimpleName("getInstances"));
+			
+			innerInvocation.arguments().add(parameter);
+			
+			block.statements().add(ast.newExpressionStatement(innerInvocation));
 		}
 
 		return block;

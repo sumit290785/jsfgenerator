@@ -81,7 +81,7 @@ public final class NodeNameUtils {
 	}
 	
 	public static String getResourceBundleName(Locale locale) {
-		return "messages_" + locale.getLanguage() + "_" + locale.getCountry();
+		return "messages_" + locale.getLanguage() + "_" + locale.getCountry() + ".properties";
 	}
 	
 

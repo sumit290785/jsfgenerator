@@ -23,6 +23,8 @@ public interface INameConstants {
 	public static final String DOMAIN_ENTITY_EDIT_HELPER = "entity" + EDITOR_FIELD_POSTFIX;
 
 	public static final String ENTIT_PAGE_INIT_FUNCTION = "init";
+	
+	public static final String ENTIT_PAGE_WIRE_FUNCTION = "wire";
 
 	public static final String ENTITY_PAGE_POSTFIX = "Page";
 
