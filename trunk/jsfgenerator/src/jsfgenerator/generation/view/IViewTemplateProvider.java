@@ -27,4 +27,6 @@ public interface IViewTemplateProvider {
 
 	public List<String> getInputTagNames();
 	
+	public ViewTemplateTree getEntityListElementTemplateTree();
+	
 }

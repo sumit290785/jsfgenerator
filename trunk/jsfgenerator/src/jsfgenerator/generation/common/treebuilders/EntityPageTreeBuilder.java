@@ -28,8 +28,6 @@ import jsfgenerator.generation.view.parameters.TagAttribute;
 import jsfgenerator.generation.view.parameters.XMLNamespaceAttribute;
 
 /**
- * TODO: do the same for list page - subclass the same class
- * 
  * @author zoltan verebes
  * 
  */

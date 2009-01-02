@@ -1,8 +1,13 @@
-package jsfgenerator.ui.wizards;
+package jsfgenerator.ui.wizards.wizardpages;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
-import jsfgenerator.ui.model.EntityDescription;
+import jsfgenerator.ui.model.EntityDescriptionEntityPageWrapper;
+import jsfgenerator.ui.model.EntityDescriptionListPageWrapper;
+import jsfgenerator.ui.wizards.MVCGenerationWizard;
 
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -24,22 +29,41 @@ import org.eclipse.swt.widgets.Composite;
 @SuppressWarnings("restriction")
 public class EntityClassSelectionWizardPage extends WizardPage {
 
+	public static class WizardInput {
+		private EntityDescriptionEntityPageWrapper entityPageWrapper;
+		private EntityDescriptionListPageWrapper listPageWrapper;
+
+		public WizardInput(EntityDescriptionEntityPageWrapper entityPageWrapper, EntityDescriptionListPageWrapper listPageWrapper) {
+			this.entityPageWrapper = entityPageWrapper;
+			this.listPageWrapper = listPageWrapper;
+		}
+
+		public EntityDescriptionEntityPageWrapper getEntityPageWrapper() {
+			return entityPageWrapper;
+		}
+
+		public EntityDescriptionListPageWrapper getListPageWrapper() {
+			return listPageWrapper;
+		}
+
+	}
+
 	private static final String GENERATE = "generate";
 	private static final String DO_NOT_GENERATE = "do not generate";
-	public static final int ENTITY_PAGE = 1 << 1;
-	public static final int LIST_PAGE = 1 << 2;
-	
+
 	private static final Image IMG_CLASS = JavaPluginImages.get(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_CLASS);
 
 	protected static class GenerateEditingSupport extends EditingSupport {
 
-		public int flag;
-
 		private ComboBoxViewerCellEditor editor;
-		
+
+		public static final int LIST_PAGE = 1 << 1;
+		public static final int ENTITY_PAGE = 1 << 2;
+		private int flag;
+
 		public GenerateEditingSupport(ColumnViewer viewer, int flag) {
 			super(viewer);
-		
+
 			editor = new ComboBoxViewerCellEditor(((TableViewer) viewer).getTable());
 			editor.setContenProvider(new ArrayContentProvider());
 			editor.setLabelProvider(new LabelProvider() {
@@ -67,49 +91,29 @@ public class EntityClassSelectionWizardPage extends WizardPage {
 
 		@Override
 		protected Object getValue(Object element) {
-
-			if (ENTITY_PAGE == flag) {
-				return ((EntityDescription) element).isEntityPage();
-			} else {
-				return ((EntityDescription) element).isListPage();
+			if ((flag & ENTITY_PAGE) == ENTITY_PAGE) {
+				return ((WizardInput) element).getEntityPageWrapper().isPageGenerated();
+			} else if ((flag & LIST_PAGE) == LIST_PAGE) {
+				return ((WizardInput) element).getListPageWrapper().isPageGenerated();
 			}
 
+			return null;
 		}
 
 		@Override
 		protected void setValue(Object element, Object value) {
-			if (value instanceof Boolean && ENTITY_PAGE == flag) {
-				((EntityDescription) element).setEntityPage((Boolean) value);
-			} else if (value instanceof Boolean && LIST_PAGE == flag) {
-				((EntityDescription) element).setListPage((Boolean) value);
+			if (value instanceof Boolean && (flag & ENTITY_PAGE) == ENTITY_PAGE) {
+				((WizardInput) element).getEntityPageWrapper().setPageGenerated((Boolean) value);
+			} else if (value instanceof Boolean && (flag & LIST_PAGE) == LIST_PAGE) {
+				((WizardInput) element).getListPageWrapper().setPageGenerated((Boolean) value);
 			}
 			getViewer().refresh();
 		}
 	}
 
-	protected static class GenerateLabelProvider extends ColumnLabelProvider {
-
-		private int flag;
-
-		public GenerateLabelProvider(int flag) {
-			super();
-			this.flag = flag;
-		}
-
-		public String getText(Object element) {
-			if (ENTITY_PAGE == flag) {
-				return (((EntityDescription) element).isEntityPage()) ? GENERATE : DO_NOT_GENERATE;
-			} else if (LIST_PAGE == flag) {
-				return (((EntityDescription) element).isListPage()) ? GENERATE : DO_NOT_GENERATE;
-			}
-
-			return null;
-		}
-	}
-
 	private TableViewer viewer;
 
-	protected EntityClassSelectionWizardPage() {
+	public EntityClassSelectionWizardPage() {
 		super("EntityClassSelectionWizardPage");
 		setTitle("Entity selection");
 		setDescription("Please, check the items that you want to generate");
@@ -134,7 +138,7 @@ public class EntityClassSelectionWizardPage extends WizardPage {
 			}
 
 			public String getText(Object element) {
-				return ((EntityDescription) element).getEntityClassName();
+				return ((WizardInput) element).getEntityPageWrapper().getEntityDescription().getEntityClassName();
 			}
 
 		});
@@ -143,22 +147,41 @@ public class EntityClassSelectionWizardPage extends WizardPage {
 
 		// entity page
 		TableViewerColumn columnEntityPage = new TableViewerColumn(viewer, SWT.FILL);
-		columnEntityPage.setLabelProvider(new GenerateLabelProvider(ENTITY_PAGE));
+		columnEntityPage.setLabelProvider(new ColumnLabelProvider() {
+			public String getText(Object element) {
+				return ((WizardInput) element).getEntityPageWrapper().isPageGenerated() ? GENERATE : DO_NOT_GENERATE;
+			}
+		});
 		columnEntityPage.getColumn().setText("Entity page");
 		columnEntityPage.getColumn().setWidth(200);
 
-		columnEntityPage.setEditingSupport(new GenerateEditingSupport(columnEntityPage.getViewer(), ENTITY_PAGE));
+		columnEntityPage.setEditingSupport(new GenerateEditingSupport(columnEntityPage.getViewer(),
+				GenerateEditingSupport.ENTITY_PAGE));
 
 		// list page
 		TableViewerColumn columnListPage = new TableViewerColumn(viewer, SWT.FILL);
-		columnListPage.setLabelProvider(new GenerateLabelProvider(LIST_PAGE));
+		columnListPage.setLabelProvider(new ColumnLabelProvider() {
+			public String getText(Object element) {
+				return ((WizardInput) element).getListPageWrapper().isPageGenerated() ? GENERATE : DO_NOT_GENERATE;
+			}
+		});
 
 		columnListPage.getColumn().setText("List page");
 		columnListPage.getColumn().setWidth(200);
 
-		columnListPage.setEditingSupport(new GenerateEditingSupport(columnEntityPage.getViewer(), LIST_PAGE));
+		columnListPage.setEditingSupport(new GenerateEditingSupport(columnEntityPage.getViewer(),
+				GenerateEditingSupport.LIST_PAGE));
 
-		viewer.setInput(((MVCGenerationWizard) getWizard()).getEntityDescriptions());
+		MVCGenerationWizard wizard = (MVCGenerationWizard) getWizard();
+
+		Iterator<EntityDescriptionEntityPageWrapper> itEntity = wizard.getEntityDescriptionEntityPageWrappers().iterator();
+		Iterator<EntityDescriptionListPageWrapper> itList = wizard.getEntityDescriptionListPageWrappers().iterator();
+		List<WizardInput> input = new ArrayList<WizardInput>();
+		while (itEntity.hasNext() && itList.hasNext()) {
+			input.add(new WizardInput(itEntity.next(), itList.next()));
+		}
+
+		viewer.setInput(input);
 		viewer.getTable().setLinesVisible(true);
 		viewer.getTable().setHeaderVisible(true);
 		viewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

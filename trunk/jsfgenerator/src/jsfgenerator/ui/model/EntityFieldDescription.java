@@ -1,11 +1,6 @@
 package jsfgenerator.ui.model;
 
-import java.util.List;
-
 import jsfgenerator.entitymodel.forms.EntityRelationship;
-import jsfgenerator.generation.common.utilities.ClassNameUtils;
-
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 public class EntityFieldDescription {
 
@@ -16,11 +11,9 @@ public class EntityFieldDescription {
 	private EntityRelationship relationshipToEntity;
 
 	private boolean isId;
-
+	
 	private String inputTagName;
-
-	private EntityDescription entityDescription;
-
+	
 	public EntityFieldDescription(String fieldName, String className, EntityRelationship relationshipToEntity, boolean isId) {
 		this.fieldName = fieldName;
 		this.className = className;
@@ -36,39 +29,6 @@ public class EntityFieldDescription {
 		return className;
 	}
 
-	public String getInputTagName() {
-		return inputTagName;
-	}
-
-	public void setInputTagName(String inputTagName) {
-		this.inputTagName = inputTagName;
-	}
-
-	public void setExternalForm(EntityRelationship relationship) {
-
-		if (relationship == null) {
-			this.entityDescription = null;
-			return;
-		}
-
-		String className;
-		if (EntityRelationship.EMBEDDED.equals(relationship) || EntityRelationship.ONE_TO_ONE.equals(relationship)
-				|| EntityRelationship.MANY_TO_ONE.equals(relationship)) {
-			className = ClassNameUtils.removeGenericParameters(getClassName());
-		} else {
-			List<String> genericTypeList = ClassNameUtils.getGenericParameterList(getClassName());
-			className = ClassNameUtils.removeGenericParameters(genericTypeList.get(0));
-		}
-
-		TypeDeclaration typeNode = ProjectResourceProvider.getInstance().findSingleClassTypeDeclarationInEjbProject(className);
-		this.entityDescription = new EntityDescription(typeNode);
-		this.entityDescription.setEmbedded(true);
-	}
-
-	public EntityDescription getEntityDescription() {
-		return entityDescription;
-	}
-
 	public void setRelationshipToEntity(EntityRelationship relationshipToEntity) {
 		this.relationshipToEntity = relationshipToEntity;
 	}
@@ -79,6 +39,14 @@ public class EntityFieldDescription {
 
 	public boolean isId() {
 		return isId;
+	}
+
+	public void setInputTagName(String inputTagName) {
+		this.inputTagName = inputTagName;
+	}
+
+	public String getInputTagName() {
+		return inputTagName;
 	}
 
 }

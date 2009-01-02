@@ -30,7 +30,9 @@ public abstract class AbstractEntityModelBuilder<TEntity, TField> {
 	 */
 	protected EntityModel entityModel;
 
-	protected Map<String, AbstractPageModel> pages;
+	protected Map<String, AbstractPageModel> entityPages;
+
+	protected Map<String, AbstractPageModel> listPages;
 
 	/**
 	 * calls the clear method of the class to have an empty model
@@ -44,7 +46,7 @@ public abstract class AbstractEntityModelBuilder<TEntity, TField> {
 	 * @return metamodel of the application model
 	 */
 	public EntityModel createEntityModel() {
-		for (AbstractPageModel view : pages.values()) {
+		for (AbstractPageModel view : entityPages.values()) {
 			entityModel.addPageModel(view);
 		}
 
@@ -56,7 +58,7 @@ public abstract class AbstractEntityModelBuilder<TEntity, TField> {
 	 */
 	public void clear() {
 		entityModel = new EntityModel();
-		pages = new HashMap<String, AbstractPageModel>();
+		entityPages = new HashMap<String, AbstractPageModel>();
 	}
 
 	/**
@@ -66,27 +68,34 @@ public abstract class AbstractEntityModelBuilder<TEntity, TField> {
 	 * @param viewId
 	 */
 	public void createEntityPageModel(String viewId, String entityClassName) {
-		if (pages.containsKey(viewId)) {
+		if (entityPages.containsKey(viewId)) {
 			throw new IllegalArgumentException("View already in the model: " + viewId);
 		}
 
 		AbstractPageModel page = new EntityPageModel(viewId, entityClassName);
-		pages.put(viewId, page);
+		entityPages.put(viewId, page);
 	}
 
 	/**
 	 * adds an EntityListPageModel to the entity model
 	 * 
+	 * @param entity
 	 * @param viewId
 	 */
 	public void createEntityListPageModel(String viewId, String entityClassName) {
-		if (pages.containsKey(viewId)) {
+		if (entityPages.containsKey(viewId)) {
 			throw new IllegalArgumentException("View already in the model: " + viewId);
 		}
 
 		AbstractPageModel page = new EntityListPageModel(viewId, entityClassName);
-		pages.put(viewId, page);
+		listPages.put(viewId, page);
 	}
+
+	/**
+	 * @param viewId
+	 * @param fieldName
+	 */
+	public abstract void addFieldToList(String viewId, TEntity entity, TField field);
 
 	/**
 	 * 
@@ -103,25 +112,7 @@ public abstract class AbstractEntityModelBuilder<TEntity, TField> {
 	 * @param listField
 	 * @param genericEntity
 	 */
-	public abstract void addEntityListForm(TEntity domainEntity, TField listField);
-
-	public void addEntityFormToList(EntityPageModel entityPage, String viewId) {
-
-		if (entityPage == null) {
-			throw new IllegalArgumentException("Entity page parameter cannot be null!");
-		}
-
-		AbstractPageModel page = pages.get(viewId);
-		if (page == null) {
-			throw new IllegalArgumentException("View is not in the model: " + viewId);
-		}
-
-		if (!(page instanceof EntityListPageModel)) {
-			throw new IllegalArgumentException("View is not list page!");
-		}
-
-		((EntityListPageModel) page).addEntityPage(entityPage);
-	}
+	public abstract void addEntityListForm(String viewId, TEntity domainEntity, TField listField, TEntity genericFieldDescription);
 
 	/**
 	 * 
@@ -129,10 +120,10 @@ public abstract class AbstractEntityModelBuilder<TEntity, TField> {
 	 * @return
 	 */
 	protected AbstractPageModel getView(String viewId) {
-		return pages.get(viewId);
+		return entityPages.get(viewId);
 	}
 
 	public boolean isViewSpecified(String viewId) {
-		return pages.containsKey(viewId);
+		return entityPages.containsKey(viewId);
 	}
 }

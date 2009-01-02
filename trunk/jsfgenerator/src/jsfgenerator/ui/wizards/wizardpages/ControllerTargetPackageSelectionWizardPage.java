@@ -1,4 +1,4 @@
-package jsfgenerator.ui.wizards;
+package jsfgenerator.ui.wizards.wizardpages;
 
 import jsfgenerator.ui.model.ProjectResourceProvider;
 import jsfgenerator.ui.providers.ResourceLabelProvider;
@@ -25,7 +25,7 @@ public class ControllerTargetPackageSelectionWizardPage extends WizardPage {
 
 	private TableViewer packageViewer;
 
-	protected ControllerTargetPackageSelectionWizardPage() {
+	public ControllerTargetPackageSelectionWizardPage() {
 		super("ControllerTargetPackageSelectionWizardPage");
 		setTitle("Controller target package selection");
 		setDescription("Please, select a target package for the generated controller java classes");

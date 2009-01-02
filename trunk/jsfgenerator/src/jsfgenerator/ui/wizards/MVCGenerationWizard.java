@@ -8,8 +8,10 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import jsfgenerator.entitymodel.EntityModel;
 import jsfgenerator.entitymodel.forms.EntityRelationship;
@@ -24,9 +26,20 @@ import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
 import jsfgenerator.generation.view.IViewTemplateProvider;
 import jsfgenerator.generation.view.impl.ViewTemplateParser;
 import jsfgenerator.ui.artifacthandlers.ArtifactEditHandler;
+import jsfgenerator.ui.model.AbstractEntityDescriptionWrapper;
+import jsfgenerator.ui.model.AbstractEntityFieldDescriptionWrapper;
 import jsfgenerator.ui.model.EntityDescription;
+import jsfgenerator.ui.model.EntityDescriptionEntityPageWrapper;
+import jsfgenerator.ui.model.EntityDescriptionListPageWrapper;
 import jsfgenerator.ui.model.EntityFieldDescription;
+import jsfgenerator.ui.model.EntityFieldDescriptionEntityPageWrapper;
 import jsfgenerator.ui.model.ProjectResourceProvider;
+import jsfgenerator.ui.wizards.wizardpages.ControllerTargetPackageSelectionWizardPage;
+import jsfgenerator.ui.wizards.wizardpages.EntityClassSelectionWizardPage;
+import jsfgenerator.ui.wizards.wizardpages.EntityListPageFieldSelectionWizardPage;
+import jsfgenerator.ui.wizards.wizardpages.EntityPageFieldSelectionWizardPage;
+import jsfgenerator.ui.wizards.wizardpages.TagDescriptorSelectionWizardPage;
+import jsfgenerator.ui.wizards.wizardpages.ViewTargetFolderSelectionWizardPage;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -55,17 +68,20 @@ import org.eclipse.ui.PlatformUI;
 
 public class MVCGenerationWizard extends Wizard {
 
-	private List<EntityDescription> entityDescriptions;
+	private List<EntityDescriptionEntityPageWrapper> entityDescriptionEntityPageWrappers;
+	private List<EntityDescriptionListPageWrapper> entityDescriptionListPageWrappers;
 
 	private TagDescriptorSelectionWizardPage tagDescriptorSelectionWizardPage;
 	private ViewTargetFolderSelectionWizardPage viewTargetFolderSelectionWizardPage;
 	private ControllerTargetPackageSelectionWizardPage controllerTargetPackageSelectionWizardPage;
 	private EntityClassSelectionWizardPage entityClassSelectionWizardPage;
-	private EntityClassFieldSelectionWizardPage entityClassFieldSelectionWizardPage;
+	private EntityPageFieldSelectionWizardPage entityPageFieldSelectionWizardPage;
+	private EntityListPageFieldSelectionWizardPage entityListPageFieldSelectionWizardPage;
 
 	public MVCGenerationWizard(List<EntityDescription> entityDescriptions) {
 		super();
-		this.entityDescriptions = entityDescriptions;
+		this.entityDescriptionEntityPageWrappers = EntityDescriptionEntityPageWrapper.createWrappers(entityDescriptions);
+		this.entityDescriptionListPageWrappers = EntityDescriptionListPageWrapper.createWrappers(entityDescriptions);
 		setWindowTitle("View and Controller generation wizard");
 
 		Image img = new Image(PlatformUI.getWorkbench().getDisplay(), getClass().getResourceAsStream(
@@ -73,20 +89,20 @@ public class MVCGenerationWizard extends Wizard {
 
 		setDefaultPageImageDescriptor(ImageDescriptor.createFromImage(img));
 	}
-	
-	
 
 	@Override
 	public void addPages() {
 		entityClassSelectionWizardPage = new EntityClassSelectionWizardPage();
 		tagDescriptorSelectionWizardPage = new TagDescriptorSelectionWizardPage();
-		entityClassFieldSelectionWizardPage = new EntityClassFieldSelectionWizardPage();
+		entityPageFieldSelectionWizardPage = new EntityPageFieldSelectionWizardPage();
+		entityListPageFieldSelectionWizardPage = new EntityListPageFieldSelectionWizardPage();
 		viewTargetFolderSelectionWizardPage = new ViewTargetFolderSelectionWizardPage();
 		controllerTargetPackageSelectionWizardPage = new ControllerTargetPackageSelectionWizardPage();
 
 		addPage(entityClassSelectionWizardPage);
 		addPage(tagDescriptorSelectionWizardPage);
-		addPage(entityClassFieldSelectionWizardPage);
+		addPage(entityPageFieldSelectionWizardPage);
+		addPage(entityListPageFieldSelectionWizardPage);
 		addPage(viewTargetFolderSelectionWizardPage);
 		addPage(controllerTargetPackageSelectionWizardPage);
 		super.addPages();
@@ -105,24 +121,27 @@ public class MVCGenerationWizard extends Wizard {
 
 					ASTEntityModelBuilder builder = new ASTEntityModelBuilder();
 
-					for (EntityDescription entity : entityDescriptions) {
+					for (EntityDescriptionEntityPageWrapper entityWrapper : getEntityDescriptionEntityPageWrappers()) {
 
-						if (entity.isEntityPage()) {
-							String viewId = entity.getViewId();
+						if (entityWrapper.isPageGenerated()) {
+							String viewId = entityWrapper.getViewId();
 							if (!builder.isViewSpecified(viewId)) {
-								builder.createEntityPageModel(viewId, entity.getEntityClassName());
+								builder.createEntityPageModel(viewId, entityWrapper.getEntityDescription().getEntityClassName());
 							}
 
-							// if (hasSimpleField(entity)) {
-							builder.addEntityForm(viewId, entity, null);
-							// }
+							builder.addEntityForm(viewId, entityWrapper.getEntityDescription(), null);
 
-							for (EntityFieldDescription entityField : getSimpleEmbeddedFields(entity)) {
-								builder.addEntityForm(viewId, entityField.getEntityDescription(), entityField);
+							for (EntityFieldDescription entityField : getSimpleEmbeddedFields(entityWrapper)) {
+								AbstractEntityFieldDescriptionWrapper fieldWrapper = entityWrapper.getFieldWrapper(entityField);
+								builder
+										.addEntityForm(viewId, fieldWrapper.getEntityWrapper().getEntityDescription(),
+												entityField);
 							}
 
-							for (EntityFieldDescription entityField : getComplexEmbeddedFields(entity)) {
-								builder.addEntityListForm(entity, entityField);
+							for (EntityFieldDescriptionEntityPageWrapper entityFieldWrapper : getComplexEmbeddedFields(entityWrapper)) {
+								builder.addEntityListForm(entityWrapper.getViewId(), entityWrapper.getEntityDescription(),
+										entityFieldWrapper.getEntityFieldDescription(), entityFieldWrapper
+												.getEntityDescriptionWrapper().getEntityDescription());
 							}
 						}
 					}
@@ -171,10 +190,6 @@ public class MVCGenerationWizard extends Wizard {
 		}
 
 		return true;
-	}
-
-	public List<EntityDescription> getEntityDescriptions() {
-		return entityDescriptions;
 	}
 
 	public List<String> getInputTagIds() {
@@ -279,29 +294,30 @@ public class MVCGenerationWizard extends Wizard {
 		return document.get();
 	}
 
-	private List<EntityFieldDescription> getComplexEmbeddedFields(EntityDescription entityDescription) {
-		List<EntityFieldDescription> entityFields = new ArrayList<EntityFieldDescription>();
+	private List<EntityFieldDescriptionEntityPageWrapper> getComplexEmbeddedFields(
+			EntityDescriptionEntityPageWrapper entityDescriptionWrapper) {
+		List<EntityFieldDescriptionEntityPageWrapper> entityFields = new ArrayList<EntityFieldDescriptionEntityPageWrapper>();
 
-		for (EntityFieldDescription entityFieldDescription : entityDescription.getEntityFieldDescriptions()) {
-			if (entityFieldDescription.getEntityDescription() != null
-					&& (EntityRelationship.ONE_TO_MANY.equals(entityFieldDescription.getRelationshipToEntity()) || EntityRelationship.MANY_TO_MANY
-							.equals(entityFieldDescription.getRelationshipToEntity()))) {
-				entityFields.add(entityFieldDescription);
+		for (AbstractEntityFieldDescriptionWrapper entityFieldWrapper : entityDescriptionWrapper.getFieldWrappers()) {
+			EntityRelationship rel = entityFieldWrapper.getEntityFieldDescription().getRelationshipToEntity();
+			if (entityFieldWrapper.getEntityDescriptionWrapper() != null
+					&& (EntityRelationship.ONE_TO_MANY.equals(rel) || EntityRelationship.MANY_TO_MANY.equals(rel))) {
+				entityFields.add((EntityFieldDescriptionEntityPageWrapper) entityFieldWrapper);
 			}
 		}
 
 		return entityFields;
 	}
 
-	private List<EntityFieldDescription> getSimpleEmbeddedFields(EntityDescription entityDescription) {
+	private List<EntityFieldDescription> getSimpleEmbeddedFields(EntityDescriptionEntityPageWrapper entityDescriptionWrapper) {
 		List<EntityFieldDescription> entityFields = new ArrayList<EntityFieldDescription>();
 
-		for (EntityFieldDescription entityFieldDescription : entityDescription.getEntityFieldDescriptions()) {
-			if (entityFieldDescription.getEntityDescription() != null
-					&& (EntityRelationship.EMBEDDED.equals(entityFieldDescription.getRelationshipToEntity())
-							|| EntityRelationship.ONE_TO_ONE.equals(entityFieldDescription.getRelationshipToEntity()) || EntityRelationship.MANY_TO_ONE
-							.equals(entityFieldDescription.getRelationshipToEntity()))) {
-				entityFields.add(entityFieldDescription);
+		for (AbstractEntityFieldDescriptionWrapper entityFieldWrapper : entityDescriptionWrapper.getFieldWrappers()) {
+			EntityRelationship rel = entityFieldWrapper.getEntityFieldDescription().getRelationshipToEntity();
+			if (entityFieldWrapper.getEntityDescriptionWrapper() != null
+					&& (EntityRelationship.EMBEDDED.equals(rel) || EntityRelationship.MANY_TO_ONE.equals(rel) || EntityRelationship.ONE_TO_ONE
+							.equals(rel))) {
+				entityFields.add(entityFieldWrapper.getEntityFieldDescription());
 			}
 		}
 
@@ -317,6 +333,30 @@ public class MVCGenerationWizard extends Wizard {
 	@Override
 	public boolean needsProgressMonitor() {
 		return true;
+	}
+
+	public List<EntityDescriptionEntityPageWrapper> getEntityDescriptionEntityPageWrappers() {
+		return entityDescriptionEntityPageWrappers;
+	}
+
+	public List<EntityDescriptionListPageWrapper> getEntityDescriptionListPageWrappers() {
+		return entityDescriptionListPageWrappers;
+	}
+	
+	public String validateViewId() {
+		Set<String> ids = new HashSet<String>();
+		List<AbstractEntityDescriptionWrapper> descriptors = new ArrayList<AbstractEntityDescriptionWrapper>();
+		descriptors.addAll(entityDescriptionEntityPageWrappers);
+		descriptors.addAll(entityDescriptionListPageWrappers);
+		for (AbstractEntityDescriptionWrapper wrapper : descriptors) {
+			String id = wrapper.getViewId();
+			if (id != null && !id.equals("") && ids.contains(id)) {
+				return id + " is not unique view id!";
+			}
+			ids.add(id);
+		}
+		
+		return null;
 	}
 
 }

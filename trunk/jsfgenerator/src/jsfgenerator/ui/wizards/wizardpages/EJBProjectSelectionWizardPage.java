@@ -1,9 +1,10 @@
-package jsfgenerator.ui.wizards;
+package jsfgenerator.ui.wizards.wizardpages;
 
 import jsfgenerator.ui.composites.ResourceSelectionComposite;
 import jsfgenerator.ui.model.ProjectResourceProvider;
 import jsfgenerator.ui.providers.ResourceLabelProvider;
 import jsfgenerator.ui.providers.ResourceSelectionContentProvider;
+import jsfgenerator.ui.wizards.JSFGenInstallConfig;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;

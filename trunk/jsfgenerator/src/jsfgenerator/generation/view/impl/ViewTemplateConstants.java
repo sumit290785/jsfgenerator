@@ -10,7 +10,7 @@ public final class ViewTemplateConstants {
 	public static final String ROOT_XPATH = "/annotation:view";
 
 	public static final String VARIABLE = "variable";
-	
+
 	public static final String MESSAGE = "message";
 
 	public static final String VAR_ATTRIBUTE = "attribute";
@@ -24,15 +24,15 @@ public final class ViewTemplateConstants {
 	public static final String EXPRESSION_ENTITY_FIELD = "entityField";
 
 	public static final String EXPRESSION_ENTITY_FIELD_NAME = "entityFieldName";
-	
+
 	public static final String EXPRESSION_ADD = "add";
 
 	public static final String EXPRESSION_REMOVE = "remove";
-	
-	public static final String EXPRESSION_SAVE= "save";
+
+	public static final String EXPRESSION_SAVE = "save";
 
 	public static final String EXPRESSION_REFRESH = "refresh";
-	
+
 	public static final String PLACE_HOLDER = "placeHolder";
 
 	public static final String PLACE_HOLDER_FOR = "for";
@@ -44,6 +44,8 @@ public final class ViewTemplateConstants {
 	public static final String ENTITY_FORM = "entityForm";
 
 	public static final String ENTITY_LIST_FORM = "entityListForm";
+
+	public static final String ENTITY_LIST_ELEMENT = "listElement";
 
 	public static final String INPUT = "input";
 
