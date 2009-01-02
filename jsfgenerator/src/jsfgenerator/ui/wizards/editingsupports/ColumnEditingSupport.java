@@ -53,6 +53,7 @@ public class ColumnEditingSupport extends EditingSupport {
 		if (EntityRelationship.ONE_TO_MANY.equals(rel) || EntityRelationship.MANY_TO_MANY.equals(rel)) {
 			entityFieldWrapper.setExternalForm(rel);
 			List<String> fieldNames = new ArrayList<String>();
+			fieldNames.add(HIDE);
 			for (AbstractEntityFieldDescriptionWrapper fieldWrapper : wizardPage
 					.getEntityFieldDescriptionWrappers(entityFieldWrapper.getEntityDescriptionWrapper())) {
 				fieldNames.add(fieldWrapper.getEntityFieldDescription().getFieldName());

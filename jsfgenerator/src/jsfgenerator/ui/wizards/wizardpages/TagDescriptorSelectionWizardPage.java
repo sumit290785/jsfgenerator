@@ -4,9 +4,9 @@ import java.io.File;
 
 import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.ui.composites.ResourceSelectionComposite;
-import jsfgenerator.ui.model.ProjectResourceProvider;
 import jsfgenerator.ui.providers.ResourceLabelProvider;
 import jsfgenerator.ui.providers.ResourceSelectionContentProvider;
+import jsfgenerator.ui.utilities.ProjectResourceProvider;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;

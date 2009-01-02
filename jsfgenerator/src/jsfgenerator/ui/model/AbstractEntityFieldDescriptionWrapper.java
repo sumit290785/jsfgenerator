@@ -4,6 +4,7 @@ import java.util.List;
 
 import jsfgenerator.entitymodel.pageelements.EntityRelationship;
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
+import jsfgenerator.ui.utilities.ProjectResourceProvider;
 
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 

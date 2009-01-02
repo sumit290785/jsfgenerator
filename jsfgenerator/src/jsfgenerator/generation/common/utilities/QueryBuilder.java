@@ -46,17 +46,16 @@ public class QueryBuilder {
 		
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("FROM ");
-		buffer.append(domainEntityClass.toLowerCase());
+		buffer.append(domainEntityClass);
 		buffer.append(" ");
 		buffer.append(entityRef);
 		
 		
 		for (String ref : singleReferences) {
-			buffer.append(", (");
+			buffer.append(", ");
 			buffer.append(entityRef);
 			buffer.append(".");
 			buffer.append(ref);
-			buffer.append(")");
 		}
 		
 		for (String ref : collectionReferences) {

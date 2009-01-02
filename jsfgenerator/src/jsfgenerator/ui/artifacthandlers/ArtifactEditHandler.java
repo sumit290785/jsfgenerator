@@ -2,7 +2,7 @@ package jsfgenerator.ui.artifacthandlers;
 
 import java.util.Iterator;
 
-import jsfgenerator.ui.model.ProjectResourceProvider;
+import jsfgenerator.ui.utilities.ProjectResourceProvider;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jst.j2ee.application.Application;

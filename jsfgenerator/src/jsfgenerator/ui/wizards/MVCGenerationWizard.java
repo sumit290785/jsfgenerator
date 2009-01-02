@@ -35,7 +35,7 @@ import jsfgenerator.ui.model.EntityDescriptionListPageWrapper;
 import jsfgenerator.ui.model.EntityFieldDescription;
 import jsfgenerator.ui.model.EntityFieldDescriptionEntityPageWrapper;
 import jsfgenerator.ui.model.EntityFieldDescriptionListPageWrapper;
-import jsfgenerator.ui.model.ProjectResourceProvider;
+import jsfgenerator.ui.utilities.ProjectResourceProvider;
 import jsfgenerator.ui.wizards.wizardpages.ControllerTargetPackageSelectionWizardPage;
 import jsfgenerator.ui.wizards.wizardpages.EntityClassSelectionWizardPage;
 import jsfgenerator.ui.wizards.wizardpages.EntityListPageFieldSelectionWizardPage;
