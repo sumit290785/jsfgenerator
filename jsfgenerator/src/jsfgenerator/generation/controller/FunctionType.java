@@ -30,5 +30,7 @@ public enum FunctionType {
 	
 	CLASS_GETTER,
 	
-	WIRE
+	WIRE,
+	
+	QUERY
 }

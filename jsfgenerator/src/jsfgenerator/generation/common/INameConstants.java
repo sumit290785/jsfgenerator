@@ -13,6 +13,8 @@ public interface INameConstants {
 	public static final String COMPLEX_FORM_FIELD_CLASS = "jsfgenerator.backingbeans.ListEditHelper";
 
 	public static final String ENTITY_PAGE_SUPER_CLASS = "jsfgenerator.backingbeans.AbstractEntityPage";
+	
+	public static final String LIST_PAGE_SUPER_CLASS = "jsfgenerator.backingbeans.AbstractListPage";
 
 	public static final String ENTITY_PAGE_FIELD_ENTITY_CLASS = "entityClass";
 
@@ -25,6 +27,8 @@ public interface INameConstants {
 	public static final String ENTIT_PAGE_INIT_FUNCTION = "init";
 
 	public static final String ENTIT_PAGE_WIRE_FUNCTION = "wire";
+	
+	public static final String LIST_PAGE_QUERY_FUNCTION = "getQuery";
 
 	public static final String ENTITY_PAGE_POSTFIX = "Page";
 	

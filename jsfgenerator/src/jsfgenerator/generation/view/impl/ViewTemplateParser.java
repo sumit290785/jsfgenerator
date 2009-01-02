@@ -106,7 +106,7 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 
 		return ids;
 	}
-	
+
 	public ViewTemplateTree getEntityListPageTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.ENTITY_LIST_PAGE);
@@ -114,12 +114,36 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 			throw new RuntimeException("Entity list page could not be parsed", e);
 		}
 	}
-	
-	public ViewTemplateTree getEntityListElementTemplateTree() {
+
+	public ViewTemplateTree getListColumnDataTemplateTree() {
 		try {
-			return getTemplate(ViewTemplateConstants.ENTITY_LIST_ELEMENT);
+			return getTemplate(ViewTemplateConstants.LIST_COLUMN_DATA);
 		} catch (ParserException e) {
-			throw new RuntimeException("Entity list page could not be parsed", e);
+			throw new RuntimeException("Column data could not be parsed", e);
+		}
+	}
+
+	public ViewTemplateTree getListCollectionColumnTemplateTree() {
+		try {
+			return getTemplate(ViewTemplateConstants.LIST_COLLECTION_COLUMN);
+		} catch (ParserException e) {
+			throw new RuntimeException("Collection column data could not be parsed", e);
+		}
+	}
+
+	public ViewTemplateTree getListCollectionColumnDataTemplateTree() {
+		try {
+			return getTemplate(ViewTemplateConstants.LIST_COLLECTION_COLUMN_DATA);
+		} catch (ParserException e) {
+			throw new RuntimeException("Collection column data could not be parsed", e);
+		}
+	}
+
+	public ViewTemplateTree getListColumnHeaderTemplateTree() {
+		try {
+			return getTemplate(ViewTemplateConstants.LIST_COLUMN_HEADER);
+		} catch (ParserException e) {
+			throw new RuntimeException("Column header could not be parsed", e);
 		}
 	}
 
@@ -183,7 +207,14 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 					return new PlaceholderTagNode(PlaceholderTagNodeType.ENTITY_LIST_FORM);
 				} else if (value.equals(ViewTemplateConstants.INPUT)) {
 					return new PlaceholderTagNode(PlaceholderTagNodeType.INPUT);
+				} else if (value.equals(ViewTemplateConstants.LIST_COLUMN_DATA)) {
+					return new PlaceholderTagNode(PlaceholderTagNodeType.LIST_COLUMN_DATA);
+				} else if (value.equals(ViewTemplateConstants.LIST_COLUMN_HEADER)) {
+					return new PlaceholderTagNode(PlaceholderTagNodeType.LIST_COLUMN_HEADER);
+				}  else if (value.equals(ViewTemplateConstants.LIST_COLLECTION_COLUMN_DATA)) {
+					return new PlaceholderTagNode(PlaceholderTagNodeType.LIST_COLLECTION_COLUMN_DATA);
 				}
+
 			}
 			return null;
 		}
@@ -327,7 +358,6 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 
 		return nodes;
 	}
-	
 
 	public static void main(String[] args) {
 		InputStream is = ViewTemplateParser.class.getResourceAsStream("viewtemplate.xml");
@@ -339,6 +369,5 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 			e.printStackTrace();
 		}
 	}
-
 
 }

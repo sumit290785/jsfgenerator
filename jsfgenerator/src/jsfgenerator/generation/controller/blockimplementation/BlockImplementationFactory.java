@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeLiteral;
@@ -74,6 +75,13 @@ public final class BlockImplementationFactory {
 			}
 
 			return createWireBlock(ast, (List<InitStatementWrapper>) args[0]);
+		} else if (FunctionType.QUERY.equals(type)) {
+
+			if (args.length != 1 || !(args[0] instanceof String)) {
+				throw new IllegalArgumentException("Number of arguments is not satisfying");
+			}
+
+			return createQueryBlock(ast, (String) args[0]);
 		}
 
 		return null;
@@ -204,17 +212,17 @@ public final class BlockImplementationFactory {
 
 			methodInvocation.setExpression(ast.newSimpleName(INameConstants.DOMAIN_ENTITY_EDIT_HELPER));
 			methodInvocation.setName(ast.newSimpleName("getInstance"));
-			
+
 			MethodInvocation innerInvocation = ast.newMethodInvocation();
 			innerInvocation.setExpression(methodInvocation);
 			innerInvocation.setName(ast.newSimpleName(NodeNameUtils.getSetterName(wrapper.getEntityFieldName())));
-			
+
 			MethodInvocation parameter = ast.newMethodInvocation();
 			parameter.setExpression(ast.newSimpleName(wrapper.getFieldName()));
 			parameter.setName(ast.newSimpleName("getInstances"));
-			
+
 			innerInvocation.arguments().add(parameter);
-			
+
 			block.statements().add(ast.newExpressionStatement(innerInvocation));
 		}
 
@@ -231,6 +239,20 @@ public final class BlockImplementationFactory {
 		ReturnStatement returnStatement = ast.newReturnStatement();
 		returnStatement.setExpression(literal);
 		block.statements().add(returnStatement);
+		return block;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected static Block createQueryBlock(AST ast, String queryString) {
+		Block block = createEmptyBlock(ast);
+
+		StringLiteral literal = ast.newStringLiteral();
+		literal.setLiteralValue(queryString);
+		
+		ReturnStatement returnStatement = ast.newReturnStatement();
+		returnStatement.setExpression(literal);
+		block.statements().add(returnStatement);
+		
 		return block;
 	}
 

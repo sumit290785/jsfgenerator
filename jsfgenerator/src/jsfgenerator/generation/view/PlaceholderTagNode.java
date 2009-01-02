@@ -15,7 +15,7 @@ import jsfgenerator.generation.view.parameters.XMLNamespaceAttribute;
 public class PlaceholderTagNode extends AbstractTagNode {
 
 	public enum PlaceholderTagNodeType {
-		ENTITY_FORM, ENTITY_LIST_FORM, INPUT;
+		ENTITY_FORM, ENTITY_LIST_FORM, INPUT, LIST_COLUMN_DATA, LIST_COLUMN_HEADER, LIST_COLLECTION_COLUMN_DATA;
 	}
 
 	private PlaceholderTagNodeType type;

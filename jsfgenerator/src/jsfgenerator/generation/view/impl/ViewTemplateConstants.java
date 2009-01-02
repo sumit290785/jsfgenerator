@@ -24,6 +24,8 @@ public final class ViewTemplateConstants {
 	public static final String EXPRESSION_ENTITY_FIELD = "entityField";
 
 	public static final String EXPRESSION_ENTITY_FIELD_NAME = "entityFieldName";
+	
+	public static final String EXPRESSION_ENTITY_NAME = "entityName";
 
 	public static final String EXPRESSION_ADD = "add";
 
@@ -32,6 +34,8 @@ public final class ViewTemplateConstants {
 	public static final String EXPRESSION_SAVE = "save";
 
 	public static final String EXPRESSION_REFRESH = "refresh";
+	
+	public static final String EXPRESSION_RESULT_SET = "resultSet";
 
 	public static final String PLACE_HOLDER = "placeHolder";
 
@@ -45,7 +49,13 @@ public final class ViewTemplateConstants {
 
 	public static final String ENTITY_LIST_FORM = "entityListForm";
 
-	public static final String ENTITY_LIST_ELEMENT = "listElement";
+	public static final String LIST_COLUMN_DATA = "columnData";
+	
+	public static final String LIST_COLLECTION_COLUMN = "collectionColumn";
+	
+	public static final String LIST_COLLECTION_COLUMN_DATA = "collectionColumnData";
+	
+	public static final String LIST_COLUMN_HEADER = "columnHeader";
 
 	public static final String INPUT = "input";
 

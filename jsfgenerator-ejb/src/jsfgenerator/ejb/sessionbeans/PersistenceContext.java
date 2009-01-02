@@ -1,5 +1,7 @@
 package jsfgenerator.ejb.sessionbeans;
 
+import java.util.List;
+
 import javax.ejb.Local;
 
 /**
@@ -34,5 +36,15 @@ public interface PersistenceContext {
 	 * @return
 	 */
 	public Object load(long id, Class<?> clazz);
+
+	/**
+	 * executes the select query and returns with its result list <br/>
+	 * 
+	 * There is not any filter or order parameter specified
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public List<?> execute(String query);
 
 }

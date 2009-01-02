@@ -64,16 +64,40 @@
 		<hr/>
 		
 		<table>
-			<a:placeHolder for="listElement" />
+			<th>
+				<a:placeHolder for="columnHeader" />
+			</th>
+			<tbody>
+				<a:variable attribute="var" />
+				<a:expression type="entityField" for="value" />
+				<ui:repeat var="item">
+					<a:placeHolder for="columnData" />
+				</ui:repeat>
+			</tbody>
 		</table>
 		
 	</a:template>
 	
-	<a:template id="listElement" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	<a:template id="columnHeader" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
 		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
 		
+		<td>
+			<a:expression type="entityFieldName" for="value" />
+			<h:outputText />
+		</td>
+				
+	</a:template>
+	
+	<a:template id="columnData" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
+		
+		<td>
+			<a:expression type="entityField" for="value" />
+			<h:outputText />
+		</td>
 		
 	</a:template>
+	
 	
 
 	<a:template id="input" name="table row multiline input" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
