@@ -26,6 +26,7 @@ public class ResourceLabelProvider extends LabelProvider {
 
 	private static final Image IMG_FOLDER = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
 	
+	@SuppressWarnings("deprecation")
 	private static final Image IMG_PROJECT = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_PROJECT);
 
 	private static final Image IMG_FILE = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE);
@@ -68,8 +69,7 @@ public class ResourceLabelProvider extends LabelProvider {
 					return IMG_PACKAGE;
 				}
 			} catch (JavaModelException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 

@@ -14,8 +14,8 @@ import java.util.Locale;
 import java.util.Set;
 
 import jsfgenerator.entitymodel.EntityModel;
+import jsfgenerator.entitymodel.EntityModelBuilder;
 import jsfgenerator.entitymodel.forms.EntityRelationship;
-import jsfgenerator.entitymodel.impl.ASTEntityModelBuilder;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.generation.common.GenerationException;
 import jsfgenerator.generation.common.ViewAndControllerDTO;
@@ -119,7 +119,7 @@ public class MVCGenerationWizard extends Wizard {
 					monitor.beginTask("JSF View and Controller generation", 4);
 					monitor.subTask("Building the model");
 
-					ASTEntityModelBuilder builder = new ASTEntityModelBuilder();
+					EntityModelBuilder builder = new EntityModelBuilder();
 
 					for (EntityDescriptionEntityPageWrapper entityWrapper : getEntityDescriptionEntityPageWrappers()) {
 
@@ -144,6 +144,10 @@ public class MVCGenerationWizard extends Wizard {
 												.getEntityDescriptionWrapper().getEntityDescription());
 							}
 						}
+					}
+
+					for (EntityDescriptionListPageWrapper entityWrapper : getEntityDescriptionListPageWrappers()) {
+						// TODO: list page
 					}
 
 					monitor.subTask("Building the model");
@@ -286,9 +290,9 @@ public class MVCGenerationWizard extends Wizard {
 		try {
 			edit.apply(document);
 		} catch (MalformedTreeException e) {
-			e.printStackTrace();
+			throw new RuntimeException("Exception at formating the generated code format", e);
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			throw new RuntimeException("Exception at formating the generated code format", e);
 		}
 
 		return document.get();
@@ -342,7 +346,7 @@ public class MVCGenerationWizard extends Wizard {
 	public List<EntityDescriptionListPageWrapper> getEntityDescriptionListPageWrappers() {
 		return entityDescriptionListPageWrappers;
 	}
-	
+
 	public String validateViewId() {
 		Set<String> ids = new HashSet<String>();
 		List<AbstractEntityDescriptionWrapper> descriptors = new ArrayList<AbstractEntityDescriptionWrapper>();
@@ -355,7 +359,7 @@ public class MVCGenerationWizard extends Wizard {
 			}
 			ids.add(id);
 		}
-		
+
 		return null;
 	}
 

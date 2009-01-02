@@ -21,9 +21,8 @@ import jsfgenerator.generation.view.IViewTemplateProvider;
 import jsfgenerator.generation.view.ViewTemplateTree;
 
 /**
- * Singleton class that generates views and controllers by iterating through the
- * entity model and using the tag model to get the right tag information for the
- * entity model elements.
+ * Singleton class that generates views and controllers by iterating through the entity model and using the tag model to get the right tag
+ * information for the entity model elements.
  * 
  * It is a singleton class!
  * 
@@ -50,7 +49,8 @@ public final class ViewAndControllerEngine {
 		return instance;
 	}
 
-	public void generateViewsAndControllers(EntityModel model, IViewTemplateProvider tagTreeProvider, AbstractControllerNodeProvider controllerNodeProvider) {
+	public void generateViewsAndControllers(EntityModel model, IViewTemplateProvider tagTreeProvider,
+			AbstractControllerNodeProvider controllerNodeProvider) {
 
 		if (model == null) {
 			throw new IllegalArgumentException("Model parameter cannot be null!");
@@ -69,9 +69,15 @@ public final class ViewAndControllerEngine {
 			if (pageModel instanceof EntityPageModel) {
 				generateEntityPageViewAndController((EntityPageModel) pageModel, tagTreeProvider, controllerNodeProvider);
 			} else if (pageModel instanceof EntityListPageModel) {
-				// TODO: list page
+				generateListPageViewAndController((EntityListPageModel) pageModel, tagTreeProvider, controllerNodeProvider);
 			}
 		}
+
+	}
+
+	private void generateListPageViewAndController(EntityListPageModel pageModel, IViewTemplateProvider tagTreeProvider,
+			AbstractControllerNodeProvider controllerNodeProvider) {
+		// TODO list page
 
 	}
 

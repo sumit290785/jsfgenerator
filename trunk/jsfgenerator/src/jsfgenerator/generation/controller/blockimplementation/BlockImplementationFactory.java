@@ -194,6 +194,7 @@ public final class BlockImplementationFactory {
 		return block;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected static Block createWireBlock(AST ast, List<InitStatementWrapper> wrappers) {
 		Block block = createEmptyBlock(ast);
 

@@ -9,18 +9,18 @@ public class EntityListPageTreeBuilder extends AbstractTreeBuilder {
 
 	public EntityListPageTreeBuilder(IViewTemplateProvider tagTreeProvider, AbstractControllerNodeProvider controllerNodeProvider) {
 		super(tagTreeProvider, controllerNodeProvider);
-		// TODO Auto-generated constructor stub
+		// TODO list page
 	}
 
 	@Override
 	public ControllerTree getControllerTree() {
-		// TODO Auto-generated method stub
+		// TODO list page
 		return null;
 	}
 
 	@Override
 	public ViewTemplateTree getViewTemplateTree() {
-		// TODO Auto-generated method stub
+		// TODO list page
 		return null;
 	}
 
