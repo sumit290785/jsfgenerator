@@ -27,6 +27,12 @@ public interface IViewTemplateProvider {
 
 	public List<String> getInputTagNames();
 	
-	public ViewTemplateTree getEntityListElementTemplateTree();
+	public ViewTemplateTree getListColumnDataTemplateTree();
+	
+	public ViewTemplateTree getListColumnHeaderTemplateTree();
+	
+	public ViewTemplateTree getListCollectionColumnTemplateTree();
+	
+	public ViewTemplateTree getListCollectionColumnDataTemplateTree();
 	
 }

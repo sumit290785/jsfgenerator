@@ -8,7 +8,8 @@
 			<xsd:enumeration value="entityListPage" />
 			<xsd:enumeration value="entityForm" />
 			<xsd:enumeration value="entityListForm" />
-			<xsd:enumeration value="listElement" />
+			<xsd:enumeration value="columnData" />
+			<xsd:enumeration value="columnHeader" />
 			<xsd:enumeration value="input" />
 		</xsd:restriction>
 	</xsd:simpleType>
@@ -19,8 +20,9 @@
 				<xsd:restriction base="a:templateName">
 					<xsd:enumeration value="entityForm" />
 					<xsd:enumeration value="entityListForm" />
-					<xsd:enumeration value="listElement" />
 					<xsd:enumeration value="input" />
+					<xsd:enumeration value="columnData" />
+					<xsd:enumeration value="columnHeader" />
 				</xsd:restriction>
 			</xsd:simpleType>
 		</xsd:attribute>

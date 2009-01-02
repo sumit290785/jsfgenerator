@@ -12,12 +12,12 @@ import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
-import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
+import jsfgenerator.generation.controller.AbstractControllerNodeFactory;
 import jsfgenerator.generation.controller.FunctionType;
 import jsfgenerator.generation.controller.blockimplementation.InitStatementWrapper;
 import jsfgenerator.generation.controller.blockimplementation.InitStatementWrapper.EditorType;
 
-public class ControllerNodeFactory extends AbstractControllerNodeProvider {
+public class ControllerNodeFactory extends AbstractControllerNodeFactory {
 
 	private static ControllerNodeFactory instance;
 
@@ -123,8 +123,13 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 	 */
 	@Override
 	public ClassControllerNode createEntityListPageClassNode(EntityListPageModel model) {
-		// TODO list page
-		return null;
+		
+		String className = NodeNameUtils.getListPageClassNameByUniqueName(model.getViewId());
+		String superClassName = ClassNameUtils.addGenericParameter(INameConstants.LIST_PAGE_SUPER_CLASS, model
+				.getEntityClassName());
+		ClassControllerNode node = new ClassControllerNode(getPackageName(), className, superClassName);
+
+		return node;
 	}
 
 	public void setPackageName(String packageName) {
@@ -138,6 +143,11 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 	protected FunctionControllerNode createInitFunctionNode() {
 		initStatementWrappers = new ArrayList<InitStatementWrapper>();
 		return new FunctionControllerNode(INameConstants.ENTIT_PAGE_INIT_FUNCTION, FunctionType.INIT, initStatementWrappers);
+	}
+	
+	public FunctionControllerNode createListQueryFunctionNode(String queryString) {
+		initStatementWrappers = new ArrayList<InitStatementWrapper>();
+		return new FunctionControllerNode(INameConstants.LIST_PAGE_QUERY_FUNCTION, "String", FunctionType.QUERY, queryString);
 	}
 	
 	protected FunctionControllerNode createWireFunctionNode() {

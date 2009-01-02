@@ -2,7 +2,10 @@ package jsfgenerator.generation.common.treebuilders;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jsfgenerator.generation.common.INameConstants;
@@ -38,8 +41,11 @@ public class ResourceBundleBuilder {
 
 	public InputStream getMessageInputStream() {
 		StringBuffer buffer = new StringBuffer();
-
-		for (String key : keys) {
+		
+		List<String> sortedKeys = new ArrayList<String>(keys);
+		Collections.sort(sortedKeys);
+		
+		for (String key : sortedKeys) {
 			buffer.append(key);
 			buffer.append("=");
 

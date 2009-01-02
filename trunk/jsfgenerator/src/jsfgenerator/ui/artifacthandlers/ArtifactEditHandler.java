@@ -75,7 +75,7 @@ public final class ArtifactEditHandler {
 		managedBT.setManagedBeanClass(managedBeanClassType);
 
 		ManagedBeanScopeType managedBeanScopeType = facesConfigFactory.createManagedBeanScopeType();
-		managedBeanScopeType.setTextContent("request");
+		managedBeanScopeType.setTextContent("session");
 		managedBT.setManagedBeanScope(managedBeanScopeType);
 		edit.getFacesConfig().getManagedBean().add(managedBT);
 

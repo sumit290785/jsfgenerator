@@ -1,7 +1,6 @@
 package jsfgenerator.generation.common.treebuilders;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,10 +11,8 @@ import jsfgenerator.entitymodel.pageelements.EntityListForm;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.generation.common.utilities.StringUtils;
-import jsfgenerator.generation.common.visitors.VarVariableVisitor;
-import jsfgenerator.generation.common.visitors.PlaceholderTagNodeVisitor;
 import jsfgenerator.generation.common.visitors.ReferenceNameEvaluatorVisitor;
-import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
+import jsfgenerator.generation.controller.AbstractControllerNodeFactory;
 import jsfgenerator.generation.controller.ControllerTree;
 import jsfgenerator.generation.controller.nodes.ControllerNode;
 import jsfgenerator.generation.view.AbstractTagNode;
@@ -50,7 +47,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	private PlaceholderTagNode entityListFormPlaceholderNode;
 
 	public EntityPageTreeBuilder(EntityPageModel model, IViewTemplateProvider tagTreeProvider,
-			AbstractControllerNodeProvider controllerNodeProvider) {
+			AbstractControllerNodeFactory controllerNodeProvider) {
 		super(tagTreeProvider, controllerNodeProvider);
 		this.model = model;
 		init();
@@ -88,14 +85,14 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		/*
 		 * add the info to the tag tree for the view
 		 */
-		ViewTemplateTree entityFormTagTree = templateTreeProvider.getEntityFormTemplateTree();
-		entityFormTagTree.applyReferenceName(form.getEntityName());
+		ViewTemplateTree entityFormTree = templateTreeProvider.getEntityFormTemplateTree();
+		entityFormTree.applyReferenceName(form.getEntityName());
 
 		String namespace = form.getEntityName() + INameConstants.EDITOR_FIELD_POSTFIX;
-		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(namespace);
-		entityFormTagTree.apply(visitor);
+		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(namespace, form.getEntityName());
+		entityFormTree.apply(visitor);
 
-		entityFormPlaceholderNode.addAllChildren(entityFormTagTree.getNodes());
+		entityFormPlaceholderNode.addAllChildren(entityFormTree.getNodes());
 
 		/*
 		 * add the info to the controller tree for the backing bean
@@ -103,18 +100,19 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		classNode.addAllChildren(controllerNodeProvider.createEntityFormControllerNodes(form));
 	}
 
-	public void addEntityListFormTemplateTree(EntityListForm form) {
+	public void addEntityListForm(EntityListForm form) {
 		ViewTemplateTree entityListFormTree = templateTreeProvider.getEntityListFormTemplateTree();
 
 		String namespace = form.getEntityName() + INameConstants.EDITOR_FIELD_POSTFIX;
-		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(namespace, "instances");
+		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(namespace, form.getEntityName());
+		visitor.setEntityFieldName("instances");
 
 		entityListFormTree.apply(visitor);
 		entityListFormTree.applyReferenceName(form.getEntityName());
 
 		String varVariableName = getVarVariableName(entityListFormTree);
 		ViewTemplateTree entityFormTree = templateTreeProvider.getEntityFormTemplateTree();
-		visitor = new ReferenceNameEvaluatorVisitor(namespace);
+		visitor = new ReferenceNameEvaluatorVisitor(namespace, form.getEntityName());
 		visitor.setVarVariable(varVariableName);
 		entityFormTree.apply(visitor);
 
@@ -170,8 +168,8 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		String entityClassName = (form instanceof EntityForm) ? ((EntityForm) form).getEntityClassName()
 				: ((EntityListForm) form).getEntityForm().getEntityClassName();
 
-		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(namespace, field.getFieldName(),
-				entityClassName);
+		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(namespace, entityClassName);
+		visitor.setEntityFieldName(field.getFieldName());
 		for (AbstractTagNode tagNode : inputTemplateTree.getNodes()) {
 			tagNode.apply(visitor);
 
@@ -200,81 +198,6 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	@Override
 	public ViewTemplateTree getViewTemplateTree() {
 		return templateTree;
-	}
-
-	/**
-	 * helper static function to find the first appearance of a place holder node with the particular type in the template tree
-	 * 
-	 * @param view
-	 *            template tree source of the search
-	 * @param type
-	 *            target type of the place holder tag
-	 * @return place holder node with the particular type in the tag tree
-	 */
-	protected PlaceholderTagNode getFirstPlaceholderTagNodeByType(ViewTemplateTree tagTree, PlaceholderTagNodeType type) {
-
-		if (tagTree == null) {
-			throw new IllegalArgumentException("Tag tree parameter cannot be null!");
-		}
-
-		if (type == null) {
-			throw new IllegalArgumentException("Type parameter cannot be null!");
-		}
-
-		PlaceholderTagNodeVisitor visitor = new PlaceholderTagNodeVisitor(type);
-		tagTree.apply(visitor);
-
-		return visitor.getPlaceholderNode();
-	}
-
-	/**
-	 * helper static function to find the first appearance of a place holder node with the particular type in the subtree of the node
-	 * 
-	 * @param node
-	 *            its subtree is the source of the search
-	 * @param type
-	 *            target type of the place holder node
-	 * @return place holder node with the particular type in the subtree of the node
-	 */
-	private PlaceholderTagNode getFirstPlaceholderTagNodeByType(List<AbstractTagNode> nodes, PlaceholderTagNodeType type) {
-
-		if (nodes == null) {
-			throw new IllegalArgumentException("Node parameter cannot be null!");
-		}
-
-		if (type == null) {
-			throw new IllegalArgumentException("Type parameter cannot be null!");
-		}
-
-		ViewTemplateTree tagTree = new ViewTemplateTree();
-		tagTree.addAllNodes(nodes);
-		return getFirstPlaceholderTagNodeByType(tagTree, type);
-	}
-
-	protected String getVarVariableName(AbstractTagNode node) {
-		VarVariableVisitor indexVariableVisitor = new VarVariableVisitor();
-		node.apply(indexVariableVisitor);
-
-		if (!indexVariableVisitor.variableFound()) {
-			return null;
-		}
-
-		return indexVariableVisitor.getVarVariableName();
-	}
-
-	protected String getVarVariableName(Collection<AbstractTagNode> nodes) {
-		for (AbstractTagNode node : nodes) {
-			String indexName = getVarVariableName(node);
-			if (indexName != null) {
-				return indexName;
-			}
-		}
-
-		return null;
-	}
-
-	protected String getVarVariableName(ViewTemplateTree tree) {
-		return getVarVariableName(tree.getNodes());
 	}
 
 }

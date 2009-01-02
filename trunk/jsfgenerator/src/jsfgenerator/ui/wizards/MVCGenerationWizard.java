@@ -16,7 +16,6 @@ import jsfgenerator.entitymodel.EntityModel;
 import jsfgenerator.entitymodel.EntityModelBuilder;
 import jsfgenerator.entitymodel.pageelements.EntityRelationship;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
-import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.common.GenerationException;
 import jsfgenerator.generation.common.ViewAndControllerDTO;
@@ -208,18 +207,17 @@ public class MVCGenerationWizard extends Wizard {
 					monitor.subTask("Save classes and resources");
 					for (AbstractPageModel pageModel : entityModel.getPageModels()) {
 
+						ViewAndControllerDTO viewDTO = engine.getViewAndControllerDTO(pageModel.getViewId());
+						saveView(pageModel.getViewId(), viewDTO.getViewStream());
+						String fileName;
 						if (pageModel instanceof EntityPageModel) {
-							ViewAndControllerDTO viewDTO = engine.getViewAndControllerDTO(pageModel.getViewId());
-							saveView(pageModel.getViewId(), viewDTO.getViewStream());
-							String fileName = NodeNameUtils.getEntityPageClassFileNameByUniqueName(pageModel.getViewId());
-							saveController(fileName, viewDTO.getViewClass());
-							saveResourceBundles();
-
-							addManagedBeanToFacesConfig(pageModel.getViewId(), viewDTO.getControllerClassName(), monitor);
-						} else if (pageModel instanceof EntityListPageModel) {
-							String fileName = NodeNameUtils.getListPageClassFileNameByUniqueName(pageModel.getViewId());
-							// TODO: list
+							fileName = NodeNameUtils.getEntityPageClassFileNameByUniqueName(pageModel.getViewId());
+						} else {
+							fileName = NodeNameUtils.getListPageClassFileNameByUniqueName(pageModel.getViewId());
 						}
+						saveController(fileName, viewDTO.getViewClass());
+						addManagedBeanToFacesConfig(pageModel.getViewId(), viewDTO.getControllerClassName(), monitor);
+						saveResourceBundles();
 					}
 
 					monitor.done();

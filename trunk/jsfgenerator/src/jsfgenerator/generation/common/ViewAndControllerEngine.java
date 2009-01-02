@@ -6,16 +6,19 @@ import java.util.Map;
 
 import jsfgenerator.entitymodel.EntityModel;
 import jsfgenerator.entitymodel.pageelements.AbstractEntityForm;
+import jsfgenerator.entitymodel.pageelements.ColumnModel;
 import jsfgenerator.entitymodel.pageelements.EntityField;
 import jsfgenerator.entitymodel.pageelements.EntityForm;
 import jsfgenerator.entitymodel.pageelements.EntityListForm;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
+import jsfgenerator.generation.common.treebuilders.AbstractTreeBuilder;
+import jsfgenerator.generation.common.treebuilders.EntityListPageTreeBuilder;
 import jsfgenerator.generation.common.treebuilders.EntityPageTreeBuilder;
 import jsfgenerator.generation.common.visitors.ControllerTreeVisitor;
 import jsfgenerator.generation.common.visitors.WriterTagVisitor;
-import jsfgenerator.generation.controller.AbstractControllerNodeProvider;
+import jsfgenerator.generation.controller.AbstractControllerNodeFactory;
 import jsfgenerator.generation.controller.ControllerTree;
 import jsfgenerator.generation.view.IViewTemplateProvider;
 import jsfgenerator.generation.view.ViewTemplateTree;
@@ -36,6 +39,9 @@ public final class ViewAndControllerEngine {
 
 	private static ViewAndControllerEngine instance;
 
+	protected ViewAndControllerEngine() {
+	}
+
 	/**
 	 * Singleton instance getter
 	 * 
@@ -49,8 +55,12 @@ public final class ViewAndControllerEngine {
 		return instance;
 	}
 
+	protected void init() {
+		views = new HashMap<String, ViewAndControllerDTO>();
+	}
+
 	public void generateViewsAndControllers(EntityModel model, IViewTemplateProvider tagTreeProvider,
-			AbstractControllerNodeProvider controllerNodeProvider) {
+			AbstractControllerNodeFactory controllerNodeProvider) {
 
 		if (model == null) {
 			throw new IllegalArgumentException("Model parameter cannot be null!");
@@ -66,44 +76,60 @@ public final class ViewAndControllerEngine {
 
 		init();
 		for (AbstractPageModel pageModel : model.getPageModels()) {
-			if (pageModel instanceof EntityPageModel) {
-				generateEntityPageViewAndController((EntityPageModel) pageModel, tagTreeProvider, controllerNodeProvider);
-			} else if (pageModel instanceof EntityListPageModel) {
-				generateListPageViewAndController((EntityListPageModel) pageModel, tagTreeProvider, controllerNodeProvider);
-			}
+			generatePageViewAndController(pageModel, tagTreeProvider, controllerNodeProvider);
 		}
 
 	}
 
-	private void generateListPageViewAndController(EntityListPageModel pageModel, IViewTemplateProvider tagTreeProvider,
-			AbstractControllerNodeProvider controllerNodeProvider) {
-		// TODO list page
-
-	}
-
-	public ViewAndControllerDTO getViewAndControllerDTO(String viewId) {
-		if (viewId == null || viewId.equals("")) {
-			throw new IllegalArgumentException("View id parameter cannot be null!");
-		}
-
-		return views.get(viewId);
-	}
-
-	protected ViewAndControllerEngine() {
-	}
-
-	protected void init() {
-		views = new HashMap<String, ViewAndControllerDTO>();
-	}
-
-	protected void generateEntityPageViewAndController(EntityPageModel pageModel, IViewTemplateProvider tagTreeProvider,
-			AbstractControllerNodeProvider controllerNodeProvider) {
+	protected void generatePageViewAndController(AbstractPageModel pageModel, IViewTemplateProvider tagTreeProvider,
+			AbstractControllerNodeFactory controllerNodeProvider) {
 
 		if (pageModel == null) {
 			throw new IllegalArgumentException("Page model cannot be null!");
 		}
 
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+		AbstractTreeBuilder treeBuilder;
+		if (pageModel instanceof EntityPageModel) {
+			treeBuilder = generateEntityPageViewAndController((EntityPageModel) pageModel, tagTreeProvider,
+					controllerNodeProvider);
+		} else {
+			treeBuilder = generateListPageViewAndController((EntityListPageModel) pageModel, tagTreeProvider,
+					controllerNodeProvider);
+		}
+
+		ControllerTree controllerTree = treeBuilder.getControllerTree();
+
+		ViewAndControllerDTO viewDTO = new ViewAndControllerDTO(pageModel.getViewId());
+
+		/*
+		 * generate controller java class with ControllerTreeVisitor class
+		 */
+		if (controllerTree != null) {
+			ControllerTreeVisitor treeVisitor = new ControllerTreeVisitor(controllerTree);
+			controllerTree.apply(treeVisitor);
+			viewDTO.setViewClass(treeVisitor.getCompilationUnit());
+			viewDTO.setControllerClassName(treeVisitor.getRootClassName());
+		}
+
+		ViewTemplateTree viewTemplate = treeBuilder.getViewTemplateTree();
+		/*
+		 * tag tree is ready to write it out into the output
+		 */
+		if (viewTemplate != null) {
+			WriterTagVisitor streamWriterVisitor = new WriterTagVisitor(os);
+			viewTemplate.apply(streamWriterVisitor);
+			viewDTO.setViewStream(streamWriterVisitor.getOutputStream());
+		}
+
+		viewDTO.setViewName(pageModel.getViewId());
+
+		views.put(viewDTO.getViewId(), viewDTO);
+	}
+
+	protected AbstractTreeBuilder generateEntityPageViewAndController(EntityPageModel pageModel,
+			IViewTemplateProvider tagTreeProvider, AbstractControllerNodeFactory controllerNodeProvider) {
 
 		EntityPageTreeBuilder treeBuilder = new EntityPageTreeBuilder(pageModel, tagTreeProvider, controllerNodeProvider);
 
@@ -117,34 +143,34 @@ public final class ViewAndControllerEngine {
 				}
 			} else if (form instanceof EntityListForm) {
 				EntityListForm entityListForm = (EntityListForm) form;
-				treeBuilder.addEntityListFormTemplateTree(entityListForm);
+				treeBuilder.addEntityListForm(entityListForm);
 				for (EntityField field : entityListForm.getFields()) {
 					treeBuilder.addInputField(entityListForm, field);
 				}
 			}
 		}
 
-		ViewTemplateTree tagTree = treeBuilder.getViewTemplateTree();
-		ControllerTree controllerTree = treeBuilder.getControllerTree();
+		return treeBuilder;
+	}
 
-		/*
-		 * generate controller java class with ControllerTreeVisitor class
-		 */
-		ControllerTreeVisitor treeVisitor = new ControllerTreeVisitor(controllerTree);
-		controllerTree.apply(treeVisitor);
+	protected AbstractTreeBuilder generateListPageViewAndController(EntityListPageModel pageModel,
+			IViewTemplateProvider tagTreeProvider, AbstractControllerNodeFactory controllerNodeProvider) {
 
-		/*
-		 * tag tree is ready to write it out into the output
-		 */
-		WriterTagVisitor streamWriterVisitor = new WriterTagVisitor(os);
-		tagTree.apply(streamWriterVisitor);
+		EntityListPageTreeBuilder treeBuilder = new EntityListPageTreeBuilder(pageModel, tagTreeProvider, controllerNodeProvider);
 
-		ViewAndControllerDTO viewDTO = new ViewAndControllerDTO(pageModel.getViewId());
-		viewDTO.setViewStream(streamWriterVisitor.getOutputStream());
-		viewDTO.setViewClass(treeVisitor.getCompilationUnit());
-		viewDTO.setControllerClassName(treeVisitor.getRootClassName());
-		viewDTO.setViewName(pageModel.getViewId());
+		for (ColumnModel column : pageModel.getColumns()) {
+			treeBuilder.addColumn(column);
+		}
 
-		views.put(viewDTO.getViewId(), viewDTO);
+		treeBuilder.buildQuery();
+		return treeBuilder;
+	}
+
+	public ViewAndControllerDTO getViewAndControllerDTO(String viewId) {
+		if (viewId == null || viewId.equals("")) {
+			throw new IllegalArgumentException("View id parameter cannot be null!");
+		}
+
+		return views.get(viewId);
 	}
 }

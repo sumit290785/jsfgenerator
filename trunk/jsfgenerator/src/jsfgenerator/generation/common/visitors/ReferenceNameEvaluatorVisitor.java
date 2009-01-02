@@ -1,9 +1,5 @@
 package jsfgenerator.generation.common.visitors;
 
-import java.util.Arrays;
-import java.util.List;
-
-import jsfgenerator.generation.common.GenerationException;
 import jsfgenerator.generation.common.treebuilders.ResourceBundleBuilder;
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.view.AbstractTagNode;
@@ -16,10 +12,21 @@ import jsfgenerator.generation.view.parameters.TagAttribute.TagParameterType;
 public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNode> {
 
 	public static enum ExpressionType {
-		ENTITY_FIELD(ViewTemplateConstants.EXPRESSION_ENTITY_FIELD), ENTITY_FIELD_NAME(
-				ViewTemplateConstants.EXPRESSION_ENTITY_FIELD_NAME), SAVE(ViewTemplateConstants.EXPRESSION_SAVE), REFRESH(
-				ViewTemplateConstants.EXPRESSION_REFRESH), ADD(ViewTemplateConstants.EXPRESSION_ADD), REMOVE(
-				ViewTemplateConstants.EXPRESSION_REMOVE);
+		ENTITY_NAME(ViewTemplateConstants.EXPRESSION_ENTITY_NAME),
+
+		ENTITY_FIELD(ViewTemplateConstants.EXPRESSION_ENTITY_FIELD),
+
+		ENTITY_FIELD_NAME(ViewTemplateConstants.EXPRESSION_ENTITY_FIELD_NAME),
+
+		SAVE(ViewTemplateConstants.EXPRESSION_SAVE),
+
+		REFRESH(ViewTemplateConstants.EXPRESSION_REFRESH),
+
+		ADD(ViewTemplateConstants.EXPRESSION_ADD),
+
+		REMOVE(ViewTemplateConstants.EXPRESSION_REMOVE),
+
+		RESULT_SET(ViewTemplateConstants.EXPRESSION_RESULT_SET);
 
 		private String name;
 
@@ -47,15 +54,17 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 	private static final String EXPRESSION_PREFIX = "#{";
 	private static final String EXPRESSION_POSTFIX = "}";
 
-	private List<String> args;
-
 	private String namespace;
 
 	// name of the variable in the repeater
 	private String varVariable;
 
-	public ReferenceNameEvaluatorVisitor(String namespace, String... args) {
-		this.args = Arrays.asList(args);
+	private String entityName;
+
+	private String entityFieldName;
+
+	public ReferenceNameEvaluatorVisitor(String namespace, String entityName) {
+		this.entityName = entityName;
 		this.namespace = namespace;
 	}
 
@@ -69,14 +78,19 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 		StaticTagNode stag = (StaticTagNode) tag;
 		for (TagAttribute attribute : stag.getAttributes()) {
 			if (TagParameterType.EXPRESSION.equals(attribute.getType())) {
-				evaluate(attribute);
+				try {
+					evaluate(attribute);
+				} catch (EvaluationException e) {
+					System.out.println("The following expression was not evaluated: " + attribute.getValue() + "; message: "
+							+ e.getMessage());
+				}
 			}
 		}
 
 		return true;
 	}
 
-	private void evaluate(TagAttribute attribute) {
+	private void evaluate(TagAttribute attribute) throws EvaluationException {
 
 		ExpressionType type = ExpressionType.valueOf(attribute.getValue());
 
@@ -86,42 +100,65 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 
 		if (ExpressionType.ENTITY_FIELD.equals(type)) {
 
-			if (args.size() == 0) {
-				throw new GenerationException("Number of arguments is insufficient!");
+			if (entityName == null) {
+				throw new EvaluationException("Entity name is required for evaluation!");
 			}
 
-			String fieldName = args.get(0);
+			if (entityFieldName == null) {
+				throw new EvaluationException("Entity field name is required for evaluation!");
+			}
 
 			StringBuffer buffer = new StringBuffer();
 			buffer.append(EXPRESSION_PREFIX);
 			buffer.append(varVariable == null || varVariable.equals("") ? namespace : varVariable);
 			buffer.append(SEPARATOR);
-			buffer.append(fieldName);
+			buffer.append(entityFieldName);
 			buffer.append(EXPRESSION_POSTFIX);
 			attribute.setValue(buffer.toString());
+			attribute.setType(TagParameterType.STATIC);
+			return;
+		}
+
+		if (ExpressionType.ENTITY_NAME.equals(type)) {
+
+			if (entityName == null) {
+				throw new EvaluationException("Entity name is required for evaluation!");
+			}
+
+			StringBuffer buffer = new StringBuffer();
+			buffer.append(EXPRESSION_PREFIX);
+			ResourceBundleBuilder.getInstance().addKey((ClassNameUtils.getSimpleClassName(entityName)).toLowerCase());
+			buffer.append(ResourceBundleBuilder.getInstance().getTranslateMethodInvocation(
+					ClassNameUtils.getSimpleClassName(entityName)));
+
+			buffer.append(EXPRESSION_POSTFIX);
+			attribute.setValue(buffer.toString());
+			attribute.setType(TagParameterType.STATIC);
+
 			return;
 		}
 
 		if (ExpressionType.ENTITY_FIELD_NAME.equals(type)) {
 
-			if (args.size() != 2) {
-				throw new GenerationException("Number of arguments is insufficient!");
+			if (entityName == null) {
+				throw new EvaluationException("Entity name is required for evaluation!");
 			}
 
-			String fieldName = args.get(0);
-			String entityClassName = args.get(1);
+			if (entityFieldName == null) {
+				throw new EvaluationException("Entity field name is required for evaluation!");
+			}
 
 			StringBuffer buffer = new StringBuffer();
 			buffer.append(EXPRESSION_PREFIX);
 			ResourceBundleBuilder.getInstance().addKey(
-					(ClassNameUtils.getSimpleClassName(entityClassName) + "." + fieldName).toLowerCase());
+					(ClassNameUtils.getSimpleClassName(entityName) + "." + entityFieldName).toLowerCase());
 			buffer.append(ResourceBundleBuilder.getInstance().getTranslateMethodInvocation(
-					ClassNameUtils.getSimpleClassName(entityClassName), fieldName));
+					ClassNameUtils.getSimpleClassName(entityName), entityFieldName));
 
 			buffer.append(EXPRESSION_POSTFIX);
 			attribute.setValue(buffer.toString());
+			attribute.setType(TagParameterType.STATIC);
 
-			ResourceBundleBuilder.getInstance().addKey(entityClassName.toLowerCase());
 			return;
 		}
 
@@ -138,6 +175,24 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 			buffer.append(getFunction(type));
 			buffer.append(EXPRESSION_POSTFIX);
 			attribute.setValue(buffer.toString());
+			attribute.setType(TagParameterType.STATIC);
+			return;
+		}
+
+		if (ExpressionType.RESULT_SET.equals(type)) {
+
+			if (entityName == null) {
+				throw new EvaluationException("Entity name is required for evaluation!");
+			}
+
+			StringBuffer buffer = new StringBuffer();
+			buffer.append(EXPRESSION_PREFIX);
+			buffer.append(namespace);
+			buffer.append(SEPARATOR);
+			buffer.append("resultSet");
+			buffer.append(EXPRESSION_POSTFIX);
+			attribute.setValue(buffer.toString());
+			attribute.setType(TagParameterType.STATIC);
 			return;
 		}
 
@@ -177,6 +232,10 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 
 	public String getVarVariable() {
 		return varVariable;
+	}
+
+	public void setEntityFieldName(String entityFieldName) {
+		this.entityFieldName = entityFieldName;
 	}
 
 }
