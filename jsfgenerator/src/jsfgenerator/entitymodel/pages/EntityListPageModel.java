@@ -3,30 +3,27 @@ package jsfgenerator.entitymodel.pages;
 import java.util.ArrayList;
 import java.util.List;
 
+import jsfgenerator.entitymodel.pageelements.ColumnModel;
+
 /**
+ * An entity list has columns which are field of the particular entity or an entity in relationship with this domain entity of the page
  * 
  * @author zoltan verebes
- * 
- * @param <T>
  */
 public class EntityListPageModel extends AbstractPageModel {
+
+	private List<ColumnModel> columns = new ArrayList<ColumnModel>();
 
 	public EntityListPageModel(String viewId, String entityClassName) {
 		super(viewId, entityClassName);
 	}
 
-	private List<EntityPageModel> entityPages = new ArrayList<EntityPageModel>();
-
-	public void setEntityPages(List<EntityPageModel> entityPages) {
-		this.entityPages = entityPages;
+	public List<ColumnModel> getColumns() {
+		return columns;
 	}
 
-	public List<EntityPageModel> getEntityPages() {
-		return entityPages;
-	}
-	
-	public void addEntityPage(EntityPageModel page) {
-		entityPages.add(page);
+	public void addColumn(ColumnModel column) {
+		columns.add(column);
 	}
 
 }

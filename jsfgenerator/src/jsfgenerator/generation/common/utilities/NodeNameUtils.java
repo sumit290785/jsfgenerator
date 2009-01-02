@@ -1,6 +1,5 @@
 package jsfgenerator.generation.common.utilities;
 
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,9 +29,9 @@ public final class NodeNameUtils {
 		}
 
 		Matcher matcher = getMatcher(uniqueName);
-		return  capitalName(matcher.group(matcher.groupCount())) + INameConstants.ENTITY_PAGE_POSTFIX;
+		return capitalName(matcher.group(matcher.groupCount())) + INameConstants.ENTITY_PAGE_POSTFIX;
 	}
-	
+
 	public static String getListPageClassNameByUniqueName(String uniqueName) {
 
 		if (uniqueName == null || uniqueName.equals("")) {
@@ -40,9 +39,9 @@ public final class NodeNameUtils {
 		}
 
 		Matcher matcher = getMatcher(uniqueName);
-		return  capitalName(matcher.group(matcher.groupCount())) + INameConstants.LIST_PAGE_POSTFIX;
+		return capitalName(matcher.group(matcher.groupCount())) + INameConstants.LIST_PAGE_POSTFIX;
 	}
-	
+
 	public static String removePostfixFromEntityPageClassName(String className) {
 		return className.replace(INameConstants.ENTITY_PAGE_POSTFIX, "");
 	}
@@ -59,7 +58,7 @@ public final class NodeNameUtils {
 		Matcher matcher = getMatcher(uniqueName);
 		return matcher.group(matcher.groupCount()) + "." + INameConstants.VIEW_NAME_EXTENSION;
 	}
-	
+
 	public static String getListPageClassFileNameByUniqueName(String uniqueName) {
 		return getListPageClassNameByUniqueName(uniqueName) + "." + INameConstants.CLASS_FILENAME_EXTENSION;
 	}
@@ -70,7 +69,7 @@ public final class NodeNameUtils {
 		}
 
 		Matcher matcher = getMatcher(uniqueName);
-		return toPlurar(matcher.group(matcher.groupCount())) + "." + INameConstants.VIEW_NAME_EXTENSION;
+		return matcher.group(matcher.groupCount()) + "." + INameConstants.VIEW_NAME_EXTENSION;
 	}
 
 	public static String getSetterName(String fieldName) {
@@ -102,11 +101,10 @@ public final class NodeNameUtils {
 		Matcher matcher = namePattern.matcher(viewId);
 		return matcher.matches();
 	}
-	
-	public static String getResourceBundleName(Locale locale) {
-		return "messages_" + locale.getLanguage() + "_" + locale.getCountry() + ".properties";
+
+	public static String getResourceBundleName() {
+		return "messages.properties";
 	}
-	
 
 	protected static String capitalName(String name) {
 		if (name == null || name.length() == 0) {
@@ -133,15 +131,4 @@ public final class NodeNameUtils {
 		return matcher;
 	}
 
-	protected static String toPlurar(String word) {
-		if (word == null || word.equals("")) {
-			return "";
-		}
-		
-		if (word.charAt(word.length() - 1) == 'y') {
-			return word.substring(0, word.length() - 2) + "ies";
-		}
-		
-		return word + "s";
-	}
 }

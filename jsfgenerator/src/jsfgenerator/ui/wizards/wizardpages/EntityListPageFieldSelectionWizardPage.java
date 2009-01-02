@@ -2,7 +2,7 @@ package jsfgenerator.ui.wizards.wizardpages;
 
 import java.util.List;
 
-import jsfgenerator.entitymodel.forms.EntityRelationship;
+import jsfgenerator.entitymodel.pageelements.EntityRelationship;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.ui.model.AbstractEntityDescriptionWrapper;
 import jsfgenerator.ui.model.AbstractEntityFieldDescriptionWrapper;

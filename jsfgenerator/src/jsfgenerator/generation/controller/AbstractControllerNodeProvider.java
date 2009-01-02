@@ -2,8 +2,8 @@ package jsfgenerator.generation.controller;
 
 import java.util.List;
 
-import jsfgenerator.entitymodel.forms.EntityListForm;
-import jsfgenerator.entitymodel.forms.EntityForm;
+import jsfgenerator.entitymodel.pageelements.EntityForm;
+import jsfgenerator.entitymodel.pageelements.EntityListForm;
 import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.controller.nodes.ClassControllerNode;

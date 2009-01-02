@@ -2,7 +2,7 @@ package jsfgenerator.ui.wizards.editingsupports;
 
 import java.util.ArrayList;
 
-import jsfgenerator.entitymodel.forms.EntityRelationship;
+import jsfgenerator.entitymodel.pageelements.EntityRelationship;
 import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.ui.model.EntityFieldDescriptionEntityPageWrapper;
 import jsfgenerator.ui.wizards.MVCGenerationWizard;

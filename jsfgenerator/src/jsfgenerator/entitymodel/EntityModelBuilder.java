@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jsfgenerator.entitymodel.forms.AbstractEntityForm;
-import jsfgenerator.entitymodel.forms.EntityField;
-import jsfgenerator.entitymodel.forms.EntityForm;
-import jsfgenerator.entitymodel.forms.EntityListForm;
+import jsfgenerator.entitymodel.pageelements.AbstractEntityForm;
+import jsfgenerator.entitymodel.pageelements.ColumnModel;
+import jsfgenerator.entitymodel.pageelements.EntityField;
+import jsfgenerator.entitymodel.pageelements.EntityForm;
+import jsfgenerator.entitymodel.pageelements.EntityListForm;
+import jsfgenerator.entitymodel.pageelements.ReferencedColumnModel;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
@@ -37,9 +39,7 @@ public class EntityModelBuilder {
 	 */
 	protected EntityModel entityModel;
 
-	protected Map<String, AbstractPageModel> entityPages;
-
-	protected Map<String, AbstractPageModel> listPages;
+	protected Map<String, AbstractPageModel> pages;
 
 	/**
 	 * calls the clear method of the class to have an empty model
@@ -53,7 +53,7 @@ public class EntityModelBuilder {
 	 * @return metamodel of the application model
 	 */
 	public EntityModel createEntityModel() {
-		for (AbstractPageModel view : entityPages.values()) {
+		for (AbstractPageModel view : pages.values()) {
 			entityModel.addPageModel(view);
 		}
 
@@ -65,7 +65,7 @@ public class EntityModelBuilder {
 	 */
 	public void clear() {
 		entityModel = new EntityModel();
-		entityPages = new HashMap<String, AbstractPageModel>();
+		pages = new HashMap<String, AbstractPageModel>();
 	}
 
 	/**
@@ -75,12 +75,12 @@ public class EntityModelBuilder {
 	 * @param viewId
 	 */
 	public void createEntityPageModel(String viewId, String entityClassName) {
-		if (entityPages.containsKey(viewId)) {
+		if (pages.containsKey(viewId)) {
 			throw new IllegalArgumentException("View already in the model: " + viewId);
 		}
 
 		AbstractPageModel page = new EntityPageModel(viewId, entityClassName);
-		entityPages.put(viewId, page);
+		pages.put(viewId, page);
 	}
 
 	/**
@@ -90,12 +90,26 @@ public class EntityModelBuilder {
 	 * @param viewId
 	 */
 	public void createEntityListPageModel(String viewId, String entityClassName) {
-		if (entityPages.containsKey(viewId)) {
+		if (pages.containsKey(viewId)) {
 			throw new IllegalArgumentException("View already in the model: " + viewId);
 		}
 
 		AbstractPageModel page = new EntityListPageModel(viewId, entityClassName);
-		listPages.put(viewId, page);
+		pages.put(viewId, page);
+	}
+
+	public void addFieldToList(String viewId, EntityDescription entity, EntityFieldDescription field, String referencedEntity,
+			String referencedField) {
+		EntityListPageModel pageModel = getEntityListPageModel(viewId);
+
+		ColumnModel column;
+		if (referencedEntity == null) {
+			column = new ColumnModel(entity.getEntityClassName(), field.getFieldName());
+		} else {
+			column = new ReferencedColumnModel(entity.getEntityClassName(), field.getFieldName(), referencedEntity,
+					referencedField, field.getRelationshipToEntity());
+		}
+		pageModel.addColumn(column);
 	}
 
 	public void addEntityForm(String viewId, EntityDescription entity, EntityFieldDescription field) {
@@ -125,11 +139,29 @@ public class EntityModelBuilder {
 	protected EntityPageModel getEntityPageModel(String viewId) {
 		AbstractPageModel view = getView(viewId);
 
+		if (view == null) {
+			throw new IllegalArgumentException("View not found. id: " + viewId);
+		}
+
 		if (!(view instanceof EntityPageModel)) {
-			throw new IllegalArgumentException("Simple entity form is applicable only for entity page models!");
+			throw new IllegalArgumentException("The view is not Entity page model");
 		}
 
 		return (EntityPageModel) view;
+	}
+
+	protected EntityListPageModel getEntityListPageModel(String viewId) {
+		AbstractPageModel view = getView(viewId);
+
+		if (view == null) {
+			throw new IllegalArgumentException("View not found. id: " + viewId);
+		}
+
+		if (!(view instanceof EntityListPageModel)) {
+			throw new IllegalArgumentException("The view is not list page model");
+		}
+
+		return (EntityListPageModel) view;
 	}
 
 	protected List<EntityField> getEntityFields(EntityDescription entity) {
@@ -146,19 +178,16 @@ public class EntityModelBuilder {
 		return fields;
 	}
 
-	public void addFieldToList(String viewId, EntityDescription entity, EntityFieldDescription field) {
-		// TODO: list
-	}
 	/**
 	 * 
 	 * @param viewId
 	 * @return
 	 */
 	protected AbstractPageModel getView(String viewId) {
-		return entityPages.get(viewId);
+		return pages.get(viewId);
 	}
 
 	public boolean isViewSpecified(String viewId) {
-		return entityPages.containsKey(viewId);
+		return pages.containsKey(viewId);
 	}
 }

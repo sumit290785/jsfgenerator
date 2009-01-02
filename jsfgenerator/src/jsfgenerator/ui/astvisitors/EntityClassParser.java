@@ -3,7 +3,7 @@ package jsfgenerator.ui.astvisitors;
 import java.util.ArrayList;
 import java.util.List;
 
-import jsfgenerator.entitymodel.forms.EntityRelationship;
+import jsfgenerator.entitymodel.pageelements.EntityRelationship;
 import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
