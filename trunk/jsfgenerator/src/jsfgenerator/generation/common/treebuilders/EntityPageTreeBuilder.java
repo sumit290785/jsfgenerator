@@ -199,5 +199,5 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	public ViewTemplateTree getViewTemplateTree() {
 		return templateTree;
 	}
-
+	
 }

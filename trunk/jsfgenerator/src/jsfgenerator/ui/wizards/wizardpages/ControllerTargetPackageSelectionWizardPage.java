@@ -1,7 +1,7 @@
 package jsfgenerator.ui.wizards.wizardpages;
 
-import jsfgenerator.ui.model.ProjectResourceProvider;
 import jsfgenerator.ui.providers.ResourceLabelProvider;
+import jsfgenerator.ui.utilities.ProjectResourceProvider;
 
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.ui.actions.OpenNewPackageWizardAction;

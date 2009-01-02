@@ -7,7 +7,7 @@ import java.util.Set;
 
 import jsfgenerator.ui.astvisitors.EntityClassParser;
 import jsfgenerator.ui.model.EntityDescription;
-import jsfgenerator.ui.model.ProjectResourceProvider;
+import jsfgenerator.ui.utilities.ProjectResourceProvider;
 import jsfgenerator.ui.wizards.MVCGenerationWizard;
 
 import org.eclipse.core.resources.IFile;

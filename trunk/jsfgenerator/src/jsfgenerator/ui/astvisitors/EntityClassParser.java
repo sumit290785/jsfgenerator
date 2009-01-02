@@ -9,7 +9,7 @@ import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.ui.model.EntityDescription;
 import jsfgenerator.ui.model.EntityFieldDescription;
-import jsfgenerator.ui.model.ProjectResourceProvider;
+import jsfgenerator.ui.utilities.ProjectResourceProvider;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;

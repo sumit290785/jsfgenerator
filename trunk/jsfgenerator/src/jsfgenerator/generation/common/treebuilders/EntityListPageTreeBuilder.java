@@ -4,6 +4,7 @@ import jsfgenerator.entitymodel.pageelements.ColumnModel;
 import jsfgenerator.entitymodel.pageelements.EntityRelationship;
 import jsfgenerator.entitymodel.pageelements.ReferencedColumnModel;
 import jsfgenerator.entitymodel.pages.EntityListPageModel;
+import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.generation.common.utilities.QueryBuilder;
 import jsfgenerator.generation.common.visitors.ReferenceNameEvaluatorVisitor;
 import jsfgenerator.generation.controller.AbstractControllerNodeFactory;
@@ -12,8 +13,11 @@ import jsfgenerator.generation.controller.nodes.ClassControllerNode;
 import jsfgenerator.generation.controller.nodes.FunctionControllerNode;
 import jsfgenerator.generation.view.IViewTemplateProvider;
 import jsfgenerator.generation.view.PlaceholderTagNode;
+import jsfgenerator.generation.view.StaticTagNode;
 import jsfgenerator.generation.view.ViewTemplateTree;
 import jsfgenerator.generation.view.PlaceholderTagNode.PlaceholderTagNodeType;
+import jsfgenerator.generation.view.parameters.TagAttribute;
+import jsfgenerator.generation.view.parameters.XMLNamespaceAttribute;
 
 public class EntityListPageTreeBuilder extends AbstractTreeBuilder {
 
@@ -62,6 +66,11 @@ public class EntityListPageTreeBuilder extends AbstractTreeBuilder {
 
 	protected void init() {
 		this.templateTree = templateTreeProvider.getEntityListPageTemplateTree();
+		
+		TagAttribute attribute = new XMLNamespaceAttribute(INameConstants.JSFGEN_TAGLIB_XMLNS_PREFIX,
+				INameConstants.JSFGEN_TAGLIB_XMLNS);
+		((StaticTagNode) templateTree.getNodes().get(0)).addAttribute(attribute);
+		
 		columnDataPlaceholderNode = getFirstPlaceholderTagNodeByType(templateTree, PlaceholderTagNodeType.LIST_COLUMN_DATA);
 
 		if (columnDataPlaceholderNode == null) {
@@ -129,10 +138,10 @@ public class EntityListPageTreeBuilder extends AbstractTreeBuilder {
 		if (column.getRelationshipToDomainEntity().equals(EntityRelationship.ONE_TO_MANY)
 				|| column.getRelationshipToDomainEntity().equals(EntityRelationship.MANY_TO_MANY)) {
 			addCollectionReferencedColumnModel(column);
-			QueryBuilder.getInstance().addCollectionReference(column.getReferencedFieldName());
+			QueryBuilder.getInstance().addCollectionReference(column.getFieldName());
 		} else {
 			addSimpleReferencedColumnModel(column);
-			QueryBuilder.getInstance().addSingleReference(column.getReferencedFieldName());
+			QueryBuilder.getInstance().addSingleReference(column.getFieldName());
 		}
 	}
 

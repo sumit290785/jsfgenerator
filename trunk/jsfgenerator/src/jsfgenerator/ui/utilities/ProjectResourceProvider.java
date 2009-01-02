@@ -1,8 +1,5 @@
-package jsfgenerator.ui.model;
+package jsfgenerator.ui.utilities;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,14 +8,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jsfgenerator.Activator;
 import jsfgenerator.generation.common.GenerationException;
 import jsfgenerator.ui.astvisitors.EntityClassASTVisitor;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -165,61 +159,6 @@ public class ProjectResourceProvider {
 			throw new NullPointerException("JSF project not found");
 		}
 
-	}
-
-	public InputStream getViewSkeletonInputStream() throws IOException {
-		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/view.xml"), null);
-		return url.openStream();
-	}
-
-	public InputStream getViewSchemaInputStream() throws IOException {
-		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/annotations.xsd"), null);
-		return url.openStream();
-	}
-
-	public InputStream getJSFGenWebJar() throws IOException {
-		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/jsfgen-web.jar"), null);
-		return url.openStream();
-	}
-
-	public InputStream getJSFGenEjbJar() throws IOException {
-		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/jsfgen-ejb.jar"), null);
-		return url.openStream();
-	}
-
-	public InputStream getFacletsJar() throws IOException {
-		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/jsf-facelets.jar"), null);
-		return url.openStream();
-	}
-
-	public InputStream getViewTemplateInputStream() throws IOException {
-		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/template.xhtml"), null);
-		return url.openStream();
-	}
-
-	public InputStream getWebAppInputStream() throws IOException {
-		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/web.xml"), null);
-		return url.openStream();
-	}
-
-	public InputStream getFacesConfigInputStream() throws IOException {
-		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/faces-config.xml"), null);
-		return url.openStream();
-	}
-
-	public InputStream getTaglibInputStream() throws IOException {
-		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/jsfgen.taglib.xml"), null);
-		return url.openStream();
-	}
-
-	public InputStream getApplicationXmlInputStream() throws IOException {
-		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/application.xml"), null);
-		return url.openStream();
-	}
-	
-	public InputStream getEjbJarXmlInputStream() throws IOException {
-		URL url = FileLocator.find(Activator.getDefault().getBundle(), new Path("/resource/ejb-jar.xml"), null);
-		return url.openStream();
 	}
 
 	public void setEjbProject(IProject ejbProject) {

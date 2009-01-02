@@ -47,6 +47,7 @@ public class ControllerNodeFactory extends AbstractControllerNodeFactory {
 		node.addChild(new FunctionControllerNode(NodeNameUtils.getGetterName(ecFieldName), ecFieldType,
 				FunctionType.CLASS_GETTER, model.getEntityClassName()));
 
+		initStatementWrappers = new ArrayList<InitStatementWrapper>();
 		node.addChild(createInitFunctionNode());
 		node.addChild(createWireFunctionNode());
 
@@ -141,17 +142,14 @@ public class ControllerNodeFactory extends AbstractControllerNodeFactory {
 	}
 
 	protected FunctionControllerNode createInitFunctionNode() {
-		initStatementWrappers = new ArrayList<InitStatementWrapper>();
 		return new FunctionControllerNode(INameConstants.ENTIT_PAGE_INIT_FUNCTION, FunctionType.INIT, initStatementWrappers);
 	}
 	
 	public FunctionControllerNode createListQueryFunctionNode(String queryString) {
-		initStatementWrappers = new ArrayList<InitStatementWrapper>();
 		return new FunctionControllerNode(INameConstants.LIST_PAGE_QUERY_FUNCTION, "String", FunctionType.QUERY, queryString);
 	}
 	
 	protected FunctionControllerNode createWireFunctionNode() {
-		initStatementWrappers = new ArrayList<InitStatementWrapper>();
 		return new FunctionControllerNode(INameConstants.ENTIT_PAGE_WIRE_FUNCTION, FunctionType.WIRE, initStatementWrappers);
 	}
 
