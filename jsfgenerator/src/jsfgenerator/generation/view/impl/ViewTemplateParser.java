@@ -75,14 +75,6 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		}
 	}
 
-	public ViewTemplateTree getEntityListPageTemplateTree() {
-		try {
-			return getTemplate(ViewTemplateConstants.ENTITY_LIST_PAGE);
-		} catch (ParserException e) {
-			throw new RuntimeException("Entity list page could not be parsed", e);
-		}
-	}
-
 	public ViewTemplateTree getEntityFormTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.ENTITY_FORM);
@@ -113,6 +105,22 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		}
 
 		return ids;
+	}
+	
+	public ViewTemplateTree getEntityListPageTemplateTree() {
+		try {
+			return getTemplate(ViewTemplateConstants.ENTITY_LIST_PAGE);
+		} catch (ParserException e) {
+			throw new RuntimeException("Entity list page could not be parsed", e);
+		}
+	}
+	
+	public ViewTemplateTree getEntityListElementTemplateTree() {
+		try {
+			return getTemplate(ViewTemplateConstants.ENTITY_LIST_ELEMENT);
+		} catch (ParserException e) {
+			throw new RuntimeException("Entity list page could not be parsed", e);
+		}
 	}
 
 	/**
@@ -319,6 +327,7 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 
 		return nodes;
 	}
+	
 
 	public static void main(String[] args) {
 		InputStream is = ViewTemplateParser.class.getResourceAsStream("viewtemplate.xml");
@@ -327,9 +336,9 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		try {
 			parser.getTemplate("entityListForm");
 		} catch (ParserException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+
 
 }

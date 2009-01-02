@@ -145,7 +145,7 @@
       <wizard-pages
             action="jsfgenerator-project-facet-1.0.install">
          <page
-               class="jsfgenerator.ui.wizards.EJBProjectSelectionWizardPage">
+               class="jsfgenerator.ui.wizards.wizardpages.EJBProjectSelectionWizardPage">
          </page>
       </wizard-pages>
    </extension>

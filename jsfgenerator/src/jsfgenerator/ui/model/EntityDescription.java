@@ -21,18 +21,8 @@ public class EntityDescription {
 	// ast node of the entity in the AST tree built by Eclipse framework
 	private TypeDeclaration node;
 
-	// true if entity page for this entity is required. By default it is true
-	private boolean entityPage = true;
-
-	// true if list page for this entity is required. By default it is true
-	private boolean listPage = true;
-
 	private List<EntityFieldDescription> entityFieldDescriptions;
-
-	private String viewId = "";
-
-	private boolean embedded = false;
-
+	
 	public EntityDescription(TypeDeclaration node) {
 
 		if (node == null) {
@@ -41,22 +31,6 @@ public class EntityDescription {
 
 		this.node = node;
 		this.entityClassName = EntityClassParser.getFullyQualifiedName(node);
-	}
-
-	public boolean isEntityPage() {
-		return entityPage;
-	}
-
-	public void setEntityPage(boolean entityPage) {
-		this.entityPage = entityPage;
-	}
-
-	public boolean isListPage() {
-		return listPage;
-	}
-
-	public void setListPage(boolean listPage) {
-		this.listPage = listPage;
 	}
 
 	public String getEntityClassName() {
@@ -69,22 +43,6 @@ public class EntityDescription {
 		}
 
 		return entityFieldDescriptions;
-	}
-
-	public void setViewId(String viewId) {
-		this.viewId = viewId;
-	}
-
-	public String getViewId() {
-		return viewId;
-	}
-
-	public void setEmbedded(boolean embedded) {
-		this.embedded = embedded;
-	}
-
-	public boolean isEmbedded() {
-		return embedded;
 	}
 
 }

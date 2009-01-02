@@ -1,15 +1,12 @@
-package jsfgenerator.ui.wizards;
+package jsfgenerator.ui.wizards.wizardpages;
 
-import java.io.File;
-
-import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.ui.composites.ResourceSelectionComposite;
 import jsfgenerator.ui.model.ProjectResourceProvider;
 import jsfgenerator.ui.providers.ResourceLabelProvider;
 import jsfgenerator.ui.providers.ResourceSelectionContentProvider;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeSelection;
@@ -20,32 +17,24 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 /**
- * TODO: validate the selected xml
+ * Wizard page implementation for selecting the target folder which is used to generate the view files into.
  * 
  * @author zoltan verebes
  * 
  */
-public class TagDescriptorSelectionWizardPage extends WizardPage {
+public class ViewTargetFolderSelectionWizardPage extends WizardPage {
 
 	/**
-	 * Filters all of the non container and non xml file type elements of the tree viewer content
+	 * Filters out all of the non-container (folder and project) type elements of the tree viewer content
 	 * 
 	 * @author zoltan verebes
 	 * 
 	 */
-	public static class XMLViewerFilter extends ViewerFilter {
+	public static class FolderViewerFilter extends ViewerFilter {
 		@Override
 		public boolean select(Viewer viewer, Object parentElement, Object element) {
 			if (element instanceof IContainer) {
 				return true;
-			}
-
-			if (element instanceof IFile) {
-				IFile file = (IFile) element;
-				// is Xml file
-				if (file.getFileExtension().equalsIgnoreCase(INameConstants.VIEW_XML_EXTENSION)) {
-					return true;
-				}
 			}
 
 			return false;
@@ -55,12 +44,12 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 
 	protected ResourceSelectionComposite resourceComposite;
 
-	protected IFile selectedFile;
+	protected IFolder selectedFolder;
 
-	protected TagDescriptorSelectionWizardPage() {
-		super("TagDescriptorSelectionWizardPage");
-		setTitle("Tag description selector page");
-		setDescription("This page is to select a view descriptor xml file");
+	public ViewTargetFolderSelectionWizardPage() {
+		super("ViewFolderSelectionWizardPage");
+		setTitle("View folder page");
+		setDescription("Please, select a target folder for the generated view xhtml files");
 	}
 
 	/*
@@ -70,7 +59,7 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 	 */
 	public void createControl(Composite parent) {
 		resourceComposite = new ResourceSelectionComposite(parent, SWT.NONE, new ResourceLabelProvider(),
-				new ResourceSelectionContentProvider(), new XMLViewerFilter(), ProjectResourceProvider.getInstance()
+				new ResourceSelectionContentProvider(), new FolderViewerFilter(), ProjectResourceProvider.getInstance()
 						.getJsfProject());
 		setControl(resourceComposite);
 
@@ -78,12 +67,12 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 
 			public void selectionChanged(SelectionChangedEvent event) {
 				TreeSelection selection = (TreeSelection) event.getSelection();
-				if (selection.getFirstElement() instanceof IFile) {
-					IFile file = (IFile) selection.getFirstElement();
-					selectedFile = file;
-					resourceComposite.getSelectionText().setText(file.getFullPath().toPortableString());
+				if (selection.getFirstElement() instanceof IFolder) {
+					IFolder folder = (IFolder) selection.getFirstElement();
+					selectedFolder = folder;
+					resourceComposite.getSelectionText().setText(folder.getFullPath().toPortableString());
 				} else {
-					selectedFile = null;
+					selectedFolder = null;
 					resourceComposite.getSelectionText().setText("");
 				}
 
@@ -96,7 +85,7 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 
 	protected void validate() {
 		if (resourceComposite.getSelectionText().getText() == null || resourceComposite.getSelectionText().getText().equals("")) {
-			setErrorMessage("Please, select a file");
+			setErrorMessage("Please, select a folder");
 		} else {
 			setErrorMessage(null);
 		}
@@ -104,12 +93,8 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 		setPageComplete(getErrorMessage() == null);
 	}
 
-	public File getSelectedFile() {
-		if (selectedFile == null) {
-			return null;
-		}
-
-		return selectedFile.getLocation().toFile();
+	public IFolder getSelectedFolder() {
+		return selectedFolder;
 	}
 
 }

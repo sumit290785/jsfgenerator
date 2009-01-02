@@ -32,22 +32,21 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityDesc
 			form = new EntityForm(formName, entity.getEntityClassName(), getEntityFields(entity), null);
 		} else {
 			String formName = StringUtils.toDotSeparatedString(viewId, field.getFieldName());
-			form = new EntityForm(formName, entity.getEntityClassName(), getEntityFields(entity), field
-					.getRelationshipToEntity());
+			form = new EntityForm(formName, entity.getEntityClassName(), getEntityFields(entity), field.getRelationshipToEntity());
 		}
 
 		getEntityPageModel(viewId).addForm(form);
 	}
 
 	@Override
-	public void addEntityListForm(EntityDescription domainEntity, EntityFieldDescription listField) {
-		EntityDescription genericFieldDescription = listField.getEntityDescription();
+	public void addEntityListForm(String viewId, EntityDescription domainEntity, EntityFieldDescription listField,
+			EntityDescription genericFieldDescription) {
 
 		String simpleListFormName = ClassNameUtils.getSimpleClassName(listField.getFieldName());
-		String formName = StringUtils.toDotSeparatedString(domainEntity.getViewId(), simpleListFormName);
+		String formName = StringUtils.toDotSeparatedString(viewId, simpleListFormName);
 		AbstractEntityForm form = new EntityListForm(formName, domainEntity.getEntityClassName(), genericFieldDescription
 				.getEntityClassName(), getEntityFields(genericFieldDescription), listField.getRelationshipToEntity());
-		getEntityPageModel(domainEntity.getViewId()).addForm(form);
+		getEntityPageModel(viewId).addForm(form);
 	}
 
 	protected EntityPageModel getEntityPageModel(String viewId) {
@@ -64,8 +63,7 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityDesc
 		List<EntityField> fields = new ArrayList<EntityField>();
 		for (EntityFieldDescription entityField : entity.getEntityFieldDescriptions()) {
 
-			if (entityField.getEntityDescription() == null && entityField.getInputTagName() != null
-					&& !entityField.getInputTagName().equals("")) {
+			if (entityField.getInputTagName() != null && !entityField.getInputTagName().equals("")) {
 				EntityField field = new EntityField(entityField.getFieldName(), entityField.getInputTagName());
 				fields.add(field);
 			}
@@ -73,6 +71,11 @@ public class ASTEntityModelBuilder extends AbstractEntityModelBuilder<EntityDesc
 		}
 
 		return fields;
+	}
+
+	@Override
+	public void addFieldToList(String viewId, EntityDescription entity, EntityFieldDescription field) {
+
 	}
 
 }

@@ -52,7 +52,29 @@
 
 	<a:template id="entityListPage" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
 		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
+		<a:expression type="entityFieldName" for="value" />
+		<h:outputText />
+		
+		<a:message attribute="value" />
+		<h:outputText value="list"/>
+		
+		<a:message attribute="value" />
+		<a:expression type="add" for="value" />
+		<h:commandLink value="new" />
+		<hr/>
+		
+		<table>
+			<a:placeHolder for="listElement" />
+		</table>
+		
 	</a:template>
+	
+	<a:template id="listElement" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
+		
+		
+	</a:template>
+	
 
 	<a:template id="input" name="table row multiline input" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
 		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">

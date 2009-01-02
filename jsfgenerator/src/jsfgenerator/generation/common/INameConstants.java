@@ -23,10 +23,12 @@ public interface INameConstants {
 	public static final String DOMAIN_ENTITY_EDIT_HELPER = "entity" + EDITOR_FIELD_POSTFIX;
 
 	public static final String ENTIT_PAGE_INIT_FUNCTION = "init";
-	
+
 	public static final String ENTIT_PAGE_WIRE_FUNCTION = "wire";
 
 	public static final String ENTITY_PAGE_POSTFIX = "Page";
+	
+	public static final String LIST_PAGE_POSTFIX = "List";
 
 	public static final String SETTER_PREFIX = "set";
 
@@ -41,17 +43,20 @@ public interface INameConstants {
 	public static final String EMBEDDED_ANNOTATION = "@javax.persistence.Embedded";
 
 	public static final String ONE_TO_ONE_ANNOTATION = "@javax.persistence.OneToOne";
-	
+
 	public static final String ONE_TO_MANY_ANNOTATION = "@javax.persistence.OneToMany";
 
 	public static final String MANY_TO_ONE_ANNOTATION = "@javax.persistence.ManyToOne";
 
 	public static final String MANY_TO_MANY_ANNOTATION = "@javax.persistence.ManyToMany";
-	
+
 	public static final String ID_ANNOTATION = "@javax.persistence.Id";
-	
+
 	public static final String JSFGEN_TAGLIB_XMLNS_PREFIX = "jsfgen";
-	
+
 	public static final String JSFGEN_TAGLIB_XMLNS = "http://www.jsfgen.com/tags/jsfgen";
 
+	public static final String NON_FIELD_TEXT = "Generate external form";
+	
+	public static final String NO_GENERATION_TEXT = "Do not generate";
 }

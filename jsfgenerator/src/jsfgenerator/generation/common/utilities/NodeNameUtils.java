@@ -33,6 +33,16 @@ public final class NodeNameUtils {
 		return  capitalName(matcher.group(matcher.groupCount())) + INameConstants.ENTITY_PAGE_POSTFIX;
 	}
 	
+	public static String getListPageClassNameByUniqueName(String uniqueName) {
+
+		if (uniqueName == null || uniqueName.equals("")) {
+			return null;
+		}
+
+		Matcher matcher = getMatcher(uniqueName);
+		return  capitalName(matcher.group(matcher.groupCount())) + INameConstants.LIST_PAGE_POSTFIX;
+	}
+	
 	public static String removePostfixFromEntityPageClassName(String className) {
 		return className.replace(INameConstants.ENTITY_PAGE_POSTFIX, "");
 	}
@@ -48,6 +58,19 @@ public final class NodeNameUtils {
 
 		Matcher matcher = getMatcher(uniqueName);
 		return matcher.group(matcher.groupCount()) + "." + INameConstants.VIEW_NAME_EXTENSION;
+	}
+	
+	public static String getListPageClassFileNameByUniqueName(String uniqueName) {
+		return getListPageClassNameByUniqueName(uniqueName) + "." + INameConstants.CLASS_FILENAME_EXTENSION;
+	}
+
+	public static String getListPageViewNameByUniqueName(String uniqueName) {
+		if (uniqueName == null || uniqueName.equals("")) {
+			return null;
+		}
+
+		Matcher matcher = getMatcher(uniqueName);
+		return toPlurar(matcher.group(matcher.groupCount())) + "." + INameConstants.VIEW_NAME_EXTENSION;
 	}
 
 	public static String getSetterName(String fieldName) {
@@ -110,4 +133,15 @@ public final class NodeNameUtils {
 		return matcher;
 	}
 
+	protected static String toPlurar(String word) {
+		if (word == null || word.equals("")) {
+			return "";
+		}
+		
+		if (word.charAt(word.length() - 1) == 'y') {
+			return word.substring(0, word.length() - 2) + "ies";
+		}
+		
+		return word + "s";
+	}
 }
