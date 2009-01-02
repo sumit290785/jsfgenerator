@@ -10,17 +10,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import jsfgenerator.entitymodel.EntityModel;
 import jsfgenerator.entitymodel.EntityModelBuilder;
-import jsfgenerator.entitymodel.forms.EntityRelationship;
+import jsfgenerator.entitymodel.pageelements.EntityRelationship;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
+import jsfgenerator.entitymodel.pages.EntityListPageModel;
+import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.common.GenerationException;
 import jsfgenerator.generation.common.ViewAndControllerDTO;
 import jsfgenerator.generation.common.ViewAndControllerEngine;
 import jsfgenerator.generation.common.treebuilders.ResourceBundleBuilder;
+import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
 import jsfgenerator.generation.view.IViewTemplateProvider;
@@ -33,6 +35,7 @@ import jsfgenerator.ui.model.EntityDescriptionEntityPageWrapper;
 import jsfgenerator.ui.model.EntityDescriptionListPageWrapper;
 import jsfgenerator.ui.model.EntityFieldDescription;
 import jsfgenerator.ui.model.EntityFieldDescriptionEntityPageWrapper;
+import jsfgenerator.ui.model.EntityFieldDescriptionListPageWrapper;
 import jsfgenerator.ui.model.ProjectResourceProvider;
 import jsfgenerator.ui.wizards.wizardpages.ControllerTargetPackageSelectionWizardPage;
 import jsfgenerator.ui.wizards.wizardpages.EntityClassSelectionWizardPage;
@@ -47,7 +50,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
@@ -131,14 +133,14 @@ public class MVCGenerationWizard extends Wizard {
 
 							builder.addEntityForm(viewId, entityWrapper.getEntityDescription(), null);
 
-							for (EntityFieldDescription entityField : getSimpleEmbeddedFields(entityWrapper)) {
+							for (EntityFieldDescription entityField : getSingleEmbeddedFields(entityWrapper)) {
 								AbstractEntityFieldDescriptionWrapper fieldWrapper = entityWrapper.getFieldWrapper(entityField);
 								builder
 										.addEntityForm(viewId, fieldWrapper.getEntityWrapper().getEntityDescription(),
 												entityField);
 							}
 
-							for (EntityFieldDescriptionEntityPageWrapper entityFieldWrapper : getComplexEmbeddedFields(entityWrapper)) {
+							for (EntityFieldDescriptionEntityPageWrapper entityFieldWrapper : getMultiplembeddedFields(entityWrapper)) {
 								builder.addEntityListForm(entityWrapper.getViewId(), entityWrapper.getEntityDescription(),
 										entityFieldWrapper.getEntityFieldDescription(), entityFieldWrapper
 												.getEntityDescriptionWrapper().getEntityDescription());
@@ -147,7 +149,35 @@ public class MVCGenerationWizard extends Wizard {
 					}
 
 					for (EntityDescriptionListPageWrapper entityWrapper : getEntityDescriptionListPageWrappers()) {
-						// TODO: list page
+						if (entityWrapper.isPageGenerated()) {
+							String viewId = entityWrapper.getViewId();
+							if (!builder.isViewSpecified(viewId)) {
+								builder.createEntityListPageModel(viewId, entityWrapper.getEntityDescription()
+										.getEntityClassName());
+							}
+
+							for (AbstractEntityFieldDescriptionWrapper entityFieldWrapper : entityWrapper.getFieldWrappers()) {
+								EntityFieldDescriptionListPageWrapper wrapper = (EntityFieldDescriptionListPageWrapper) entityFieldWrapper;
+								if (wrapper.isShown()
+										&& (wrapper.getEntityFieldDescription().getRelationshipToEntity() == null || wrapper
+												.getEntityFieldDescription().getRelationshipToEntity().equals(
+														EntityRelationship.FIELD))) {
+
+									builder.addFieldToList(viewId, entityWrapper.getEntityDescription(), wrapper
+											.getEntityFieldDescription(), null, null);
+								} else if (wrapper.isShown()) {
+
+									List<String> genericParams = ClassNameUtils.getGenericParameterList(wrapper
+											.getEntityFieldDescription().getClassName());
+									if (genericParams.size() > 0) {
+										String referencedEntityClassName = genericParams.get(0);
+
+										builder.addFieldToList(viewId, entityWrapper.getEntityDescription(), wrapper
+												.getEntityFieldDescription(), referencedEntityClassName, wrapper.getFieldName());
+									}
+								}
+							}
+						}
 					}
 
 					monitor.subTask("Building the model");
@@ -177,12 +207,19 @@ public class MVCGenerationWizard extends Wizard {
 
 					monitor.subTask("Save classes and resources");
 					for (AbstractPageModel pageModel : entityModel.getPageModels()) {
-						ViewAndControllerDTO viewDTO = engine.getViewAndControllerDTO(pageModel.getViewId());
-						saveView(pageModel.getViewId(), viewDTO.getViewStream());
-						saveController(pageModel.getViewId(), viewDTO.getViewClass());
-						saveResourceBundles();
 
-						addManagedBeanToFacesConfig(pageModel.getViewId(), viewDTO.getControllerClassName(), monitor);
+						if (pageModel instanceof EntityPageModel) {
+							ViewAndControllerDTO viewDTO = engine.getViewAndControllerDTO(pageModel.getViewId());
+							saveView(pageModel.getViewId(), viewDTO.getViewStream());
+							String fileName = NodeNameUtils.getEntityPageClassFileNameByUniqueName(pageModel.getViewId());
+							saveController(fileName, viewDTO.getViewClass());
+							saveResourceBundles();
+
+							addManagedBeanToFacesConfig(pageModel.getViewId(), viewDTO.getControllerClassName(), monitor);
+						} else if (pageModel instanceof EntityListPageModel) {
+							String fileName = NodeNameUtils.getListPageClassFileNameByUniqueName(pageModel.getViewId());
+							// TODO: list
+						}
 					}
 
 					monitor.done();
@@ -212,13 +249,12 @@ public class MVCGenerationWizard extends Wizard {
 		return null;
 	}
 
-	private void saveController(String className, CompilationUnit controller) {
+	private void saveController(String fileName, CompilationUnit controller) {
 		String sourceCode = formatCode(controller.toString());
 		IPackageFragment fragment = controllerTargetPackageSelectionWizardPage.getSelectedPackageFragment();
 
 		ICompilationUnit cu = null;
 		try {
-			String fileName = NodeNameUtils.getEntityPageClassFileNameByUniqueName(className);
 
 			// delete the file if exists
 			IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(fragment.getPath());
@@ -227,7 +263,8 @@ public class MVCGenerationWizard extends Wizard {
 			cu = fragment.createCompilationUnit(fileName, sourceCode, false, null);
 			cu.becomeWorkingCopy(null);
 		} catch (JavaModelException e) {
-			throw new GenerationException("Could not save the generated controller!", e);
+			throw new GenerationException(
+					"Could not save the generated controller! Source is on the disk, but it is not in the workspace.", e);
 		}
 	}
 
@@ -258,15 +295,12 @@ public class MVCGenerationWizard extends Wizard {
 		InputStream stream = ResourceBundleBuilder.getInstance().getMessageInputStream();
 
 		IFolder srcFolder = ProjectResourceProvider.getInstance().getJsfProject().getFolder("src");
-		String fileNameEN = NodeNameUtils.getResourceBundleName(new Locale("en", "US"));
-		String fileNameHU = NodeNameUtils.getResourceBundleName(new Locale("hu", "HU"));
+		String fileNameEN = NodeNameUtils.getResourceBundleName();
 
 		delete(srcFolder, fileNameEN);
-		delete(srcFolder, fileNameHU);
 		try {
 			IFile fileEN = srcFolder.getFile(fileNameEN);
 			fileEN.create(stream, IResource.FORCE, null);
-			fileEN.copy(new Path(fileNameHU), IResource.FORCE, null);
 		} catch (CoreException e) {
 			throw new GenerationException("Could not save the generated view!", e);
 		}
@@ -298,8 +332,8 @@ public class MVCGenerationWizard extends Wizard {
 		return document.get();
 	}
 
-	private List<EntityFieldDescriptionEntityPageWrapper> getComplexEmbeddedFields(
-			EntityDescriptionEntityPageWrapper entityDescriptionWrapper) {
+	private List<EntityFieldDescriptionEntityPageWrapper> getMultiplembeddedFields(
+			AbstractEntityDescriptionWrapper entityDescriptionWrapper) {
 		List<EntityFieldDescriptionEntityPageWrapper> entityFields = new ArrayList<EntityFieldDescriptionEntityPageWrapper>();
 
 		for (AbstractEntityFieldDescriptionWrapper entityFieldWrapper : entityDescriptionWrapper.getFieldWrappers()) {
@@ -313,7 +347,7 @@ public class MVCGenerationWizard extends Wizard {
 		return entityFields;
 	}
 
-	private List<EntityFieldDescription> getSimpleEmbeddedFields(EntityDescriptionEntityPageWrapper entityDescriptionWrapper) {
+	private List<EntityFieldDescription> getSingleEmbeddedFields(AbstractEntityDescriptionWrapper entityDescriptionWrapper) {
 		List<EntityFieldDescription> entityFields = new ArrayList<EntityFieldDescription>();
 
 		for (AbstractEntityFieldDescriptionWrapper entityFieldWrapper : entityDescriptionWrapper.getFieldWrappers()) {

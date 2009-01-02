@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import jsfgenerator.entitymodel.forms.EntityListForm;
-import jsfgenerator.entitymodel.forms.EntityRelationship;
-import jsfgenerator.entitymodel.forms.EntityForm;
+import jsfgenerator.entitymodel.pageelements.EntityForm;
+import jsfgenerator.entitymodel.pageelements.EntityListForm;
+import jsfgenerator.entitymodel.pageelements.EntityRelationship;
 import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.common.INameConstants;

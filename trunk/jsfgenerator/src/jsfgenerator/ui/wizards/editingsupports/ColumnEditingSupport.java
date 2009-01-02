@@ -3,7 +3,7 @@ package jsfgenerator.ui.wizards.editingsupports;
 import java.util.ArrayList;
 import java.util.List;
 
-import jsfgenerator.entitymodel.forms.EntityRelationship;
+import jsfgenerator.entitymodel.pageelements.EntityRelationship;
 import jsfgenerator.ui.model.AbstractEntityFieldDescriptionWrapper;
 import jsfgenerator.ui.model.EntityFieldDescriptionListPageWrapper;
 import jsfgenerator.ui.wizards.wizardpages.EntityListPageFieldSelectionWizardPage;

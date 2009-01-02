@@ -1,6 +1,6 @@
 package jsfgenerator.ui.model;
 
-import jsfgenerator.entitymodel.forms.EntityRelationship;
+import jsfgenerator.entitymodel.pageelements.EntityRelationship;
 
 public class EntityFieldDescription {
 

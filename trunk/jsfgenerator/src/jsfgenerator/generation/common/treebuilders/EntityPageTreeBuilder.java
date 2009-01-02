@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import jsfgenerator.entitymodel.forms.AbstractEntityForm;
-import jsfgenerator.entitymodel.forms.EntityField;
-import jsfgenerator.entitymodel.forms.EntityForm;
-import jsfgenerator.entitymodel.forms.EntityListForm;
+import jsfgenerator.entitymodel.pageelements.AbstractEntityForm;
+import jsfgenerator.entitymodel.pageelements.EntityField;
+import jsfgenerator.entitymodel.pageelements.EntityForm;
+import jsfgenerator.entitymodel.pageelements.EntityListForm;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.generation.common.utilities.StringUtils;

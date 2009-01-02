@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jsfgenerator.entitymodel.EntityModel;
-import jsfgenerator.entitymodel.forms.EntityListForm;
-import jsfgenerator.entitymodel.forms.EntityField;
-import jsfgenerator.entitymodel.forms.AbstractEntityForm;
-import jsfgenerator.entitymodel.forms.EntityForm;
+import jsfgenerator.entitymodel.pageelements.AbstractEntityForm;
+import jsfgenerator.entitymodel.pageelements.EntityField;
+import jsfgenerator.entitymodel.pageelements.EntityForm;
+import jsfgenerator.entitymodel.pageelements.EntityListForm;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;

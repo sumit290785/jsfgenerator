@@ -3,7 +3,7 @@ package jsfgenerator.entitymodel.pages;
 import java.util.ArrayList;
 import java.util.List;
 
-import jsfgenerator.entitymodel.forms.AbstractEntityForm;
+import jsfgenerator.entitymodel.pageelements.AbstractEntityForm;
 
 /**
  * It describes a page of a single entity type. Entity is a domain entity, which

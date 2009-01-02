@@ -1,6 +1,6 @@
 package jsfgenerator.ui.astvisitors;
 
-import jsfgenerator.entitymodel.forms.EntityRelationship;
+import jsfgenerator.entitymodel.pageelements.EntityRelationship;
 import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.generation.common.utilities.AnnotationNameUtils;
 import jsfgenerator.generation.common.utilities.ClassNameUtils;

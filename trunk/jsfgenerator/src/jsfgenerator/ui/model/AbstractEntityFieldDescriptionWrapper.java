@@ -2,7 +2,7 @@ package jsfgenerator.ui.model;
 
 import java.util.List;
 
-import jsfgenerator.entitymodel.forms.EntityRelationship;
+import jsfgenerator.entitymodel.pageelements.EntityRelationship;
 import jsfgenerator.generation.common.utilities.ClassNameUtils;
 
 import org.eclipse.jdt.core.dom.TypeDeclaration;

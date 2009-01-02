@@ -6,7 +6,7 @@ import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.Type;
 
 /**
- * Try to find the getters and setters of a field in an AST!
+ * Try to find the getters and setters of a field in an AST! It is used by the wizard to discover the fields of an entity
  * 
  * @author zoltan verebes
  * 
@@ -37,14 +37,12 @@ public class MethodVisitor extends ASTVisitor {
 		String methodName = node.getName().getFullyQualifiedName();
 
 		getterFound = getterFound
-				|| (methodName.equals(getGetterName()) && node.getReturnType2() != null && node.getReturnType2()
-						.equals(type));
+				|| (methodName.equals(getGetterName()) && node.getReturnType2() != null && node.getReturnType2().equals(type));
 
 		if (node.getReturnType2().isPrimitiveType()) {
 			PrimitiveType returnType = (PrimitiveType) node.getReturnType2();
 			setterFound = setterFound
-					|| (methodName.equals(getSetterName()) && returnType.getPrimitiveTypeCode().equals(
-							PrimitiveType.VOID));
+					|| (methodName.equals(getSetterName()) && returnType.getPrimitiveTypeCode().equals(PrimitiveType.VOID));
 		}
 
 		return !getterFound || !setterFound;
