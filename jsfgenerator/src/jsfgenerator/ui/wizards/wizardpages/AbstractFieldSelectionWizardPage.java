@@ -343,6 +343,7 @@ public abstract class AbstractFieldSelectionWizardPage extends WizardPage {
 		return entityDescriptionWrappers;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void validate() {
 		List<AbstractEntityDescriptionWrapper> entityWrappers = (List<AbstractEntityDescriptionWrapper>) masterPart.getInput();
 		/*

@@ -111,7 +111,6 @@ public class WriterTagVisitor extends AbstractVisitor<AbstractTagNode> {
 			buffer.append("=\"");
 			buffer.append(attribute.getValue());
 			buffer.append("\"");
-			// TODO: change expressions
 		}
 
 		return buffer.toString();

@@ -123,7 +123,7 @@ public class ControllerNodeFactory extends AbstractControllerNodeProvider {
 	 */
 	@Override
 	public ClassControllerNode createEntityListPageClassNode(EntityListPageModel model) {
-		// TODO Auto-generated method stub
+		// TODO list page
 		return null;
 	}
 
