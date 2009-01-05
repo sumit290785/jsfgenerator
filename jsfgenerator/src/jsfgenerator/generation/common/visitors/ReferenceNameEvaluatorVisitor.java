@@ -140,12 +140,10 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 
 		if (ExpressionType.ENTITY_FIELD_NAME.equals(type)) {
 
-			if (entityName == null) {
-				throw new EvaluationException("Entity name is required for evaluation!");
-			}
-
-			if (entityFieldName == null) {
-				throw new EvaluationException("Entity field name is required for evaluation!");
+			if (entityName == null || entityFieldName == null) {
+				attribute.setValue("");
+				attribute.setType(TagParameterType.STATIC);
+				return;
 			}
 
 			StringBuffer buffer = new StringBuffer();

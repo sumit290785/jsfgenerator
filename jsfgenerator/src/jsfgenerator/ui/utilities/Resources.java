@@ -41,7 +41,7 @@ public class Resources {
 		IProject ejbProject = ProjectResourceProvider.getInstance().getEjbProject();
 		IProject earProject = ProjectResourceProvider.getInstance().getEarProject();
 
-		monitor.beginTask("Copy resource files into the new projects", 11);
+		monitor.beginTask("Copy resource files into the new projects", 12);
 
 		try {
 			copy(jsfProject, "/resources/view.xml");
@@ -49,9 +49,9 @@ public class Resources {
 			copy(jsfProject, "/WebContent/layout/template.xhtml");
 			copy(jsfProject, "/WebContent/WEB-INF/web.xml");
 			copy(jsfProject, "/WebContent/WEB-INF/faces-config.xml");
-			copy(jsfProject, "/WebContent/taglibs/jsfgen.taglib.xml");
-			copy(jsfProject, "/WebContent/lib/jsfgen-web.jar");
-			copy(jsfProject, "/WebContent/lib/jsf-facelets.jar");
+			copy(jsfProject, "/WebContent/WEB-INF/lib/jsfgen-web.jar");
+			copy(jsfProject, "/WebContent/WEB-INF/lib/jsf-facelets.jar");
+			copy(jsfProject, "/WebContent/WEB-INF/taglibs/jsfgen.taglib.xml");
 
 			copy(earProject, "/EarContent/jsfgen-ejb.jar");
 			copy(earProject, "/EarContent/META-INF/application.xml");

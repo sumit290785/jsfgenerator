@@ -21,6 +21,7 @@ import jsfgenerator.generation.common.visitors.WriterTagVisitor;
 import jsfgenerator.generation.controller.AbstractControllerNodeFactory;
 import jsfgenerator.generation.controller.ControllerTree;
 import jsfgenerator.generation.view.IViewTemplateProvider;
+import jsfgenerator.generation.view.IndexPageBuilder;
 import jsfgenerator.generation.view.ViewTemplateTree;
 
 /**
@@ -57,6 +58,7 @@ public final class ViewAndControllerEngine {
 
 	protected void init() {
 		views = new HashMap<String, ViewAndControllerDTO>();
+		IndexPageBuilder.getInstance().clear();
 	}
 
 	public void generateViewsAndControllers(EntityModel model, IViewTemplateProvider tagTreeProvider,
@@ -161,8 +163,11 @@ public final class ViewAndControllerEngine {
 		for (ColumnModel column : pageModel.getColumns()) {
 			treeBuilder.addColumn(column);
 		}
-
+		
 		treeBuilder.buildQuery();
+		
+		IndexPageBuilder.getInstance().addView(pageModel.getViewId());
+		
 		return treeBuilder;
 	}
 

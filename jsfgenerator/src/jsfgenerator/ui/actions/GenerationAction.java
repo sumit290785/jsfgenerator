@@ -15,8 +15,11 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -46,7 +49,17 @@ public class GenerationAction extends Action implements IObjectActionDelegate {
 		Set<IFile> resources = collectSelectedFiles();
 
 		if (selectedEjbProject != null && resources.size() != 0) {
-			ProjectResourceProvider.getInstance().findProjectsByEjbProject(selectedEjbProject);
+
+			try {
+				ProjectResourceProvider.getInstance().findProjectsByEjbProject(selectedEjbProject);
+			} catch (Exception e) {
+				ErrorDialog errorDialog = new ErrorDialog(part.getSite().getShell(), "Generation error", e.getMessage(),
+						new Status(IStatus.INFO, "jsfgenerator",
+								"Related projects not found in the workspace. An EAR and a Web project are required", e),
+						IStatus.INFO);
+				errorDialog.open();
+			}
+
 			List<EntityDescription> entityDescriptions = EntityClassParser.findEntities(resources.toArray(new IFile[0]));
 
 			WizardDialog dialog = new WizardDialog(part.getSite().getShell(), new MVCGenerationWizard(entityDescriptions));
@@ -83,7 +96,7 @@ public class GenerationAction extends Action implements IObjectActionDelegate {
 			if (!ProjectResourceProvider.isEjbProject(project)) {
 				continue;
 			}
-			
+
 			selectedEjbProject = ((IResource) element).getProject();
 			files.addAll(getFiles((IResource) element));
 		}

@@ -104,6 +104,7 @@ public class EntityClassSelectionWizardPage extends WizardPage {
 		protected void setValue(Object element, Object value) {
 			if (value instanceof Boolean && (flag & ENTITY_PAGE) == ENTITY_PAGE) {
 				((WizardInput) element).getEntityPageWrapper().setPageGenerated((Boolean) value);
+				((WizardInput) element).getListPageWrapper().setPageGenerated((Boolean) value);
 			} else if (value instanceof Boolean && (flag & LIST_PAGE) == LIST_PAGE) {
 				((WizardInput) element).getListPageWrapper().setPageGenerated((Boolean) value);
 			}
@@ -152,14 +153,14 @@ public class EntityClassSelectionWizardPage extends WizardPage {
 				return ((WizardInput) element).getEntityPageWrapper().isPageGenerated() ? GENERATE : DO_NOT_GENERATE;
 			}
 		});
-		columnEntityPage.getColumn().setText("Entity page");
+		columnEntityPage.getColumn().setText("Page generation");
 		columnEntityPage.getColumn().setWidth(200);
 
 		columnEntityPage.setEditingSupport(new GenerateEditingSupport(columnEntityPage.getViewer(),
 				GenerateEditingSupport.ENTITY_PAGE));
 
 		// list page
-		TableViewerColumn columnListPage = new TableViewerColumn(viewer, SWT.FILL);
+/*		TableViewerColumn columnListPage = new TableViewerColumn(viewer, SWT.FILL);
 		columnListPage.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				return ((WizardInput) element).getListPageWrapper().isPageGenerated() ? GENERATE : DO_NOT_GENERATE;
@@ -170,7 +171,7 @@ public class EntityClassSelectionWizardPage extends WizardPage {
 		columnListPage.getColumn().setWidth(200);
 
 		columnListPage.setEditingSupport(new GenerateEditingSupport(columnEntityPage.getViewer(),
-				GenerateEditingSupport.LIST_PAGE));
+				GenerateEditingSupport.LIST_PAGE));*/
 
 		MVCGenerationWizard wizard = (MVCGenerationWizard) getWizard();
 

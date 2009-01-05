@@ -8,7 +8,7 @@ public class EntityFieldDescriptionEntityPageWrapper extends AbstractEntityField
 
 	@Override
 	protected AbstractEntityDescriptionWrapper createEntityDescreptionWrapper(EntityDescription entityDescriptor) {
-		return new EntityDescriptionEntityPageWrapper(entityDescriptor);
+		return new EntityDescriptionEntityPageWrapper(entityDescriptor, null);
 	}
 
 }

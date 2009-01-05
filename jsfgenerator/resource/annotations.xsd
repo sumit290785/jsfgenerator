@@ -9,7 +9,10 @@
 			<xsd:enumeration value="entityForm" />
 			<xsd:enumeration value="entityListForm" />
 			<xsd:enumeration value="columnData" />
+			<xsd:enumeration value="columnAction" />
 			<xsd:enumeration value="columnHeader" />
+			<xsd:enumeration value="collectionColumn" />
+			<xsd:enumeration value="collectionColumnData" />
 			<xsd:enumeration value="input" />
 		</xsd:restriction>
 	</xsd:simpleType>
@@ -17,12 +20,13 @@
 	<xsd:complexType name="placeHolderType">
 		<xsd:attribute name="for" use="required">
 			<xsd:simpleType>
-				<xsd:restriction base="a:templateName">
+				<xsd:restriction base="xsd:string">
 					<xsd:enumeration value="entityForm" />
 					<xsd:enumeration value="entityListForm" />
 					<xsd:enumeration value="input" />
 					<xsd:enumeration value="columnData" />
 					<xsd:enumeration value="columnHeader" />
+					<xsd:enumeration value="action" />
 				</xsd:restriction>
 			</xsd:simpleType>
 		</xsd:attribute>
@@ -58,6 +62,8 @@
 						<xsd:enumeration value="remove" />
 						<xsd:enumeration value="entityField" />
 						<xsd:enumeration value="entityFieldName" />
+						<xsd:enumeration value="entityName" />
+						<xsd:enumeration value="resultSet" />
 					</xsd:restriction>
 				</xsd:simpleType>
 			</xsd:attribute>

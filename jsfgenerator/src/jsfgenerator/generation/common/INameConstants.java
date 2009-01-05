@@ -59,6 +59,10 @@ public interface INameConstants {
 	public static final String JSFGEN_TAGLIB_XMLNS_PREFIX = "jsfgen";
 
 	public static final String JSFGEN_TAGLIB_XMLNS = "http://www.jsfgen.com/tags/jsfgen";
+	
+	public static final String JSF_HTML_TAGLIB_XMLNS = "http://java.sun.com/jsf/html";
+	
+	public static final String JSF_CORE_TAGLIB_XMLNS = "http://java.sun.com/jsf/core";
 
 	public static final String NON_FIELD_TEXT = "Generate external form";
 	

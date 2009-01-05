@@ -139,6 +139,14 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		}
 	}
 
+	public ViewTemplateTree getListColumnActionTemplateTree() {
+		try {
+			return getTemplate(ViewTemplateConstants.LIST_COLUMN_ACTION);
+		} catch (ParserException e) {
+			throw new RuntimeException("Collection column data could not be parsed", e);
+		}
+	}
+
 	public ViewTemplateTree getListColumnHeaderTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.LIST_COLUMN_HEADER);
@@ -211,11 +219,13 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 					return new PlaceholderTagNode(PlaceholderTagNodeType.LIST_COLUMN_DATA);
 				} else if (value.equals(ViewTemplateConstants.LIST_COLUMN_HEADER)) {
 					return new PlaceholderTagNode(PlaceholderTagNodeType.LIST_COLUMN_HEADER);
-				}  else if (value.equals(ViewTemplateConstants.LIST_COLLECTION_COLUMN_DATA)) {
+				} else if (value.equals(ViewTemplateConstants.LIST_COLLECTION_COLUMN_DATA)) {
 					return new PlaceholderTagNode(PlaceholderTagNodeType.LIST_COLLECTION_COLUMN_DATA);
+				} else if (value.equals(ViewTemplateConstants.ACTION)) {
+					return new PlaceholderTagNode(PlaceholderTagNodeType.ACTION);
 				}
-
 			}
+
 			return null;
 		}
 
@@ -357,17 +367,6 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		NodeList nodes = (NodeList) result;
 
 		return nodes;
-	}
-
-	public static void main(String[] args) {
-		InputStream is = ViewTemplateParser.class.getResourceAsStream("viewtemplate.xml");
-		ViewTemplateParser parser = new ViewTemplateParser(is);
-
-		try {
-			parser.getTemplate("entityListForm");
-		} catch (ParserException e) {
-			e.printStackTrace();
-		}
 	}
 
 }

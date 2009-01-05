@@ -14,8 +14,8 @@ import jsfgenerator.entitymodel.pageelements.AbstractEntityForm;
  */
 public class EntityPageModel extends AbstractPageModel {
 
-	public EntityPageModel(String viewId, String entityClassName) {
-		super(viewId, entityClassName);
+	public EntityPageModel(String viewId, String entityClassName, String relatedPageViewId) {
+		super(viewId, entityClassName, relatedPageViewId);
 	}
 
 	// forms of the entity page. they are not necessarily EntityForm of T

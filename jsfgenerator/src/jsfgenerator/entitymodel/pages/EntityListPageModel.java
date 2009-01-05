@@ -14,8 +14,8 @@ public class EntityListPageModel extends AbstractPageModel {
 
 	private List<ColumnModel> columns = new ArrayList<ColumnModel>();
 
-	public EntityListPageModel(String viewId, String entityClassName) {
-		super(viewId, entityClassName);
+	public EntityListPageModel(String viewId, String entityClassName, String relatedPageViewId) {
+		super(viewId, entityClassName, relatedPageViewId);
 	}
 
 	public List<ColumnModel> getColumns() {
