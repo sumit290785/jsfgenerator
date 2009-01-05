@@ -5,9 +5,8 @@ import java.util.Set;
 import jsfgenerator.generation.view.parameters.XMLNamespaceAttribute;
 
 /**
- * It is a special tag in the tag tree of an element! At generation time other
- * tags are added as children of a proxy tag. Pages have forms hang on a proxy
- * tag, form tag trees have inputs hang on a proxy, etc
+ * It is a special tag in the tag tree of an element! At generation time other tags are added as children of a proxy tag. Pages have forms
+ * hang on a proxy tag, form tag trees have inputs hang on a proxy, etc
  * 
  * @author zoltan verebes
  * 
@@ -15,7 +14,7 @@ import jsfgenerator.generation.view.parameters.XMLNamespaceAttribute;
 public class PlaceholderTagNode extends AbstractTagNode {
 
 	public enum PlaceholderTagNodeType {
-		ENTITY_FORM, ENTITY_LIST_FORM, INPUT, LIST_COLUMN_DATA, LIST_COLUMN_HEADER, LIST_COLLECTION_COLUMN_DATA;
+		ENTITY_FORM, ENTITY_LIST_FORM, INPUT, LIST_COLUMN_DATA, LIST_COLUMN_HEADER, LIST_COLLECTION_COLUMN_DATA, ACTION;
 	}
 
 	private PlaceholderTagNodeType type;
@@ -30,6 +29,7 @@ public class PlaceholderTagNode extends AbstractTagNode {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see jsfgenerator.generation.tagmodel.Tag#getXmlNamespaces()
 	 */
 	@Override

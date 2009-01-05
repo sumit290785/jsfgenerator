@@ -20,7 +20,6 @@ public abstract class AbstractEntityPage<T> {
 	protected EditHelper<T> entityEditHelper;
 
 	public AbstractEntityPage() {
-		setEntityId(null);
 	}
 
 	public void setEntityEditHelper(EditHelper<T> entityEditHelper) {
@@ -43,7 +42,7 @@ public abstract class AbstractEntityPage<T> {
 	@SuppressWarnings("unchecked")
 	protected void load() {
 
-		if (entityId == null) {
+		if (entityId == null || entityId == 0) {
 			createEntityInstance();
 			return;
 		}

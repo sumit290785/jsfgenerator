@@ -25,6 +25,15 @@
            label="Generate view and controller"
            menubarPath="jsfgenerator.ui.actions.menu">
 	    </action>
+	    <action
+           class="jsfgenerator.ui.actions.ValidationAction"
+           definitionId="jsfgenerator.ui.validationaction"
+           enablesFor="+"
+           icon="resource/images/applications-system.png"
+           id="jsfgenerator.ui.validationaction"
+           label="Validate view descriptor"
+           menubarPath="jsfgenerator.ui.actions.menu">
+	    </action>
 	 </objectContribution>
           
    </extension>

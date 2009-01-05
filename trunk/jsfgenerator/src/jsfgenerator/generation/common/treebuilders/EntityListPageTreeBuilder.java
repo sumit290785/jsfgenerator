@@ -1,5 +1,6 @@
 package jsfgenerator.generation.common.treebuilders;
 
+import jsfgenerator.entitymodel.pageelements.ActionColumnModel;
 import jsfgenerator.entitymodel.pageelements.ColumnModel;
 import jsfgenerator.entitymodel.pageelements.EntityRelationship;
 import jsfgenerator.entitymodel.pageelements.ReferencedColumnModel;
@@ -18,6 +19,7 @@ import jsfgenerator.generation.view.ViewTemplateTree;
 import jsfgenerator.generation.view.PlaceholderTagNode.PlaceholderTagNodeType;
 import jsfgenerator.generation.view.parameters.TagAttribute;
 import jsfgenerator.generation.view.parameters.XMLNamespaceAttribute;
+import jsfgenerator.generation.view.parameters.TagAttribute.TagParameterType;
 
 public class EntityListPageTreeBuilder extends AbstractTreeBuilder {
 
@@ -66,11 +68,16 @@ public class EntityListPageTreeBuilder extends AbstractTreeBuilder {
 
 	protected void init() {
 		this.templateTree = templateTreeProvider.getEntityListPageTemplateTree();
-		
-		TagAttribute attribute = new XMLNamespaceAttribute(INameConstants.JSFGEN_TAGLIB_XMLNS_PREFIX,
-				INameConstants.JSFGEN_TAGLIB_XMLNS);
-		((StaticTagNode) templateTree.getNodes().get(0)).addAttribute(attribute);
-		
+
+		((StaticTagNode) templateTree.getNodes().get(0)).addAttribute(new XMLNamespaceAttribute(
+				INameConstants.JSFGEN_TAGLIB_XMLNS_PREFIX, INameConstants.JSFGEN_TAGLIB_XMLNS));
+
+		((StaticTagNode) templateTree.getNodes().get(0)).addAttribute(new XMLNamespaceAttribute("h",
+				INameConstants.JSF_HTML_TAGLIB_XMLNS));
+
+		((StaticTagNode) templateTree.getNodes().get(0)).addAttribute(new XMLNamespaceAttribute("f",
+				INameConstants.JSF_CORE_TAGLIB_XMLNS));
+
 		columnDataPlaceholderNode = getFirstPlaceholderTagNodeByType(templateTree, PlaceholderTagNodeType.LIST_COLUMN_DATA);
 
 		if (columnDataPlaceholderNode == null) {
@@ -88,15 +95,32 @@ public class EntityListPageTreeBuilder extends AbstractTreeBuilder {
 		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(model.getViewId(), model.getEntityClassName());
 		templateTree.apply(visitor);
 
+		addNewAction();
+
 		/*
 		 * add the root CLASS to the controller tree it will keep all of its elements as children in the tree
 		 */
 		this.controllerTree = new ControllerTree();
 		classNode = controllerNodeProvider.createEntityListPageClassNode(model);
 		controllerTree.addNode(classNode);
-		
+
 		QueryBuilder.getInstance().clear();
 		QueryBuilder.getInstance().setDomainEntityClass(model.getEntityClassName());
+	}
+
+	private void addNewAction() {
+		StaticTagNode node = new StaticTagNode("h:outputLink");
+		node.addAttribute(new TagAttribute("value", model.getRelatedPageViewId() + ".jsf", TagParameterType.STATIC, false));
+
+		StaticTagNode textNode = new StaticTagNode("h:outputText");
+		ResourceBundleBuilder.getInstance().addKey("new");
+		textNode.addAttribute(new TagAttribute("value", "#{jsfgen:translate('new')}", TagParameterType.STATIC, false));
+		node.addChild(textNode);
+
+		PlaceholderTagNode placeHolder = getFirstPlaceholderTagNodeByType(templateTree, PlaceholderTagNodeType.ACTION);
+		if (placeHolder != null) {
+			placeHolder.addChild(node);
+		}
 	}
 
 	public void addColumn(ColumnModel column) {
@@ -105,7 +129,9 @@ public class EntityListPageTreeBuilder extends AbstractTreeBuilder {
 		if (column instanceof ReferencedColumnModel) {
 			addReferencedColumnModel((ReferencedColumnModel) column);
 			entityName = ((ReferencedColumnModel) column).getReferencedEntityClassName();
-			;
+		} else if (column instanceof ActionColumnModel) {
+			addActionColumnModel((ActionColumnModel) column);
+			entityName = column.getEntityClassName();
 		} else {
 			addColumnModel(column);
 			entityName = column.getEntityClassName();
@@ -120,6 +146,30 @@ public class EntityListPageTreeBuilder extends AbstractTreeBuilder {
 			columnHeaderTree.apply(visitor);
 
 			columnHeaderPlaceholderNode.addAllChildren(columnHeaderTree.getNodes());
+		}
+	}
+
+	public void addActionColumnModel(ActionColumnModel column) {
+		StaticTagNode node = new StaticTagNode("h:outputLink");
+		node.addAttribute(new TagAttribute("value", model.getRelatedPageViewId() + ".jsf", TagParameterType.STATIC, false));
+
+		StaticTagNode textNode = new StaticTagNode("h:outputText");
+		ResourceBundleBuilder.getInstance().addKey(column.getType().toString().toLowerCase());
+		textNode.addAttribute(new TagAttribute("value", "#{jsfgen:translate('" + column.getType().toString().toLowerCase()
+				+ "')}", TagParameterType.STATIC, false));
+		node.addChild(textNode);
+
+		StaticTagNode paramNode = new StaticTagNode("f:param");
+		paramNode.addAttribute(new TagAttribute("name", "entityId", TagParameterType.STATIC, false));
+		paramNode.addAttribute(new TagAttribute("value", "#{" + varVariableName + "." + column.getIdFieldName() + "}",
+				TagParameterType.STATIC, false));
+		node.addChild(paramNode);
+
+		ViewTemplateTree tree = templateTreeProvider.getListColumnActionTemplateTree();
+		PlaceholderTagNode placeHolder = getFirstPlaceholderTagNodeByType(tree, PlaceholderTagNodeType.ACTION);
+		if (placeHolder != null) {
+			placeHolder.addChild(node);
+			columnDataPlaceholderNode.addAllChildren(tree.getNodes());
 		}
 	}
 

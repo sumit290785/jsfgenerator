@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import jsfgenerator.entitymodel.pageelements.AbstractEntityForm;
+import jsfgenerator.entitymodel.pageelements.ActionColumnModel;
 import jsfgenerator.entitymodel.pageelements.ColumnModel;
 import jsfgenerator.entitymodel.pageelements.EntityField;
 import jsfgenerator.entitymodel.pageelements.EntityForm;
 import jsfgenerator.entitymodel.pageelements.EntityListForm;
 import jsfgenerator.entitymodel.pageelements.ReferencedColumnModel;
+import jsfgenerator.entitymodel.pageelements.ActionColumnModel.ActionType;
 import jsfgenerator.entitymodel.pages.AbstractPageModel;
 import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
@@ -74,12 +76,12 @@ public class EntityModelBuilder {
 	 * @param entity
 	 * @param viewId
 	 */
-	public void createEntityPageModel(String viewId, String entityClassName) {
+	public void createEntityPageModel(String viewId, String entityClassName, String relatedPageViewId) {
 		if (pages.containsKey(viewId)) {
 			throw new IllegalArgumentException("View already in the model: " + viewId);
 		}
 
-		AbstractPageModel page = new EntityPageModel(viewId, entityClassName);
+		AbstractPageModel page = new EntityPageModel(viewId, entityClassName, relatedPageViewId);
 		pages.put(viewId, page);
 	}
 
@@ -89,12 +91,12 @@ public class EntityModelBuilder {
 	 * @param entity
 	 * @param viewId
 	 */
-	public void createEntityListPageModel(String viewId, String entityClassName) {
+	public void createEntityListPageModel(String viewId, String entityClassName, String relatedPageViewId) {
 		if (pages.containsKey(viewId)) {
 			throw new IllegalArgumentException("View already in the model: " + viewId);
 		}
 
-		AbstractPageModel page = new EntityListPageModel(viewId, entityClassName);
+		AbstractPageModel page = new EntityListPageModel(viewId, entityClassName, relatedPageViewId);
 		pages.put(viewId, page);
 	}
 
@@ -110,6 +112,12 @@ public class EntityModelBuilder {
 					referencedField, field.getRelationshipToEntity());
 		}
 		pageModel.addColumn(column);
+	}
+	
+	public void addActionColumns(String viewId, EntityDescription entity, String idFieldName) {
+		EntityListPageModel pageModel = getEntityListPageModel(viewId);
+		pageModel.addColumn(new ActionColumnModel(entity.getEntityClassName(), ActionType.SELECT, idFieldName));
+		pageModel.addColumn(new ActionColumnModel(entity.getEntityClassName(), ActionType.DELETE, idFieldName));
 	}
 
 	public void addEntityForm(String viewId, EntityDescription entity, EntityFieldDescription field) {

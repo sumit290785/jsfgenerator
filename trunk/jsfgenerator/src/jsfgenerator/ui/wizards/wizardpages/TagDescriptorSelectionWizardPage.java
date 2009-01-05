@@ -7,6 +7,7 @@ import jsfgenerator.ui.composites.ResourceSelectionComposite;
 import jsfgenerator.ui.providers.ResourceLabelProvider;
 import jsfgenerator.ui.providers.ResourceSelectionContentProvider;
 import jsfgenerator.ui.utilities.ProjectResourceProvider;
+import jsfgenerator.ui.validation.ViewTemplateValidator;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -95,12 +96,19 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 	}
 
 	protected void validate() {
-		if (resourceComposite.getSelectionText().getText() == null || resourceComposite.getSelectionText().getText().equals("")) {
+		
+		if (selectedFile == null) {
 			setErrorMessage("Please, select a file");
 		} else {
-			setErrorMessage(null);
+			ViewTemplateValidator validator = new ViewTemplateValidator(selectedFile);
+			validator.validate();
+			
+			if (!validator.validationPassed()) {
+				setErrorMessage("Selected file is invalid! For details check the validation from the context menu for the selected file");
+			} else {
+				setErrorMessage(null);
+			}
 		}
-
 		setPageComplete(getErrorMessage() == null);
 	}
 

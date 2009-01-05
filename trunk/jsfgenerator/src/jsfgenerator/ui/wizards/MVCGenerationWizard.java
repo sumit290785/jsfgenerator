@@ -25,6 +25,7 @@ import jsfgenerator.generation.common.utilities.ClassNameUtils;
 import jsfgenerator.generation.common.utilities.NodeNameUtils;
 import jsfgenerator.generation.controller.nodes.ControllerNodeFactory;
 import jsfgenerator.generation.view.IViewTemplateProvider;
+import jsfgenerator.generation.view.IndexPageBuilder;
 import jsfgenerator.generation.view.impl.ViewTemplateParser;
 import jsfgenerator.ui.artifacthandlers.ArtifactEditHandler;
 import jsfgenerator.ui.model.AbstractEntityDescriptionWrapper;
@@ -127,7 +128,10 @@ public class MVCGenerationWizard extends Wizard {
 						if (entityWrapper.isPageGenerated()) {
 							String viewId = entityWrapper.getViewId();
 							if (!builder.isViewSpecified(viewId)) {
-								builder.createEntityPageModel(viewId, entityWrapper.getEntityDescription().getEntityClassName());
+								String otherId = getEntityListPageViewId(entityWrapper.getEntityDescription()
+										.getEntityClassName());
+								builder.createEntityPageModel(viewId, entityWrapper.getEntityDescription().getEntityClassName(),
+										otherId);
 							}
 
 							builder.addEntityForm(viewId, entityWrapper.getEntityDescription(), null);
@@ -147,12 +151,14 @@ public class MVCGenerationWizard extends Wizard {
 						}
 					}
 
+					String idFieldName = null;
 					for (EntityDescriptionListPageWrapper entityWrapper : getEntityDescriptionListPageWrappers()) {
 						if (entityWrapper.isPageGenerated()) {
 							String viewId = entityWrapper.getViewId();
 							if (!builder.isViewSpecified(viewId)) {
+								String otherId = getEntityPageViewId(entityWrapper.getEntityDescription().getEntityClassName());
 								builder.createEntityListPageModel(viewId, entityWrapper.getEntityDescription()
-										.getEntityClassName());
+										.getEntityClassName(), otherId);
 							}
 
 							for (AbstractEntityFieldDescriptionWrapper entityFieldWrapper : entityWrapper.getFieldWrappers()) {
@@ -175,7 +181,12 @@ public class MVCGenerationWizard extends Wizard {
 												.getEntityFieldDescription(), referencedEntityClassName, wrapper.getFieldName());
 									}
 								}
+								if (wrapper.getEntityFieldDescription().isId()) {
+									idFieldName = wrapper.getEntityFieldDescription().getFieldName();
+								}
 							}
+
+							builder.addActionColumns(viewId, entityWrapper.getEntityDescription(), idFieldName);
 						}
 					}
 
@@ -217,9 +228,10 @@ public class MVCGenerationWizard extends Wizard {
 						}
 						saveController(fileName, viewDTO.getViewClass());
 						addManagedBeanToFacesConfig(pageModel.getViewId(), viewDTO.getControllerClassName(), monitor);
-						saveResourceBundles();
 					}
 
+					saveResourceBundles();
+					saveIndexPage();
 					monitor.done();
 				}
 
@@ -263,6 +275,23 @@ public class MVCGenerationWizard extends Wizard {
 		} catch (JavaModelException e) {
 			throw new GenerationException(
 					"Could not save the generated controller! Source is on the disk, but it is not in the workspace.", e);
+		}
+	}
+
+	private void saveIndexPage() {
+		IndexPageBuilder.getInstance().finish();
+
+		InputStream stream = IndexPageBuilder.getInstance().getContent();
+		String fileName = "index.xhtml";
+		IFolder folder = viewTargetFolderSelectionWizardPage.getSelectedFolder();
+
+		delete(folder, fileName);
+
+		try {
+			IFile file = folder.getFile(fileName);
+			file.create(stream, IResource.FORCE, null);
+		} catch (CoreException e) {
+			throw new GenerationException("Could not save the generated view!", e);
 		}
 	}
 
@@ -390,6 +419,26 @@ public class MVCGenerationWizard extends Wizard {
 				return id + " is not unique view id!";
 			}
 			ids.add(id);
+		}
+
+		return null;
+	}
+
+	private String getEntityListPageViewId(String className) {
+		for (EntityDescriptionListPageWrapper desc : getEntityDescriptionListPageWrappers()) {
+			if (desc.getEntityDescription().getEntityClassName().equals(className)) {
+				return desc.getViewId();
+			}
+		}
+
+		return null;
+	}
+
+	private String getEntityPageViewId(String className) {
+		for (EntityDescriptionEntityPageWrapper desc : getEntityDescriptionEntityPageWrappers()) {
+			if (desc.getEntityDescription().getEntityClassName().equals(className)) {
+				return desc.getViewId();
+			}
 		}
 
 		return null;

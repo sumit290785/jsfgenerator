@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EntityDescriptionEntityPageWrapper extends AbstractEntityDescriptionWrapper {
+	
+	private String relatedPageViewId;
 
-	public EntityDescriptionEntityPageWrapper(EntityDescription entityDescription) {
+	public EntityDescriptionEntityPageWrapper(EntityDescription entityDescription, String relatedPageViewId) {
 		super(entityDescription);
 	}
 
@@ -25,9 +27,17 @@ public class EntityDescriptionEntityPageWrapper extends AbstractEntityDescriptio
 		List<EntityDescriptionEntityPageWrapper> wrappers = new ArrayList<EntityDescriptionEntityPageWrapper>();
 
 		for (EntityDescription desc : descriptions) {
-			wrappers.add(new EntityDescriptionEntityPageWrapper(desc));
+			wrappers.add(new EntityDescriptionEntityPageWrapper(desc, ""));
 		}
 		return wrappers;
+	}
+
+	public void setRelatedPageViewId(String relatedPageViewId) {
+		this.relatedPageViewId = relatedPageViewId;
+	}
+
+	public String getRelatedPageViewId() {
+		return relatedPageViewId;
 	}
 
 }

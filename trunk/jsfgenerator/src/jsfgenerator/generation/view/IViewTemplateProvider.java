@@ -29,6 +29,8 @@ public interface IViewTemplateProvider {
 	
 	public ViewTemplateTree getListColumnDataTemplateTree();
 	
+	public ViewTemplateTree getListColumnActionTemplateTree();
+	
 	public ViewTemplateTree getListColumnHeaderTemplateTree();
 	
 	public ViewTemplateTree getListCollectionColumnTemplateTree();
