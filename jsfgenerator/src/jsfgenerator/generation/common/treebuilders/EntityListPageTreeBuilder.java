@@ -6,6 +6,7 @@ import jsfgenerator.entitymodel.pageelements.EntityRelationship;
 import jsfgenerator.entitymodel.pageelements.ReferencedColumnModel;
 import jsfgenerator.entitymodel.pages.EntityListPageModel;
 import jsfgenerator.generation.common.INameConstants;
+import jsfgenerator.generation.common.utilities.ActionViewTemplateTreeBuilder;
 import jsfgenerator.generation.common.utilities.QueryBuilder;
 import jsfgenerator.generation.common.visitors.ReferenceNameEvaluatorVisitor;
 import jsfgenerator.generation.controller.AbstractControllerNodeFactory;
@@ -17,9 +18,7 @@ import jsfgenerator.generation.view.PlaceholderTagNode;
 import jsfgenerator.generation.view.StaticTagNode;
 import jsfgenerator.generation.view.ViewTemplateTree;
 import jsfgenerator.generation.view.PlaceholderTagNode.PlaceholderTagNodeType;
-import jsfgenerator.generation.view.parameters.TagAttribute;
 import jsfgenerator.generation.view.parameters.XMLNamespaceAttribute;
-import jsfgenerator.generation.view.parameters.TagAttribute.TagParameterType;
 
 public class EntityListPageTreeBuilder extends AbstractTreeBuilder {
 
@@ -95,7 +94,12 @@ public class EntityListPageTreeBuilder extends AbstractTreeBuilder {
 		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(model.getViewId(), model.getEntityClassName());
 		templateTree.apply(visitor);
 
-		addNewAction();
+		PlaceholderTagNode actionBarPlaceholderNode = getFirstPlaceholderTagNodeByType(templateTree,
+				PlaceholderTagNodeType.ACTION_BAR);
+		if (actionBarPlaceholderNode != null) {
+			StaticTagNode node = ActionViewTemplateTreeBuilder.getNewAtionNode(model.getRelatedPageViewId());
+			actionBarPlaceholderNode.addChild(node);
+		}
 
 		/*
 		 * add the root CLASS to the controller tree it will keep all of its elements as children in the tree
@@ -106,21 +110,6 @@ public class EntityListPageTreeBuilder extends AbstractTreeBuilder {
 
 		QueryBuilder.getInstance().clear();
 		QueryBuilder.getInstance().setDomainEntityClass(model.getEntityClassName());
-	}
-
-	private void addNewAction() {
-		StaticTagNode node = new StaticTagNode("h:outputLink");
-		node.addAttribute(new TagAttribute("value", model.getRelatedPageViewId() + ".jsf", TagParameterType.STATIC, false));
-
-		StaticTagNode textNode = new StaticTagNode("h:outputText");
-		ResourceBundleBuilder.getInstance().addKey("new");
-		textNode.addAttribute(new TagAttribute("value", "#{jsfgen:translate('new')}", TagParameterType.STATIC, false));
-		node.addChild(textNode);
-
-		PlaceholderTagNode placeHolder = getFirstPlaceholderTagNodeByType(templateTree, PlaceholderTagNodeType.ACTION);
-		if (placeHolder != null) {
-			placeHolder.addChild(node);
-		}
 	}
 
 	public void addColumn(ColumnModel column) {
@@ -150,25 +139,13 @@ public class EntityListPageTreeBuilder extends AbstractTreeBuilder {
 	}
 
 	public void addActionColumnModel(ActionColumnModel column) {
-		StaticTagNode node = new StaticTagNode("h:outputLink");
-		node.addAttribute(new TagAttribute("value", model.getRelatedPageViewId() + ".jsf", TagParameterType.STATIC, false));
-
-		StaticTagNode textNode = new StaticTagNode("h:outputText");
-		ResourceBundleBuilder.getInstance().addKey(column.getType().toString().toLowerCase());
-		textNode.addAttribute(new TagAttribute("value", "#{jsfgen:translate('" + column.getType().toString().toLowerCase()
-				+ "')}", TagParameterType.STATIC, false));
-		node.addChild(textNode);
-
-		StaticTagNode paramNode = new StaticTagNode("f:param");
-		paramNode.addAttribute(new TagAttribute("name", "entityId", TagParameterType.STATIC, false));
-		paramNode.addAttribute(new TagAttribute("value", "#{" + varVariableName + "." + column.getIdFieldName() + "}",
-				TagParameterType.STATIC, false));
-		node.addChild(paramNode);
+		StaticTagNode selectNode = ActionViewTemplateTreeBuilder.getSelectAtionNode(model.getRelatedPageViewId(), varVariableName, column
+				.getIdFieldName());
 
 		ViewTemplateTree tree = templateTreeProvider.getListColumnActionTemplateTree();
 		PlaceholderTagNode placeHolder = getFirstPlaceholderTagNodeByType(tree, PlaceholderTagNodeType.ACTION);
 		if (placeHolder != null) {
-			placeHolder.addChild(node);
+			placeHolder.addChild(selectNode);
 			columnDataPlaceholderNode.addAllChildren(tree.getNodes());
 		}
 	}

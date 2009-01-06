@@ -13,6 +13,7 @@
 			<xsd:enumeration value="columnHeader" />
 			<xsd:enumeration value="collectionColumn" />
 			<xsd:enumeration value="collectionColumnData" />
+			<xsd:enumeration value="actionBar" />
 			<xsd:enumeration value="input" />
 		</xsd:restriction>
 	</xsd:simpleType>

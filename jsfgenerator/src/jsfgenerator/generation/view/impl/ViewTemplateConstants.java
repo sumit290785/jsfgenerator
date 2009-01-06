@@ -59,6 +59,8 @@ public final class ViewTemplateConstants {
 	
 	public static final String LIST_COLUMN_HEADER = "columnHeader";
 	
+	public static final String ACTION_BAR= "actionBar";
+	
 	public static final String ACTION = "action";
 
 	public static final String INPUT = "input";

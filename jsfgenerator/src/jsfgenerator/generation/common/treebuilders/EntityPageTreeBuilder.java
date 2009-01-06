@@ -10,6 +10,7 @@ import jsfgenerator.entitymodel.pageelements.EntityForm;
 import jsfgenerator.entitymodel.pageelements.EntityListForm;
 import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.common.INameConstants;
+import jsfgenerator.generation.common.utilities.ActionViewTemplateTreeBuilder;
 import jsfgenerator.generation.common.utilities.StringUtils;
 import jsfgenerator.generation.common.visitors.ReferenceNameEvaluatorVisitor;
 import jsfgenerator.generation.controller.AbstractControllerNodeFactory;
@@ -44,6 +45,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	// the only entity form place holder tag in the tag tree
 	private PlaceholderTagNode entityFormPlaceholderNode;
 
+	// the entity list form place holder tag in the tag tree
 	private PlaceholderTagNode entityListFormPlaceholderNode;
 
 	public EntityPageTreeBuilder(EntityPageModel model, IViewTemplateProvider tagTreeProvider,
@@ -73,6 +75,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 
 		entityFormPlaceholderNode = getFirstPlaceholderTagNodeByType(templateTree, PlaceholderTagNodeType.ENTITY_FORM);
 		entityListFormPlaceholderNode = getFirstPlaceholderTagNodeByType(templateTree, PlaceholderTagNodeType.ENTITY_LIST_FORM);
+		
 	}
 
 	/**
@@ -93,6 +96,19 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		entityFormTree.apply(visitor);
 
 		entityFormPlaceholderNode.addAllChildren(entityFormTree.getNodes());
+		
+		PlaceholderTagNode actionBarPlaceholderNode = getFirstPlaceholderTagNodeByType(templateTree, PlaceholderTagNodeType.ACTION_BAR);
+
+		if (actionBarPlaceholderNode != null) {
+			StaticTagNode saveNode = ActionViewTemplateTreeBuilder.getSaveActionNode();
+			actionBarPlaceholderNode.addChild(saveNode);
+
+			StaticTagNode deleteNode = ActionViewTemplateTreeBuilder.getRemoveActionNode();
+			actionBarPlaceholderNode.addChild(deleteNode);
+
+			visitor = new ReferenceNameEvaluatorVisitor(namespace, form.getEntityName());
+			actionBarPlaceholderNode.apply(visitor);
+		}
 
 		/*
 		 * add the info to the controller tree for the backing bean
@@ -110,7 +126,19 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		entityListFormTree.apply(visitor);
 		entityListFormTree.applyReferenceName(form.getEntityName());
 
+		PlaceholderTagNode actionBarPlaceholderNode = getFirstPlaceholderTagNodeByType(entityListFormTree,
+				PlaceholderTagNodeType.ACTION_BAR);
+
+		if (actionBarPlaceholderNode != null) {
+			StaticTagNode addNode = ActionViewTemplateTreeBuilder.getAddActionNode();
+			visitor = new ReferenceNameEvaluatorVisitor(namespace, form.getEntityName());
+			addNode.apply(visitor);
+			actionBarPlaceholderNode.addChild(addNode);
+		}
+
 		String varVariableName = getVarVariableName(entityListFormTree);
+		
+		//TODO: clear the entity form
 		ViewTemplateTree entityFormTree = templateTreeProvider.getEntityFormTemplateTree();
 		visitor = new ReferenceNameEvaluatorVisitor(namespace, form.getEntityName());
 		visitor.setVarVariable(varVariableName);
@@ -124,6 +152,16 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 					"Entity list form template tree does not contain placeholder tag for the entity form");
 		}
 		entityFormPlaceholderNode.addAllChildren(entityFormTree.getNodes());
+		
+		actionBarPlaceholderNode = getFirstPlaceholderTagNodeByType(entityFormTree, PlaceholderTagNodeType.ACTION_BAR);
+
+		if (actionBarPlaceholderNode != null) {
+			// remove element action
+			StaticTagNode removeNode = ActionViewTemplateTreeBuilder.getRemoveActionNode();
+			visitor = new ReferenceNameEvaluatorVisitor(namespace, form.getEntityName());
+			removeNode.apply(visitor);
+			actionBarPlaceholderNode.addChild(removeNode);
+		}
 
 		entityListFormPlaceholderNode.addAllChildren(entityListFormTree.getNodes());
 
@@ -199,5 +237,5 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	public ViewTemplateTree getViewTemplateTree() {
 		return templateTree;
 	}
-	
+
 }

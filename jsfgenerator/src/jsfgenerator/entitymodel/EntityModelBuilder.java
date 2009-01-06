@@ -117,7 +117,6 @@ public class EntityModelBuilder {
 	public void addActionColumns(String viewId, EntityDescription entity, String idFieldName) {
 		EntityListPageModel pageModel = getEntityListPageModel(viewId);
 		pageModel.addColumn(new ActionColumnModel(entity.getEntityClassName(), ActionType.SELECT, idFieldName));
-		pageModel.addColumn(new ActionColumnModel(entity.getEntityClassName(), ActionType.DELETE, idFieldName));
 	}
 
 	public void addEntityForm(String viewId, EntityDescription entity, EntityFieldDescription field) {

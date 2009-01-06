@@ -2,6 +2,8 @@ package jsfgenerator.generation.view;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -9,6 +11,11 @@ import java.util.Set;
 import jsfgenerator.generation.view.parameters.TagAttribute;
 import jsfgenerator.generation.view.parameters.XMLNamespaceAttribute;
 
+/**
+ * 
+ * @author zoltan verebes
+ *
+ */
 public class StaticTagNode extends AbstractTagNode {
 
 	// name of the tag
@@ -62,11 +69,22 @@ public class StaticTagNode extends AbstractTagNode {
 	}
 
 	public void addAttribute(TagAttribute tagAttribute) {
-		attributes.add(tagAttribute);
+		int i = Collections.binarySearch(attributes, tagAttribute, new Comparator<TagAttribute>() {
+
+			public int compare(TagAttribute tag1, TagAttribute tag2) {
+				return tag1.getName().compareTo(tag2.getName());
+			}
+		});
+
+		if (i < 0) {
+			attributes.add(tagAttribute);
+		}
 	}
-	
+
 	public void addAllAttributes(Collection<TagAttribute> attributes) {
-		attributes.addAll(attributes);
+		for (TagAttribute tagAttribute : attributes) {
+			addAttribute(tagAttribute);
+		}
 	}
-	
+
 }
