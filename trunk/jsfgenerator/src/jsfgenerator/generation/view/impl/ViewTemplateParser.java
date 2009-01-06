@@ -37,6 +37,8 @@ import org.xml.sax.SAXException;
 
 /**
  * 
+ * It parses the xml file of the view, handles the annotations.xsd and provides view template trees for view tree generation
+ * 
  * @author zoltan verebes
  * 
  */
@@ -59,6 +61,11 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		factory = XPathFactory.newInstance();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsfgenerator.generation.view.IViewTemplateProvider#getEntityListFormTemplateTree()
+	 */
 	public ViewTemplateTree getEntityListFormTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.ENTITY_LIST_FORM);
@@ -67,6 +74,11 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsfgenerator.generation.view.IViewTemplateProvider#getEntityPageTemplateTree()
+	 */
 	public ViewTemplateTree getEntityPageTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.ENTITY_PAGE);
@@ -75,6 +87,11 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsfgenerator.generation.view.IViewTemplateProvider#getEntityFormTemplateTree()
+	 */
 	public ViewTemplateTree getEntityFormTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.ENTITY_FORM);
@@ -83,6 +100,11 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsfgenerator.generation.view.IViewTemplateProvider#getInputTemplateTree(java.lang.String)
+	 */
 	public ViewTemplateTree getInputTemplateTree(String inputTagId) {
 		try {
 			return getTemplate(ViewTemplateConstants.INPUT, inputTagId);
@@ -91,6 +113,11 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsfgenerator.generation.view.IViewTemplateProvider#getInputTagNames()
+	 */
 	public List<String> getInputTagNames() {
 		List<String> ids = new ArrayList<String>();
 		try {
@@ -107,6 +134,11 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		return ids;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsfgenerator.generation.view.IViewTemplateProvider#getEntityListPageTemplateTree()
+	 */
 	public ViewTemplateTree getEntityListPageTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.ENTITY_LIST_PAGE);
@@ -115,6 +147,11 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsfgenerator.generation.view.IViewTemplateProvider#getListColumnDataTemplateTree()
+	 */
 	public ViewTemplateTree getListColumnDataTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.LIST_COLUMN_DATA);
@@ -123,6 +160,11 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsfgenerator.generation.view.IViewTemplateProvider#getListCollectionColumnTemplateTree()
+	 */
 	public ViewTemplateTree getListCollectionColumnTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.LIST_COLLECTION_COLUMN);
@@ -131,6 +173,11 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsfgenerator.generation.view.IViewTemplateProvider#getListCollectionColumnDataTemplateTree()
+	 */
 	public ViewTemplateTree getListCollectionColumnDataTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.LIST_COLLECTION_COLUMN_DATA);
@@ -139,6 +186,11 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsfgenerator.generation.view.IViewTemplateProvider#getListColumnActionTemplateTree()
+	 */
 	public ViewTemplateTree getListColumnActionTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.LIST_COLUMN_ACTION);
@@ -147,9 +199,27 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsfgenerator.generation.view.IViewTemplateProvider#getListColumnHeaderTemplateTree()
+	 */
 	public ViewTemplateTree getListColumnHeaderTemplateTree() {
 		try {
 			return getTemplate(ViewTemplateConstants.LIST_COLUMN_HEADER);
+		} catch (ParserException e) {
+			throw new RuntimeException("Column header could not be parsed", e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsfgenerator.generation.view.IViewTemplateProvider#getActionBarTemplateTree()
+	 */
+	public ViewTemplateTree getActionBarTemplateTree() {
+		try {
+			return getTemplate(ViewTemplateConstants.ACTION_BAR);
 		} catch (ParserException e) {
 			throw new RuntimeException("Column header could not be parsed", e);
 		}
@@ -223,6 +293,8 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 					return new PlaceholderTagNode(PlaceholderTagNodeType.LIST_COLLECTION_COLUMN_DATA);
 				} else if (value.equals(ViewTemplateConstants.ACTION)) {
 					return new PlaceholderTagNode(PlaceholderTagNodeType.ACTION);
+				} else if (value.equals(ViewTemplateConstants.ACTION_BAR)) {
+					return new PlaceholderTagNode(PlaceholderTagNodeType.ACTION_BAR);
 				}
 			}
 

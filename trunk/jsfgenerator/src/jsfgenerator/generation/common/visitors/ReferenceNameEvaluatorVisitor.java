@@ -165,9 +165,7 @@ public class ReferenceNameEvaluatorVisitor extends AbstractVisitor<AbstractTagNo
 			StringBuffer buffer = new StringBuffer();
 			buffer.append(EXPRESSION_PREFIX);
 
-			buffer.append((ExpressionType.SAVE.equals(type) && namespace != null && namespace.lastIndexOf(".") != -1 && namespace
-					.substring(namespace.lastIndexOf(".") + 1).equals("entityEditHelper")) ? namespace.substring(0, namespace
-					.lastIndexOf(".")) : namespace);
+			buffer.append(namespace);
 
 			buffer.append(SEPARATOR);
 			buffer.append(getFunction(type));
