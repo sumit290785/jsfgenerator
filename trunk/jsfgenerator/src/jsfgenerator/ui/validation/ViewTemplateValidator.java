@@ -23,6 +23,19 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Validator class plugged into Ecipse Validator Framework. it is used in the plugin.xml. It validates for the mandatory and the forbidden
+ * elements of the view descriptor file. It handles more complex validation than an XSD can do.
+ * 
+ * It displays ERROR marker in the Eclipse XML editor and on the file in the Navigator if the validation fails. It's all configured in the
+ * plugin.xml manifest
+ * 
+ * 
+ * This class is instantiated straight from the wizard as well.
+ * 
+ * @author zoltan verebes
+ * 
+ */
 public class ViewTemplateValidator extends AbstractValidator {
 
 	private static List<String> templateTreeNames = Arrays.asList(ViewTemplateConstants.ENTITY_PAGE,
@@ -35,6 +48,12 @@ public class ViewTemplateValidator extends AbstractValidator {
 	private XMLParserUtils parserUtils;
 	private IFile file;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.wst.validation.AbstractValidator#validate(org.eclipse.core.resources.IResource, int,
+	 * org.eclipse.wst.validation.ValidationState, org.eclipse.core.runtime.IProgressMonitor)
+	 */
 	@Override
 	public ValidationResult validate(IResource resource, int arg1, ValidationState state, IProgressMonitor monitor) {
 
@@ -45,7 +64,7 @@ public class ViewTemplateValidator extends AbstractValidator {
 		file = (IFile) resource;
 
 		// check the full extension
-		if (!file.getName().endsWith(".jsfgen.xml"))  {
+		if (!file.getName().endsWith(".jsfgen.xml")) {
 			return null;
 		}
 
@@ -95,7 +114,12 @@ public class ViewTemplateValidator extends AbstractValidator {
 		rules.addAll(createElementRules(ViewTemplateConstants.ENTITY_FORM, Arrays.asList(ViewTemplateConstants.INPUT), Arrays
 				.asList(ViewTemplateConstants.ACTION_BAR)));
 
-		// TODO: entity list form
+		// entity list form
+		rules.addAll(createElementRules(ViewTemplateConstants.ENTITY_LIST_FORM, Arrays.asList(ViewTemplateConstants.INPUT,
+				ViewTemplateConstants.ACTION_BAR), null));
+
+		rules.addAll(createVariableRules(ViewTemplateConstants.ENTITY_LIST_FORM, ViewTemplateConstants.ACTION_BAR,
+				ViewTemplateConstants.INPUT));
 
 		// entity list page
 		rules.addAll(createElementRules(ViewTemplateConstants.ENTITY_LIST_PAGE, Arrays.asList(
@@ -121,7 +145,7 @@ public class ViewTemplateValidator extends AbstractValidator {
 		return rules;
 	}
 
-	private List<ValidationRule> createVariableRules(String root, String mandatoryElement) {
+	private List<ValidationRule> createVariableRules(String root, String... mandatoryElements) {
 		List<ValidationRule> rules = new ArrayList<ValidationRule>();
 
 		// var
@@ -130,10 +154,11 @@ public class ViewTemplateValidator extends AbstractValidator {
 				+ " tag tree", ValidationRuleType.MANDATORY));
 
 		// mandatory elements
-		exp = ViewTemplateConstants.getTemplateXPath(root) + ViewTemplateConstants.getPlaceholderXPath(mandatoryElement);
-		rules.add(new ValidationRule(exp, ViewTemplateConstants.getTemplateXPath(root) + ViewTemplateConstants.VARIABLE_XPATH,
-				"Variable tag does not contain mandatory element: " + mandatoryElement + " placeHolder",
-				ValidationRuleType.MANDATORY));
+		for (String mandatoryElement : mandatoryElements) {
+			String innerExp = exp + "/following-sibling::*" + ViewTemplateConstants.getPlaceholderXPath(mandatoryElement);
+			rules.add(new ValidationRule(innerExp, exp, "Variable tag does not contain mandatory element: " + mandatoryElement
+					+ " placeHolder", ValidationRuleType.MANDATORY));
+		}
 
 		return rules;
 	}
