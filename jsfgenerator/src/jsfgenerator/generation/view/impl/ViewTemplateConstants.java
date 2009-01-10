@@ -2,10 +2,14 @@ package jsfgenerator.generation.view.impl;
 
 public final class ViewTemplateConstants {
 
-	public static final String ANNOTATION_NS_URI = "http://www.example.org/annotations";
+	public static final String ANNOTATION_NS_URI = "http://www.jsfgen.com/annotations";
 
 	// xPATH expression for template with an id parameter
 	public static final String TEMPLATE_XPATH = "//annotation:template";
+	
+	public static final String PLACEHOLDER_XPATH = "//annotation:placeHolder";
+	
+	public static final String VARIABLE_XPATH = "//annotation:variable";
 
 	public static final String ROOT_XPATH = "/annotation:view";
 
@@ -97,5 +101,19 @@ public final class ViewTemplateConstants {
 
 		return buffer.toString();
 	}
-
+	
+	public static String getPlaceholderXPath(String id) {
+		if (id == null || id.equals("")) {
+			throw new IllegalArgumentException("Empty id is invalid");
+		}
+		
+		StringBuffer buffer = new StringBuffer(PLACEHOLDER_XPATH);
+		buffer.append("[");
+		buffer.append("@for='");
+		buffer.append(id);
+		buffer.append("'");
+		buffer.append("]");
+		
+		return buffer.toString();
+	}
 }

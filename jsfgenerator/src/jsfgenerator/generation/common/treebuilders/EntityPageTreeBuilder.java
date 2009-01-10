@@ -1,6 +1,7 @@
 package jsfgenerator.generation.common.treebuilders;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import jsfgenerator.entitymodel.pages.EntityPageModel;
 import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.generation.common.utilities.ActionViewTemplateTreeBuilder;
 import jsfgenerator.generation.common.utilities.StringUtils;
+import jsfgenerator.generation.common.visitors.PlaceholderTagNodeVisitor;
 import jsfgenerator.generation.common.visitors.ReferenceNameEvaluatorVisitor;
 import jsfgenerator.generation.controller.AbstractControllerNodeFactory;
 import jsfgenerator.generation.controller.ControllerTree;
@@ -26,6 +28,11 @@ import jsfgenerator.generation.view.parameters.TagAttribute;
 import jsfgenerator.generation.view.parameters.XMLNamespaceAttribute;
 
 /**
+ * Builds the model of the controller and the view tree of an entity page. Models are represented in trees. The root of the tree is the
+ * entityPage. It contains entity forms and entity list forms. It kind is up to the relationship of the entity to the base entity of the
+ * page. Forms contain action bars for actions and place holder elements for the input fields. Input fields are attached to the place holder
+ * elements of the tree
+ * 
  * @author zoltan verebes
  * 
  */
@@ -55,6 +62,9 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		init();
 	}
 
+	/**
+	 * initialize the root of the view template tree and the root of the controller tree
+	 */
 	protected void init() {
 		this.templateTree = templateTreeProvider.getEntityPageTemplateTree();
 
@@ -75,12 +85,14 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 
 		entityFormPlaceholderNode = getFirstPlaceholderTagNodeByType(templateTree, PlaceholderTagNodeType.ENTITY_FORM);
 		entityListFormPlaceholderNode = getFirstPlaceholderTagNodeByType(templateTree, PlaceholderTagNodeType.ENTITY_LIST_FORM);
-		
+
 	}
 
 	/**
-	 * adds a simple entity form to the tag tree of the view and also to the controller tree for the backing bean class. field and getter
-	 * method are required to be generated into the backing bean
+	 * adds a simple entity form to the view template tree of the view and also to the controller tree for the backing bean class. field and
+	 * getter method are required to be generated into the backing bean.
+	 * 
+	 * It requires a valid view template tree which is insured by the validation framework of Eclipse
 	 * 
 	 * @param form
 	 */
@@ -96,8 +108,9 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		entityFormTree.apply(visitor);
 
 		entityFormPlaceholderNode.addAllChildren(entityFormTree.getNodes());
-		
-		PlaceholderTagNode actionBarPlaceholderNode = getFirstPlaceholderTagNodeByType(templateTree, PlaceholderTagNodeType.ACTION_BAR);
+
+		PlaceholderTagNode actionBarPlaceholderNode = getFirstPlaceholderTagNodeByType(templateTree,
+				PlaceholderTagNodeType.ACTION_BAR);
 
 		if (actionBarPlaceholderNode != null) {
 			StaticTagNode saveNode = ActionViewTemplateTreeBuilder.getSaveActionNode();
@@ -116,9 +129,26 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		classNode.addAllChildren(controllerNodeProvider.createEntityFormControllerNodes(form));
 	}
 
+	/**
+	 * adds a list entity form to the view template tree of the view and also to the controller tree for the backing bean class. It requires
+	 * a valid view template tree which is insured by the validation framework of Eclipse
+	 * 
+	 * It must contain an action bar for the add command link, a form, an iterable part, an input place holder for the input fields for the
+	 * entity and an action bar for save and remove command links
+	 * 
+	 * @param form
+	 */
 	public void addEntityListForm(EntityListForm form) {
+		// root of the entity list form
 		ViewTemplateTree entityListFormTree = templateTreeProvider.getEntityListFormTemplateTree();
 
+		StaticTagNode variableNode = getVariableNode(entityListFormTree);
+
+		if (variableNode == null) {
+			throw new NullPointerException("Variable node not found! Please create a valid view descriptor");
+		}
+
+		// namespace is the entity instance out of the iterable part
 		String namespace = form.getEntityName() + INameConstants.EDITOR_FIELD_POSTFIX;
 		ReferenceNameEvaluatorVisitor visitor = new ReferenceNameEvaluatorVisitor(namespace, form.getEntityName());
 		visitor.setEntityFieldName("instances");
@@ -126,8 +156,7 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		entityListFormTree.apply(visitor);
 		entityListFormTree.applyReferenceName(form.getEntityName());
 
-		PlaceholderTagNode actionBarPlaceholderNode = getFirstPlaceholderTagNodeByType(entityListFormTree,
-				PlaceholderTagNodeType.ACTION_BAR);
+		PlaceholderTagNode actionBarPlaceholderNode = getFirstEntityListActionBar(entityListFormTree, variableNode);
 
 		if (actionBarPlaceholderNode != null) {
 			StaticTagNode addNode = ActionViewTemplateTreeBuilder.getAddActionNode();
@@ -137,23 +166,16 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 		}
 
 		String varVariableName = getVarVariableName(entityListFormTree);
-		
-		//TODO: clear the entity form
-		ViewTemplateTree entityFormTree = templateTreeProvider.getEntityFormTemplateTree();
+
 		visitor = new ReferenceNameEvaluatorVisitor(namespace, form.getEntityName());
 		visitor.setVarVariable(varVariableName);
-		entityFormTree.apply(visitor);
 
-		AbstractTagNode entityFormPlaceholderNode = getFirstPlaceholderTagNodeByType(entityListFormTree,
-				PlaceholderTagNodeType.ENTITY_FORM);
-
-		if (entityFormPlaceholderNode == null) {
-			throw new IllegalArgumentException(
-					"Entity list form template tree does not contain placeholder tag for the entity form");
+		for (AbstractTagNode child : variableNode.getChildren()) {
+			child.apply(visitor);
 		}
-		entityFormPlaceholderNode.addAllChildren(entityFormTree.getNodes());
-		
-		actionBarPlaceholderNode = getFirstPlaceholderTagNodeByType(entityFormTree, PlaceholderTagNodeType.ACTION_BAR);
+
+		actionBarPlaceholderNode = getFirstPlaceholderTagNodeByType(Arrays.asList((AbstractTagNode) variableNode),
+				PlaceholderTagNodeType.ACTION_BAR);
 
 		if (actionBarPlaceholderNode != null) {
 			// remove element action
@@ -236,6 +258,22 @@ public class EntityPageTreeBuilder extends AbstractTreeBuilder {
 	@Override
 	public ViewTemplateTree getViewTemplateTree() {
 		return templateTree;
+	}
+
+	private PlaceholderTagNode getFirstEntityListActionBar(ViewTemplateTree tamplateTree, StaticTagNode variableNode) {
+
+		if (tamplateTree == null) {
+			throw new IllegalArgumentException("Tag tree parameter cannot be null!");
+		}
+
+		if (variableNode == null) {
+			throw new IllegalArgumentException("variableNode parameter cannot be null!");
+		}
+
+		PlaceholderTagNodeVisitor visitor = new PlaceholderTagNodeVisitor(PlaceholderTagNodeType.ACTION_BAR);
+		tamplateTree.apply(visitor, Arrays.asList((AbstractTagNode) variableNode));
+
+		return visitor.getPlaceholderNode();
 	}
 
 }

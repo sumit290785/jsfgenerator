@@ -19,10 +19,9 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.wst.validation.ValidationResult;
 
 /**
- * TODO: validate the selected xml
- * 
  * @author zoltan verebes
  * 
  */
@@ -44,7 +43,7 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 			if (element instanceof IFile) {
 				IFile file = (IFile) element;
 				// is Xml file
-				if (file.getFileExtension().equalsIgnoreCase(INameConstants.VIEW_XML_EXTENSION)) {
+				if (file.getName().endsWith(INameConstants.VIEW_XML_EXTENSION)) {
 					return true;
 				}
 			}
@@ -96,14 +95,14 @@ public class TagDescriptorSelectionWizardPage extends WizardPage {
 	}
 
 	protected void validate() {
-		
+
 		if (selectedFile == null) {
 			setErrorMessage("Please, select a file");
 		} else {
-			ViewTemplateValidator validator = new ViewTemplateValidator(selectedFile);
-			validator.validate();
-			
-			if (!validator.validationPassed()) {
+			ViewTemplateValidator validator = new ViewTemplateValidator();
+			ValidationResult result = validator.validate(selectedFile, 0, null, null);
+
+			if (result != null && result.getMessages().length != 0) {
 				setErrorMessage("Selected file is invalid! For details check the validation from the context menu for the selected file");
 			} else {
 				setErrorMessage(null);

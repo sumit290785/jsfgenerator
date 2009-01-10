@@ -1,310 +1,218 @@
 package jsfgenerator.ui.validation;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
+import jsfgenerator.generation.common.utilities.XMLParserUtils;
 import jsfgenerator.generation.view.impl.ParserException;
-import jsfgenerator.generation.view.impl.TemplateAnnotationNamespaceContext;
 import jsfgenerator.generation.view.impl.ViewTemplateConstants;
+import jsfgenerator.ui.validation.ValidationRule.ValidationRuleType;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.wst.validation.AbstractValidator;
+import org.eclipse.wst.validation.ValidationResult;
+import org.eclipse.wst.validation.ValidationState;
+import org.eclipse.wst.validation.ValidatorMessage;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
-public class ViewTemplateValidator {
+public class ViewTemplateValidator extends AbstractValidator {
 
-	private static class AttributeFilter {
-		private String key;
-		private String value;
-
-		public AttributeFilter(String key, String value) {
-			this.key = key;
-			this.value = value;
-		}
-
-		public String getKey() {
-			return key;
-		}
-
-		public String getValue() {
-			return value;
-		}
-	}
-
-	private static class ErrorNode {
-
-		private String nodeName;
-		private List<AttributeFilter> filters;
-		private boolean passed;
-
-		public ErrorNode(String nodeName, List<AttributeFilter> filters, boolean passed) {
-			this.nodeName = nodeName;
-			this.filters = filters;
-			this.setPassed(passed);
-		}
-
-		public String getNodeName() {
-			return nodeName;
-		}
-
-		public List<AttributeFilter> getFilters() {
-			return filters;
-		}
-
-		public void setPassed(boolean passed) {
-			this.passed = passed;
-		}
-
-		public boolean isPassed() {
-			return passed;
-		}
-	}
-
-	private InputStream is;
-
-	private List<String> messages = new ArrayList<String>();
+	private static List<String> templateTreeNames = Arrays.asList(ViewTemplateConstants.ENTITY_PAGE,
+			ViewTemplateConstants.ENTITY_FORM, ViewTemplateConstants.ENTITY_LIST_FORM, ViewTemplateConstants.ENTITY_LIST_PAGE,
+			ViewTemplateConstants.LIST_COLLECTION_COLUMN, ViewTemplateConstants.LIST_COLLECTION_COLUMN_DATA,
+			ViewTemplateConstants.LIST_COLUMN_DATA, ViewTemplateConstants.LIST_COLUMN_HEADER,
+			ViewTemplateConstants.LIST_COLUMN_ACTION, ViewTemplateConstants.ACTION_BAR);
 
 	private Document doc;
+	private XMLParserUtils parserUtils;
+	private IFile file;
 
-	private XPathFactory factory;
-	
-	public ViewTemplateValidator(IFile file) {
+	@Override
+	public ValidationResult validate(IResource resource, int arg1, ValidationState state, IProgressMonitor monitor) {
 
-		if (file == null) {
-			throw new IllegalArgumentException("File cannot be null");
+		if (!(resource instanceof IFile)) {
+			return null;
 		}
 
-		File f = file.getLocation().toFile();
+		file = (IFile) resource;
 
-		try {
-			is = new FileInputStream(f);
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
+		// check the full extension
+		if (!file.getName().endsWith(".jsfgen.xml"))  {
+			return null;
 		}
-		factory = XPathFactory.newInstance();
-	}
 
-	public void validate() {
 		try {
-			parseXML(is);
+			InputStream is = new FileInputStream(file.getLocation().toFile());
+			doc = ValidatorDOMParser.createDocument(is);
 		} catch (Exception e) {
-			messages.add("Could not parse the selected file");
-			return;
+			throw new RuntimeException("Validation error", e);
 		}
 
+		parserUtils = new XMLParserUtils(doc);
+
+		List<ValidatorMessage> messages = new ArrayList<ValidatorMessage>();
+		for (ValidationRule rule : getValidationRules()) {
+			List<ValidatorMessage> msgs = validate(rule);
+
+			if (msgs != null) {
+				messages.addAll(msgs);
+			}
+		}
+
+		ValidationResult result = new ValidationResult();
+		for (ValidatorMessage validatorMessage : messages) {
+			result.add(validatorMessage);
+		}
+
+		return result;
+	}
+
+	private List<ValidationRule> getValidationRules() {
+		List<ValidationRule> rules = new ArrayList<ValidationRule>();
+
+		// root
+		rules.add(new ValidationRule(ViewTemplateConstants.ROOT_XPATH, ViewTemplateConstants.ROOT_XPATH,
+				"Entity list form description not found", ValidationRuleType.MANDATORY));
+
+		// view template tree
+		for (String treeName : templateTreeNames) {
+			rules.add(createTemplateTreeValudationRule(treeName));
+		}
+
+		// entity page
+		rules.addAll(createElementRules(ViewTemplateConstants.ENTITY_PAGE, Arrays.asList(ViewTemplateConstants.ENTITY_FORM,
+				ViewTemplateConstants.ENTITY_LIST_FORM), null));
+
+		// entity form
+		rules.addAll(createElementRules(ViewTemplateConstants.ENTITY_FORM, Arrays.asList(ViewTemplateConstants.INPUT), Arrays
+				.asList(ViewTemplateConstants.ACTION_BAR)));
+
+		// TODO: entity list form
+
+		// entity list page
+		rules.addAll(createElementRules(ViewTemplateConstants.ENTITY_LIST_PAGE, Arrays.asList(
+				ViewTemplateConstants.LIST_COLUMN_DATA, ViewTemplateConstants.LIST_COLUMN_HEADER), Arrays
+				.asList(ViewTemplateConstants.ACTION_BAR)));
+
+		rules.addAll(createVariableRules(ViewTemplateConstants.ENTITY_LIST_PAGE, ViewTemplateConstants.LIST_COLUMN_DATA));
+
+		// column action
+		rules.addAll(createElementRules(ViewTemplateConstants.LIST_COLUMN_ACTION, Arrays.asList(ViewTemplateConstants.ACTION),
+				null));
+
+		// collection column
+		rules.addAll(createElementRules(ViewTemplateConstants.LIST_COLLECTION_COLUMN, Arrays
+				.asList(ViewTemplateConstants.LIST_COLLECTION_COLUMN_DATA), null));
+
+		rules.addAll(createVariableRules(ViewTemplateConstants.LIST_COLLECTION_COLUMN,
+				ViewTemplateConstants.LIST_COLLECTION_COLUMN_DATA));
+
+		// action bar
+		rules.addAll(createElementRules(ViewTemplateConstants.ACTION_BAR, Arrays.asList(ViewTemplateConstants.ACTION), null));
+
+		return rules;
+	}
+
+	private List<ValidationRule> createVariableRules(String root, String mandatoryElement) {
+		List<ValidationRule> rules = new ArrayList<ValidationRule>();
+
+		// var
+		String exp = ViewTemplateConstants.getTemplateXPath(root) + ViewTemplateConstants.VARIABLE_XPATH;
+		rules.add(new ValidationRule(exp, ViewTemplateConstants.getTemplateXPath(root), "Variable tag not found in " + root
+				+ " tag tree", ValidationRuleType.MANDATORY));
+
+		// mandatory elements
+		exp = ViewTemplateConstants.getTemplateXPath(root) + ViewTemplateConstants.getPlaceholderXPath(mandatoryElement);
+		rules.add(new ValidationRule(exp, ViewTemplateConstants.getTemplateXPath(root) + ViewTemplateConstants.VARIABLE_XPATH,
+				"Variable tag does not contain mandatory element: " + mandatoryElement + " placeHolder",
+				ValidationRuleType.MANDATORY));
+
+		return rules;
+	}
+
+	private List<ValidationRule> createElementRules(String root, List<String> mandatoryElements, List<String> allowedElements) {
+		List<ValidationRule> rules = new ArrayList<ValidationRule>();
+
+		for (String element : mandatoryElements) {
+			String exp = ViewTemplateConstants.getTemplateXPath(root) + ViewTemplateConstants.getPlaceholderXPath(element);
+			rules.add(new ValidationRule(exp, ViewTemplateConstants.getTemplateXPath(root), "Placeholder tag for " + element
+					+ " tree is not defined in " + root + " tree", ValidationRuleType.MANDATORY));
+		}
+
+		for (String treeName : templateTreeNames) {
+			if (!mandatoryElements.contains(treeName) && (allowedElements == null || !allowedElements.contains(treeName))) {
+				String exp = ViewTemplateConstants.getTemplateXPath(root) + ViewTemplateConstants.getPlaceholderXPath(treeName);
+				rules.add(new ValidationRule(exp, ViewTemplateConstants.getTemplateXPath(root), "Placeholder tag for " + treeName
+						+ " tree is not allowed in " + root + " tree", ValidationRuleType.FORBIDDEN));
+			}
+		}
+
+		return rules;
+	}
+
+	private ValidationRule createTemplateTreeValudationRule(String treeName) {
+		String exp = ViewTemplateConstants.getTemplateXPath(treeName);
+		return new ValidationRule(exp, exp, treeName + " description not found", ValidationRuleType.MANDATORY);
+	}
+
+	private List<ValidatorMessage> validate(ValidationRule rule) {
+
+		NodeList nodeList = null;
 		try {
-			validatePlaceHolder(ViewTemplateConstants.ENTITY_PAGE);
+			nodeList = parserUtils.getNodes(rule.getValidateFor());
 		} catch (ParserException e) {
-			messages.add("Could not parse the selected file");
-			return;
-		}
-	}
+			ValidatorMessage message = ValidatorMessage.create("Could not parse the xml file.", file);
+			message.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+			message.setAttribute(IMarker.LINE_NUMBER, 1);
 
-	public List<String> getMessages() {
-		return messages;
-	}
-
-	public boolean validationPassed() {
-		return messages.size() == 0;
-	}
-
-	private void validatePlaceHolder(String name) throws ParserException {
-		String exp = ViewTemplateConstants.getTemplateXPath(name);
-		Node rootNode = getNode(exp);
-
-		List<ErrorNode> whiteList = Collections.emptyList();
-		List<ErrorNode> blackList = Collections.emptyList();
-		if (name.equals(ViewTemplateConstants.ENTITY_PAGE)) {
-			whiteList = createPlaceHolderElement(false, ViewTemplateConstants.ENTITY_FORM, ViewTemplateConstants.ENTITY_LIST_FORM);
-			blackList = createPlaceHolderElement(true, ViewTemplateConstants.LIST_COLUMN_DATA,
-					ViewTemplateConstants.LIST_COLLECTION_COLUMN, ViewTemplateConstants.LIST_COLLECTION_COLUMN_DATA,
-					ViewTemplateConstants.LIST_COLUMN_HEADER);
+			return Arrays.asList(message);
 		}
 
-		findErrors(rootNode, whiteList, blackList);
-		for (ErrorNode errorNode : whiteList) {
-			if (!errorNode.isPassed()) {
-				messages.add(getNodeName(errorNode) + ": not found in node " + getNodeName(rootNode));
-			}
-		}
+		if (ValidationRuleType.MANDATORY.equals(rule.getType()) && (nodeList == null || nodeList.getLength() == 0)) {
+			ValidatorMessage message = ValidatorMessage.create(rule.getErrorMessage(), file);
 
-		for (ErrorNode errorNode : blackList) {
-			if (!errorNode.isPassed()) {
-				messages.add(getNodeName(errorNode) + ": should not be in node " + getNodeName(rootNode));
-			}
-		}
-	}
+			int lineNumber = 1;
+			if (!rule.getValidateFor().equals(rule.getTargetNode())) {
+				Node targetNode;
+				try {
+					targetNode = parserUtils.getNode(rule.getTargetNode());
+					if (targetNode != null) {
+						lineNumber = Integer.valueOf((String) targetNode.getUserData(ValidatorDOMParser.LINE_NUMBER_KEY));
+					}
+				} catch (ParserException e) {
+					ValidatorMessage msg = ValidatorMessage.create("Could not parse the xml file.", file);
+					msg.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+					msg.setAttribute(IMarker.LINE_NUMBER, 1);
 
-	private List<ErrorNode> createPlaceHolderElement(boolean b, String... elements) {
-		List<ErrorNode> nodes = new ArrayList<ErrorNode>();
-		for (String element : elements) {
-			nodes.add(new ErrorNode(ViewTemplateConstants.PLACE_HOLDER, Arrays.asList(new AttributeFilter(
-					ViewTemplateConstants.PLACE_HOLDER_FOR, element)), b));
-		}
-
-		return nodes;
-	}
-
-	private void findErrors(Node rootNode, List<ErrorNode> whiteList, List<ErrorNode> blackList) {
-		NodeList children = rootNode.getChildNodes();
-		for (int i = 0; i < children.getLength(); i++) {
-			Node child = children.item(i);
-
-			// check the white list
-			for (ErrorNode error : whiteList) {
-				if (!error.isPassed() && match(child, error)) {
-					error.setPassed(true);
+					return Arrays.asList(msg);
 				}
 			}
 
-			// check the black list
-			for (ErrorNode error : blackList) {
-				if (match(child, error)) {
-					error.setPassed(false);
-				}
+			message.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+			message.setAttribute(IMarker.LINE_NUMBER, lineNumber);
+			return Arrays.asList(message);
+		} else if (ValidationRuleType.FORBIDDEN.equals(rule.getType()) && (nodeList == null || nodeList.getLength() != 0)) {
+			List<ValidatorMessage> messages = new ArrayList<ValidatorMessage>();
+			for (int i = 0; i < nodeList.getLength(); i++) {
+				ValidatorMessage message = ValidatorMessage.create(rule.getErrorMessage(), file);
+				message.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+				int lineNumber = Integer.valueOf((String) nodeList.item(i).getUserData(ValidatorDOMParser.LINE_NUMBER_KEY));
+				message.setAttribute(IMarker.LINE_NUMBER, lineNumber);
+				messages.add(message);
 			}
 
-			findErrors(child, whiteList, blackList);
+			return messages;
 		}
+
+		return null;
 	}
 
-	private boolean match(Node node, ErrorNode error) {
-		if (node.getLocalName() == null || !node.getLocalName().equals(error.getNodeName())) {
-			return false;
-		}
-
-		for (AttributeFilter filter : error.getFilters()) {
-			Node attr = node.getAttributes().getNamedItem(filter.getKey());
-
-			if (!attr.getNodeValue().equals(filter.getValue())) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * parses the document with DOM
-	 * 
-	 * @param is
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
-	 */
-	protected void parseXML(InputStream is) throws ParserConfigurationException, SAXException, IOException {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setNamespaceAware(true); // never forget this!
-		DocumentBuilder builder = factory.newDocumentBuilder();
-
-		doc = builder.parse(is);
-	}
-
-	protected Node getNode(String exp) throws ParserException {
-		NodeList nodes = getNodes(exp);
-
-		if (nodes.getLength() == 0) {
-			throw new ParserException("Node not found for expression: " + exp);
-		}
-
-		if (nodes.getLength() > 1) {
-			throw new ParserException("Multiple nodes found! Expression: " + exp);
-		}
-
-		Node node = nodes.item(0);
-
-		return node;
-	}
-
-	protected NodeList getNodes(String exp) throws ParserException {
-		XPath xpath = factory.newXPath();
-		xpath.setNamespaceContext(new TemplateAnnotationNamespaceContext());
-		XPathExpression expression;
-		try {
-			expression = xpath.compile(exp);
-		} catch (XPathExpressionException e) {
-			throw new ParserException("Node not found in the document. Expression: " + exp, e);
-		}
-
-		Object result;
-		try {
-			result = expression.evaluate(doc, XPathConstants.NODESET);
-		} catch (XPathExpressionException e) {
-			throw new ParserException("Node not found in the document. Expression: " + exp, e);
-		}
-
-		NodeList nodes = (NodeList) result;
-
-		return nodes;
-	}
-
-	private String getNodeName(ErrorNode error) {
-		StringBuffer buffer = new StringBuffer();
-		buffer.append(error.getNodeName());
-
-		if (error.getFilters().size() != 0) {
-			buffer.append("[");
-		}
-
-		for (int i = 0; i < error.getFilters().size(); i++) {
-			AttributeFilter filter = error.getFilters().get(i);
-			buffer.append(filter.getKey());
-			buffer.append("=");
-			buffer.append(filter.getValue());
-
-			if (i != error.getFilters().size() - 1) {
-				buffer.append(", ");
-			}
-		}
-
-		if (error.getFilters().size() != 0) {
-			buffer.append("]");
-		}
-
-		return buffer.toString();
-	}
-
-	private String getNodeName(Node node) {
-		StringBuffer buffer = new StringBuffer();
-		buffer.append(node.getNodeName());
-
-		if (node.getAttributes().getLength() != 0) {
-			buffer.append("[");
-		}
-
-		for (int i = 0; i < node.getAttributes().getLength(); i++) {
-			Node attr = node.getAttributes().item(i);
-			buffer.append(attr.getNodeName());
-			buffer.append("=");
-			buffer.append(attr.getNodeValue());
-
-			if (i != node.getAttributes().getLength() - 1) {
-				buffer.append(", ");
-			}
-		}
-
-		if (node.getAttributes().getLength() != 0) {
-			buffer.append("]");
-		}
-
-		return buffer.toString();
-	}
 }

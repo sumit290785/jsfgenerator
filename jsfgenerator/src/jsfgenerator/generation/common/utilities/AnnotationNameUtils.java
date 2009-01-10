@@ -17,7 +17,6 @@ public final class AnnotationNameUtils {
 	/*
 	 * regular expression for parsing a fully qualified java class name with generic parameter list
 	 */
-	// TODO: handle parameters
 	private static Pattern fullyQualifiedAnnotationPatttern = Pattern
 			.compile("^(@)((?:[A-Za-z][A-Za-z0-9_]*\\.)*)([A-Za-z0-9]+)$");
 

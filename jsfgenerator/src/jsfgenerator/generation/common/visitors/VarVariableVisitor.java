@@ -7,6 +7,8 @@ import jsfgenerator.generation.view.parameters.TagAttribute;
 public class VarVariableVisitor extends AbstractVisitor<AbstractTagNode> {
 
 	private String varVariableName;
+	
+	private StaticTagNode variableNode;
 
 	@Override
 	public boolean visit(AbstractTagNode node) {
@@ -20,6 +22,7 @@ public class VarVariableVisitor extends AbstractVisitor<AbstractTagNode> {
 		for (TagAttribute attribute : stag.getAttributes()) {
 			if (attribute.isVarVariable()) {
 				varVariableName = attribute.getValue();
+				variableNode = stag;
 				return false;
 			}
 		}
@@ -33,6 +36,10 @@ public class VarVariableVisitor extends AbstractVisitor<AbstractTagNode> {
 
 	public String getVarVariableName() {
 		return varVariableName;
+	}
+	
+	public StaticTagNode getVariableNode() {
+		return variableNode;
 	}
 
 }

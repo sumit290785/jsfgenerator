@@ -3,7 +3,6 @@ package jsfgenerator.generation.view.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,13 +10,9 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import jsfgenerator.generation.common.treebuilders.ResourceBundleBuilder;
+import jsfgenerator.generation.common.utilities.XMLParserUtils;
 import jsfgenerator.generation.common.visitors.ReferenceNameEvaluatorVisitor.ExpressionType;
 import jsfgenerator.generation.view.AbstractTagNode;
 import jsfgenerator.generation.view.IViewTemplateProvider;
@@ -49,7 +44,7 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 	// xml document
 	private Document doc;
 
-	private XPathFactory factory;
+	private XMLParserUtils xmlParserUtils;
 
 	public ViewTemplateParser(InputStream is) {
 		try {
@@ -57,8 +52,6 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Could not parse the input stream!", e);
 		}
-
-		factory = XPathFactory.newInstance();
 	}
 
 	/*
@@ -121,7 +114,7 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 	public List<String> getInputTagNames() {
 		List<String> ids = new ArrayList<String>();
 		try {
-			NodeList inputTagNodeList = getNodes(ViewTemplateConstants.getTemplateXPath(ViewTemplateConstants.INPUT) + "/@name");
+			NodeList inputTagNodeList = xmlParserUtils.getNodes(ViewTemplateConstants.getTemplateXPath(ViewTemplateConstants.INPUT) + "/@name");
 
 			for (int i = 0; i < inputTagNodeList.getLength(); i++) {
 				Node inputTagNode = inputTagNodeList.item(i);
@@ -239,6 +232,7 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		DocumentBuilder builder = factory.newDocumentBuilder();
 
 		doc = builder.parse(is);
+		xmlParserUtils = new XMLParserUtils(doc);
 	}
 
 	protected ViewTemplateTree getTemplate(String... args) throws ParserException {
@@ -254,7 +248,7 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 			exp = ViewTemplateConstants.getTemplateXPath(args[0], args[1]);
 		}
 
-		Node tagTreeNode = getNode(exp);
+		Node tagTreeNode = xmlParserUtils.getNode(exp);
 		NodeList tagNodes = tagTreeNode.getChildNodes();
 
 		ViewTemplateTree templateTree = new ViewTemplateTree();
@@ -307,7 +301,7 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		/*
 		 * root xmlns
 		 */
-		tag.addAllAttributes(getRootXMLNamespaces());
+		tag.addAllAttributes(xmlParserUtils.getRootXMLNamespaces());
 
 		for (int i = 0; node.getAttributes() != null && i < node.getAttributes().getLength(); i++) {
 			TagAttribute attribute = getTagAttribute(node.getAttributes().item(i), processor);
@@ -378,67 +372,6 @@ public class ViewTemplateParser implements IViewTemplateProvider {
 		}
 
 		return attribute;
-	}
-
-	protected Node getNode(String exp) throws ParserException {
-		NodeList nodes = getNodes(exp);
-
-		if (nodes.getLength() == 0) {
-			throw new ParserException("Node not found for expression: " + exp);
-		}
-
-		if (nodes.getLength() > 1) {
-			throw new ParserException("Multiple nodes found! Expression: " + exp);
-		}
-
-		Node node = nodes.item(0);
-
-		return node;
-	}
-
-	protected List<TagAttribute> getRootXMLNamespaces() {
-		Node root;
-		try {
-			root = getNode(ViewTemplateConstants.ROOT_XPATH);
-		} catch (ParserException e) {
-			return Collections.emptyList();
-		}
-
-		List<TagAttribute> attributes = new ArrayList<TagAttribute>();
-		for (int i = 0; root.getAttributes() != null && i < root.getAttributes().getLength(); i++) {
-			Node attributeNode = root.getAttributes().item(i);
-
-			if (!ViewTemplateConstants.ANNOTATION_NS_URI.equals(attributeNode.getNodeValue())) {
-				Matcher matcher = xmlnsPattern.matcher(attributeNode.getNodeName());
-				if (matcher.matches()) {
-					attributes.add(new XMLNamespaceAttribute(matcher.group(2), attributeNode.getNodeValue()));
-				}
-			}
-		}
-
-		return attributes;
-	}
-
-	protected NodeList getNodes(String exp) throws ParserException {
-		XPath xpath = factory.newXPath();
-		xpath.setNamespaceContext(new TemplateAnnotationNamespaceContext());
-		XPathExpression expression;
-		try {
-			expression = xpath.compile(exp);
-		} catch (XPathExpressionException e) {
-			throw new ParserException("Node not found in the document. Expression: " + exp, e);
-		}
-
-		Object result;
-		try {
-			result = expression.evaluate(doc, XPathConstants.NODESET);
-		} catch (XPathExpressionException e) {
-			throw new ParserException("Node not found in the document. Expression: " + exp, e);
-		}
-
-		NodeList nodes = (NodeList) result;
-
-		return nodes;
 	}
 
 }

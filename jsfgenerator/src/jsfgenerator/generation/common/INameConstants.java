@@ -38,7 +38,7 @@ public interface INameConstants {
 
 	public static final String GETTER_PREFIX = "get";
 
-	public static final String VIEW_XML_EXTENSION = "xml";
+	public static final String VIEW_XML_EXTENSION = "jsfgen.xml";
 
 	public static final String JAVA_DEFAULT_PACKAGE = "java.lang";
 
