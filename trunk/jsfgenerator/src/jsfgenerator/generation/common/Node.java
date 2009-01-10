@@ -27,6 +27,15 @@ public abstract class Node<T extends Node> {
 	}
 	
 	public boolean apply(AbstractVisitor visitor) {
+		return apply(visitor, null);
+	}
+	
+	public boolean apply(AbstractVisitor visitor, List<T> toIgnore) {
+		
+		if (toIgnore != null && toIgnore.contains(this)) {
+			return true;
+		}
+		
 		if (!visitor.visit(this)) {
 			visitor.postVisit(this);
 			return false;
@@ -36,7 +45,7 @@ public abstract class Node<T extends Node> {
 		Iterator<T> it = getChildren().iterator();
 		while (result && it.hasNext()) {
 			T child = it.next();
-			result = child.apply(visitor);
+			result = child.apply(visitor, toIgnore);
 		}
 
 		visitor.postVisit(this);

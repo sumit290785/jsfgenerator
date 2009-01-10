@@ -10,8 +10,6 @@
 			<a:message attribute="value" />
 			<h:outputText value="welcome" />
 
-			<a:placeHolder for="actionBar" />
-
 			<hr />
 			<div class="content">
 				<a:placeHolder for="entityForm" />
@@ -26,18 +24,17 @@
 		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
 
 		<h:form>
+			<a:placeHolder for="actionBar" />
 			<table>
 				<a:placeHolder for="input" />
 			</table>
-			<a:expression type="save" for="action" />
-			<a:message attribute="value" />
-			<h:commandButton value="save" />
 		</h:form>
 	</a:template>
 
 	<a:template id="entityListForm" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
 		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
 
+		<h:form>
 		<hr />
 		<a:placeHolder for="actionBar" />
 
@@ -45,8 +42,12 @@
 		<a:expression type="entityField" for="value" />
 		<ui:repeat var="item">
 			<a:placeHolder for="actionBar" />
-			<a:placeHolder for="entityForm" />
+			<table>
+				<a:placeHolder for="input" />
+			</table>
 		</ui:repeat>
+		
+		</h:form>
 	</a:template>
 
 	<a:template id="entityListPage" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"

@@ -25,15 +25,6 @@
            label="Generate view and controller"
            menubarPath="jsfgenerator.ui.actions.menu">
 	    </action>
-	    <action
-           class="jsfgenerator.ui.actions.ValidationAction"
-           definitionId="jsfgenerator.ui.validationaction"
-           enablesFor="+"
-           icon="resource/images/applications-system.png"
-           id="jsfgenerator.ui.validationaction"
-           label="Validate view descriptor"
-           menubarPath="jsfgenerator.ui.actions.menu">
-	    </action>
 	 </objectContribution>
           
    </extension>
@@ -157,6 +148,26 @@
                class="jsfgenerator.ui.wizards.wizardpages.EJBProjectSelectionWizardPage">
          </page>
       </wizard-pages>
+   </extension>
+   <extension
+         id="jsfgeneretor.viewtemplatevalidator"
+         name="View template validator"
+         point="org.eclipse.wst.validation.validatorV2">
+      <validator
+            class="jsfgenerator.ui.validation.ViewTemplateValidator"
+            manual="true">
+         <include>
+            <rules>
+               <facet
+                     id="jsfgenerator-project-facet">
+               </facet>
+               <fileext
+                     caseSensitive="false"
+                     ext="xml">
+               </fileext>
+            </rules>
+         </include>
+      </validator>
    </extension>
 
 </plugin>
