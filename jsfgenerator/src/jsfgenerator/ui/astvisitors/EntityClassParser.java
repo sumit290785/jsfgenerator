@@ -172,8 +172,6 @@ public final class EntityClassParser {
 	 * It does the same for its generic type list if there is any defined
 	 * 
 	 * 
-	 * TODO: document it in details in long-long pages
-	 * 
 	 * @param type
 	 * @param imports
 	 * @return
