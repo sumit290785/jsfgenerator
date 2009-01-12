@@ -43,8 +43,10 @@ public interface INameConstants {
 	public static final String JAVA_DEFAULT_PACKAGE = "java.lang";
 
 	public static final String ENTITY_ANNOTATION = "@javax.persistence.Entity";
-
+	
 	public static final String EMBEDDED_ANNOTATION = "@javax.persistence.Embedded";
+	
+	public static final String EMBEDDABLE_ANNOTATION = "@javax.persistence.Embeddable";
 
 	public static final String ONE_TO_ONE_ANNOTATION = "@javax.persistence.OneToOne";
 

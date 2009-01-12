@@ -34,6 +34,8 @@ public class EntityClassASTVisitor extends ASTVisitor {
 	protected static class EntityAnnotationASTVisitor extends ASTVisitor {
 
 		private boolean isEntity = false;
+		
+		private boolean isEmbeddable = false;
 
 		/*
 		 * (non-Javadoc)
@@ -43,6 +45,7 @@ public class EntityClassASTVisitor extends ASTVisitor {
 		@Override
 		public boolean visit(NormalAnnotation node) {
 			isEntity |= isEntityAnnotation(node);
+			isEmbeddable |= isEmbeddableAnnotation(node);
 			return false;
 		}
 
@@ -54,16 +57,26 @@ public class EntityClassASTVisitor extends ASTVisitor {
 		@Override
 		public boolean visit(MarkerAnnotation node) {
 			isEntity |= isEntityAnnotation(node);
+			isEmbeddable |= isEmbeddableAnnotation(node);
 			return false;
 		}
 
 		public boolean isEntity() {
 			return isEntity;
 		}
+		
+		public boolean isEmbeddable() {
+			return isEmbeddable;
+		}
 
 		private boolean isEntityAnnotation(Annotation node) {
 			String className = ClassNameUtils.getSimpleClassName(node.getTypeName().getFullyQualifiedName());
 			return className.equals(AnnotationNameUtils.getSimpleAnnotationName(INameConstants.ENTITY_ANNOTATION));
+		}
+		
+		private boolean isEmbeddableAnnotation(Annotation node) {
+			String className = ClassNameUtils.getSimpleClassName(node.getTypeName().getFullyQualifiedName());
+			return className.equals(AnnotationNameUtils.getSimpleAnnotationName(INameConstants.EMBEDDABLE_ANNOTATION));
 		}
 	}
 
@@ -80,11 +93,14 @@ public class EntityClassASTVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(TypeDeclaration node) {
+		
+		EntityAnnotationASTVisitor visitor = new EntityAnnotationASTVisitor();
+		node.accept(visitor);
 
-		if (isEntity(node)) {
+		if (visitor.isEntity() || visitor.isEmbeddable()) {
 
 			if (className == null) {
-				entityDescriptions.add(new EntityDescription(node));
+				entityDescriptions.add(new EntityDescription(node, visitor.isEmbeddable()));
 				return true;
 			} else if (className.equals(EntityClassParser.getFullyQualifiedName(node))) {
 				singleTypeDeclaration = node;
@@ -97,12 +113,6 @@ public class EntityClassASTVisitor extends ASTVisitor {
 
 	public List<EntityDescription> getEntityDescriptions() {
 		return entityDescriptions;
-	}
-
-	private boolean isEntity(TypeDeclaration node) {
-		EntityAnnotationASTVisitor visitor = new EntityAnnotationASTVisitor();
-		node.accept(visitor);
-		return visitor.isEntity();
 	}
 
 	public void setClassName(String className) {
