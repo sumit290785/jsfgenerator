@@ -197,7 +197,7 @@ public class ProjectResourceProvider {
 
 	public static boolean isEjbProject(IProject project) {
 		for (IProjectFacet facet : getProjectFacets(project)) {
-			if (facet.getId().equals("jpt.jpa")) {
+			if (facet.getId().equals("jpt.jpa") || facet.getId().equals("jst.ejb")) {
 				return true;
 			}
 		}

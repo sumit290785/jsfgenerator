@@ -138,9 +138,11 @@ public class MVCGenerationWizard extends Wizard {
 
 							for (EntityFieldDescription entityField : getSingleEmbeddedFields(entityWrapper)) {
 								AbstractEntityFieldDescriptionWrapper fieldWrapper = entityWrapper.getFieldWrapper(entityField);
-								builder
-										.addEntityForm(viewId, fieldWrapper.getEntityWrapper().getEntityDescription(),
-												entityField);
+
+								if (fieldWrapper != null) {
+									builder.addEntityForm(viewId, fieldWrapper.getEntityWrapper().getEntityDescription(),
+											entityField);
+								}
 							}
 
 							for (EntityFieldDescriptionEntityPageWrapper entityFieldWrapper : getMultiplembeddedFields(entityWrapper)) {

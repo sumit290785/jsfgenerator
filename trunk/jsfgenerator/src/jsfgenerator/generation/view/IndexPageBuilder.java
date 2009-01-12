@@ -3,7 +3,6 @@ package jsfgenerator.generation.view;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import jsfgenerator.generation.common.INameConstants;
 import jsfgenerator.generation.common.treebuilders.ResourceBundleBuilder;
 
 public class IndexPageBuilder {

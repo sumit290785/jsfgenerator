@@ -44,7 +44,7 @@ public class Resources {
 		monitor.beginTask("Copy resource files into the new projects", 12);
 
 		try {
-			copy(jsfProject, "/resources/view.xml");
+			copy(jsfProject, "/resources/view.jsfgen.xml");
 			copy(jsfProject, "/resources/annotations.xsd");
 			copy(jsfProject, "/WebContent/layout/template.xhtml");
 			copy(jsfProject, "/WebContent/WEB-INF/web.xml");
