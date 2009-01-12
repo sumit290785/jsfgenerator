@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/annotations"
-	xmlns:a="http://www.example.org/annotations" elementFormDefault="qualified">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.jsfgen.com/annotations"
+	xmlns:a="http://www.jsfgen.com/annotations" elementFormDefault="qualified">
 
 	<xsd:simpleType name="templateName">
 		<xsd:restriction base="xsd:string">

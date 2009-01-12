@@ -3,18 +3,18 @@ package jsfgenerator.ui.validation;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.xerces.parsers.DOMParser;
+import org.apache.xerces.xni.Augmentations;
+import org.apache.xerces.xni.NamespaceContext;
+import org.apache.xerces.xni.QName;
+import org.apache.xerces.xni.XMLAttributes;
+import org.apache.xerces.xni.XMLLocator;
+import org.apache.xerces.xni.XNIException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.sun.org.apache.xerces.internal.parsers.DOMParser;
-import com.sun.org.apache.xerces.internal.xni.Augmentations;
-import com.sun.org.apache.xerces.internal.xni.NamespaceContext;
-import com.sun.org.apache.xerces.internal.xni.QName;
-import com.sun.org.apache.xerces.internal.xni.XMLAttributes;
-import com.sun.org.apache.xerces.internal.xni.XMLLocator;
-import com.sun.org.apache.xerces.internal.xni.XNIException;
 
 public class ValidatorDOMParser extends DOMParser {
 
