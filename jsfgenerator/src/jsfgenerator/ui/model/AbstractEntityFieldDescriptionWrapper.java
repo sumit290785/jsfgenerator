@@ -45,7 +45,7 @@ public abstract class AbstractEntityFieldDescriptionWrapper {
 		}
 
 		TypeDeclaration typeNode = ProjectResourceProvider.getInstance().findSingleClassTypeDeclarationInEjbProject(className);
-		this.entityDescriptionWrapper = createEntityDescreptionWrapper(new EntityDescription(typeNode));
+		this.entityDescriptionWrapper = createEntityDescreptionWrapper(new EntityDescription(typeNode, false));
 		this.entityDescriptionWrapper.setEmbedded(true);
 	}
 

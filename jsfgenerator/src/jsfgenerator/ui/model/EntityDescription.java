@@ -20,10 +20,12 @@ public class EntityDescription {
 
 	// ast node of the entity in the AST tree built by Eclipse framework
 	private TypeDeclaration node;
+	
+	private boolean embeddable;
 
 	private List<EntityFieldDescription> entityFieldDescriptions;
 	
-	public EntityDescription(TypeDeclaration node) {
+	public EntityDescription(TypeDeclaration node, boolean embeddable) {
 
 		if (node == null) {
 			throw new IllegalArgumentException("Type declaration node cannot be null!");
@@ -31,6 +33,7 @@ public class EntityDescription {
 
 		this.node = node;
 		this.entityClassName = EntityClassParser.getFullyQualifiedName(node);
+		this.embeddable = embeddable;
 	}
 
 	public String getEntityClassName() {
@@ -43,6 +46,10 @@ public class EntityDescription {
 		}
 
 		return entityFieldDescriptions;
+	}
+
+	public boolean isEmbeddable() {
+		return embeddable;
 	}
 
 }

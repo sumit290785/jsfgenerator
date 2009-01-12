@@ -146,7 +146,6 @@ public class EntityClassSelectionWizardPage extends WizardPage {
 		classNameColumn.getColumn().setText("Entity name");
 		classNameColumn.getColumn().setWidth(500);
 
-		// entity page
 		TableViewerColumn columnEntityPage = new TableViewerColumn(viewer, SWT.FILL);
 		columnEntityPage.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
@@ -159,19 +158,6 @@ public class EntityClassSelectionWizardPage extends WizardPage {
 		columnEntityPage.setEditingSupport(new GenerateEditingSupport(columnEntityPage.getViewer(),
 				GenerateEditingSupport.ENTITY_PAGE));
 
-		// list page
-/*		TableViewerColumn columnListPage = new TableViewerColumn(viewer, SWT.FILL);
-		columnListPage.setLabelProvider(new ColumnLabelProvider() {
-			public String getText(Object element) {
-				return ((WizardInput) element).getListPageWrapper().isPageGenerated() ? GENERATE : DO_NOT_GENERATE;
-			}
-		});
-
-		columnListPage.getColumn().setText("List page");
-		columnListPage.getColumn().setWidth(200);
-
-		columnListPage.setEditingSupport(new GenerateEditingSupport(columnEntityPage.getViewer(),
-				GenerateEditingSupport.LIST_PAGE));*/
 
 		MVCGenerationWizard wizard = (MVCGenerationWizard) getWizard();
 
@@ -179,7 +165,12 @@ public class EntityClassSelectionWizardPage extends WizardPage {
 		Iterator<EntityDescriptionListPageWrapper> itList = wizard.getEntityDescriptionListPageWrappers().iterator();
 		List<WizardInput> input = new ArrayList<WizardInput>();
 		while (itEntity.hasNext() && itList.hasNext()) {
-			input.add(new WizardInput(itEntity.next(), itList.next()));
+			EntityDescriptionEntityPageWrapper eWrapper = itEntity.next();
+			EntityDescriptionListPageWrapper lWrapper = itList.next();
+			if (!eWrapper.getEntityDescription().isEmbeddable()) {
+				input.add(new WizardInput(eWrapper, lWrapper));
+				
+			}
 		}
 
 		viewer.setInput(input);
