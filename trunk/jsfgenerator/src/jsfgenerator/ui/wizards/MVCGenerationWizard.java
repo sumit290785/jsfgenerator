@@ -139,10 +139,8 @@ public class MVCGenerationWizard extends Wizard {
 							for (EntityFieldDescription entityField : getSingleEmbeddedFields(entityWrapper)) {
 								AbstractEntityFieldDescriptionWrapper fieldWrapper = entityWrapper.getFieldWrapper(entityField);
 
-								if (fieldWrapper != null) {
-									builder.addEntityForm(viewId, fieldWrapper.getEntityWrapper().getEntityDescription(),
-											entityField);
-								}
+								builder.addEntityForm(viewId, fieldWrapper.getEntityDescriptionWrapper().getEntityDescription(),
+										entityField);
 							}
 
 							for (EntityFieldDescriptionEntityPageWrapper entityFieldWrapper : getMultiplembeddedFields(entityWrapper)) {
@@ -223,13 +221,15 @@ public class MVCGenerationWizard extends Wizard {
 						ViewAndControllerDTO viewDTO = engine.getViewAndControllerDTO(pageModel.getViewId());
 						saveView(pageModel.getViewId(), viewDTO.getViewStream());
 						String fileName;
+						boolean property = false;
 						if (pageModel instanceof EntityPageModel) {
 							fileName = NodeNameUtils.getEntityPageClassFileNameByUniqueName(pageModel.getViewId());
+							property = true;
 						} else {
 							fileName = NodeNameUtils.getListPageClassFileNameByUniqueName(pageModel.getViewId());
 						}
 						saveController(fileName, viewDTO.getViewClass());
-						addManagedBeanToFacesConfig(pageModel.getViewId(), viewDTO.getControllerClassName(), monitor);
+						addManagedBeanToFacesConfig(pageModel.getViewId(), viewDTO.getControllerClassName(), monitor, property);
 					}
 
 					saveResourceBundles();
@@ -391,10 +391,10 @@ public class MVCGenerationWizard extends Wizard {
 		return entityFields;
 	}
 
-	private void addManagedBeanToFacesConfig(String viewId, String className, IProgressMonitor monitor) {
+	private void addManagedBeanToFacesConfig(String viewId, String className, IProgressMonitor monitor, boolean property) {
 		ArtifactEditHandler handler = ArtifactEditHandler.getInstance();
 		handler.setMonitor(monitor);
-		handler.addManagedBeanToFacesConfig(viewId, className);
+		handler.addManagedBeanToFacesConfig(viewId, className, property);
 	}
 
 	@Override

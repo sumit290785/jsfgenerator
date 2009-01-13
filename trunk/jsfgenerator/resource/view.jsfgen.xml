@@ -1,64 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<a:view xmlns:a="http://www.jsfgen.com/annotations" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.jsfgen.com/annotations annotations.xsd">
+<a:view xmlns:a="http://www.jsfgen.com/annotations" >
 
 	<a:template id="entityPage">
 
-		<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-			xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
-			xmlns:h="http://java.sun.com/jsf/html" template="layout/template.xhtml">
+		<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+			xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" template="layout/template.xhtml" xmlns:rich="http://richfaces.org/rich">
 
-			<a:placeHolder for="entityForm" />
-			<a:placeHolder for="entityListForm" />
+			<a:message attribute="value" />
+			<h:outputText value="welcome" />
+
+			<hr />
+			<div class="content">
+				<a:placeHolder for="entityForm" />
+				<a:placeHolder for="entityListForm" />
+			</div>
 
 		</ui:composition>
 
 	</a:template>
 
-	<a:template id="entityForm" xmlns="http://www.w3.org/1999/xhtml"
-		xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
-		xmlns:h="http://java.sun.com/jsf/html">
+	<a:template id="entityForm" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
 
 		<h:form>
 			<a:placeHolder for="actionBar" />
-			<a:placeHolder for="input" />
-		</h:form>
-	</a:template>
-
-	<a:template id="entityListForm" xmlns="http://www.w3.org/1999/xhtml"
-		xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
-		xmlns:h="http://java.sun.com/jsf/html">
-
-		<h:form>
-			<a:placeHolder for="actionBar" />
-
-			<a:variable attribute="var" />
-			<a:expression type="entityField" for="value" />
-			<ui:repeat var="item">
-				<a:placeHolder for="actionBar" />
+			<table>
 				<a:placeHolder for="input" />
-			</ui:repeat>
-
+			</table>
 		</h:form>
 	</a:template>
 
-	<a:template id="entityListPage" xmlns="http://www.w3.org/1999/xhtml"
-		xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
-		xmlns:h="http://java.sun.com/jsf/html">
+	<a:template id="entityListForm" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
 
-		<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-			xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
-			xmlns:h="http://java.sun.com/jsf/html" template="layout/template.xhtml">
+		<h:form>
+		<hr />
+		<a:placeHolder for="actionBar" />
+
+		<a:variable attribute="var" />
+		<a:expression type="entityField" for="value" />
+		<ui:repeat var="item">
+			<a:placeHolder for="actionBar" />
+			
+			<table>
+				<a:placeHolder for="input" />
+			</table>
+		</ui:repeat>
+		
+		</h:form>
+	</a:template>
+
+	<a:template id="entityListPage" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
+
+		<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+			xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" template="layout/template.xhtml">
+
+			<div>
+				<a:expression type="entityName" for="value" />
+				<h:outputText />
+
+				<a:message attribute="value" />
+				<h:outputText value=" list" />
+			</div>
+			<hr />
 
 			<a:placeHolder for="actionBar" />
+			<hr />
 
 			<table>
-				<th>
+				<thead><tr>
 					<a:placeHolder for="columnHeader" />
-				</th>
-
-				<a:variable attribute="var" />
+				</tr></thead>
+				
+				<a:variable attribute="var"/>
 				<a:expression type="resultSet" for="value" />
 				<ui:repeat var="item">
 					<tr>
@@ -71,9 +87,8 @@
 
 	</a:template>
 
-	<a:template id="columnData" xmlns="http://www.w3.org/1999/xhtml"
-		xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
-		xmlns:h="http://java.sun.com/jsf/html">
+	<a:template id="columnData" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
 
 		<td>
 			<a:expression type="entityField" for="value" />
@@ -81,10 +96,9 @@
 		</td>
 
 	</a:template>
-
-	<a:template id="columnHeader" xmlns="http://www.w3.org/1999/xhtml"
-		xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
-		xmlns:h="http://java.sun.com/jsf/html">
+	
+	<a:template id="columnHeader" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
 
 		<td>
 			<a:expression type="entityFieldName" for="value" />
@@ -93,9 +107,8 @@
 
 	</a:template>
 
-	<a:template id="columnAction" xmlns="http://www.w3.org/1999/xhtml"
-		xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
-		xmlns:h="http://java.sun.com/jsf/html">
+	<a:template id="columnAction" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
 
 		<td>
 			<a:placeHolder for="action" />
@@ -104,9 +117,8 @@
 	</a:template>
 
 
-	<a:template id="collectionColumn" xmlns="http://www.w3.org/1999/xhtml"
-		xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
-		xmlns:h="http://java.sun.com/jsf/html">
+	<a:template id="collectionColumn" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
 
 		<td>
 			<ul>
@@ -120,9 +132,8 @@
 
 	</a:template>
 
-	<a:template id="collectionColumnData" xmlns="http://www.w3.org/1999/xhtml"
-		xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
-		xmlns:h="http://java.sun.com/jsf/html">
+	<a:template id="collectionColumnData" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
 
 		<li>
 			<a:expression type="entityField" for="value" />
@@ -132,14 +143,30 @@
 	</a:template>
 
 
-	<a:template id="actionBar" xmlns="http://www.w3.org/1999/xhtml"
-		xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
-		xmlns:h="http://java.sun.com/jsf/html">
-		<a:placeHolder for="action" />
+	<a:template id="actionBar" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
+		<div class="actionbar">
+			<a:placeHolder for="action" />
+		</div>
 	</a:template>
 
-	<a:template id="input" name="table row input" xmlns="http://www.w3.org/1999/xhtml"
-		xmlns:h="http://java.sun.com/jsf/html">
+	<a:template id="input" name="multiline text input" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
+
+		<tr>
+			<td>
+				<a:expression type="entityFieldName" for="value" />
+				<h:outputText />
+			</td>
+			<td>
+				<a:expression type="entityField" for="value" />
+				<h:inputText cols="5" />
+			</td>
+		</tr>
+
+	</a:template>
+
+	<a:template id="input" name="text input" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html">
 
 		<tr>
 			<td>
@@ -154,4 +181,53 @@
 
 	</a:template>
 
+	<a:template id="input" name="date" xmlns="http://www.w3.org/1999/xhtml" xmlns:rich="http://richfaces.org/rich" xmlns:h="http://java.sun.com/jsf/html">
+
+		<tr>
+			<td>
+				<a:expression type="entityFieldName" for="value" />
+				<h:outputText />
+			</td>
+			<td>
+				<a:expression type="entityField" for="value" />
+				<rich:calendar />
+			</td>
+		</tr>
+
+	</a:template>
+	
+	<a:template id="input" name="address input" xmlns="http://www.w3.org/1999/xhtml" xmlns:rich="http://richfaces.org/rich" xmlns:h="http://java.sun.com/jsf/html">
+		<tr>
+			<td>
+				<a:message attribute="value" />
+				<h:outputText value="country"/>
+			</td>
+			<td>
+				<a:expression type="entityField" for="value" />
+				<h:inputText />
+			</td>
+		</tr>
+		
+		<tr>
+			<td>
+				<a:message attribute="value" />
+				<h:outputText value="city"/>
+			</td>
+			<td>
+				<a:expression type="entityField" for="value" />
+				<h:inputText />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<a:message attribute="value" />
+				<h:outputText value="street"/>
+			</td>
+			<td>
+				<a:expression type="entityField" for="value" />
+				<h:inputText />
+			</td>
+		</tr>
+
+	</a:template>
 </a:view>

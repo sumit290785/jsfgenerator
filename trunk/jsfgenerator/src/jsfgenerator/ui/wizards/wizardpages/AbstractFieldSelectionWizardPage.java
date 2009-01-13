@@ -35,6 +35,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * 
+ * @author zoltan verebes
+ *
+ */
 @SuppressWarnings("restriction")
 public abstract class AbstractFieldSelectionWizardPage extends WizardPage {
 
@@ -335,7 +340,7 @@ public abstract class AbstractFieldSelectionWizardPage extends WizardPage {
 	protected List<AbstractEntityDescriptionWrapper> getSelectedEntityDescriptionWrappers() {
 		List<AbstractEntityDescriptionWrapper> entityDescriptionWrappers = new ArrayList<AbstractEntityDescriptionWrapper>();
 		for (AbstractEntityDescriptionWrapper entityDescriptionWrapper : getInputList()) {
-			if (entityDescriptionWrapper.isPageGenerated()) {
+			if (entityDescriptionWrapper.isPageGenerated() && !entityDescriptionWrapper.getEntityDescription().isEmbeddable()) {
 				entityDescriptionWrappers.add(entityDescriptionWrapper);
 			}
 		}

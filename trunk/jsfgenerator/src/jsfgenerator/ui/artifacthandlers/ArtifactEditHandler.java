@@ -22,6 +22,10 @@ import org.eclipse.jst.jsf.facesconfig.emf.ManagedBeanClassType;
 import org.eclipse.jst.jsf.facesconfig.emf.ManagedBeanNameType;
 import org.eclipse.jst.jsf.facesconfig.emf.ManagedBeanScopeType;
 import org.eclipse.jst.jsf.facesconfig.emf.ManagedBeanType;
+import org.eclipse.jst.jsf.facesconfig.emf.ManagedPropertyType;
+import org.eclipse.jst.jsf.facesconfig.emf.PropertyClassType;
+import org.eclipse.jst.jsf.facesconfig.emf.PropertyNameType;
+import org.eclipse.jst.jsf.facesconfig.emf.ValueType;
 import org.eclipse.jst.jsf.facesconfig.util.FacesConfigArtifactEdit;
 import org.eclipse.wst.common.componentcore.ArtifactEdit;
 
@@ -49,7 +53,7 @@ public final class ArtifactEditHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void addManagedBeanToFacesConfig(String viewId, String className) {
+	public void addManagedBeanToFacesConfig(String viewId, String className, boolean property) {
 
 		FacesConfigArtifactEdit edit = getFacesConfigArtifectEdit();
 
@@ -77,8 +81,25 @@ public final class ArtifactEditHandler {
 		ManagedBeanScopeType managedBeanScopeType = facesConfigFactory.createManagedBeanScopeType();
 		managedBeanScopeType.setTextContent("request");
 		managedBT.setManagedBeanScope(managedBeanScopeType);
-		edit.getFacesConfig().getManagedBean().add(managedBT);
 
+		if (property) {
+			ManagedPropertyType prop = facesConfigFactory.createManagedPropertyType();
+			PropertyNameType name = facesConfigFactory.createPropertyNameType();
+			name.setTextContent("entityId");
+			prop.setPropertyName(name);
+
+			PropertyClassType clazz = facesConfigFactory.createPropertyClassType();
+			clazz.setTextContent("java.lang.Long");
+			prop.setPropertyClass(clazz);
+
+			ValueType vType = facesConfigFactory.createValueType();
+			vType.setTextContent("#{param.entityId}");
+			prop.setValue(vType);
+
+			managedBT.getManagedProperty().add(prop);
+		}
+
+		edit.getFacesConfig().getManagedBean().add(managedBT);
 		saveEdit(edit);
 	}
 
@@ -88,25 +109,25 @@ public final class ArtifactEditHandler {
 		webApp.setDisplayName(projectName);
 		saveEdit(webEdit);
 	}
-	
+
 	public void configEarApplication(String webProjectName, String ejbProjectName) {
 		EARArtifactEdit earEdit = getEarArtifactEdit();
 		Application app = earEdit.getApplication();
 		app.setDisplayName(webProjectName + "-ear");
-		
+
 		for (Object module : app.getModules()) {
 			if (module instanceof WebModule) {
 				WebModule webModule = (WebModule) module;
 				webModule.setContextRoot("/" + webProjectName);
 				webModule.setUri(webProjectName + ".war");
 			}
-			
+
 			if (module instanceof EjbModule) {
 				EjbModule ejbModule = (EjbModule) module;
 				ejbModule.setUri(ejbProjectName + ".jar");
 			}
 		}
-		
+
 		saveEdit(earEdit);
 	}
 
