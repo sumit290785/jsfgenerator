@@ -47,7 +47,7 @@ public class ActionViewTemplateTreeBuilder {
 
 		StaticTagNode textNode = new StaticTagNode("h:outputText");
 		ResourceBundleBuilder.getInstance().addKey(text);
-		textNode.addAttribute(new TagAttribute("value", "#{jsfgen:translate('" + text + ")}", TagParameterType.STATIC, false));
+		textNode.addAttribute(new TagAttribute("value", "#{jsfgen:translate('" + text + "')}", TagParameterType.STATIC, false));
 		node.addChild(textNode);
 
 		return node;

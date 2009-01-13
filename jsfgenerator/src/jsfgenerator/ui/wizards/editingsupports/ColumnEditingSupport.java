@@ -50,7 +50,8 @@ public class ColumnEditingSupport extends EditingSupport {
 	protected CellEditor getCellEditor(Object element) {
 		EntityFieldDescriptionListPageWrapper entityFieldWrapper = (EntityFieldDescriptionListPageWrapper) element;
 		EntityRelationship rel = entityFieldWrapper.getEntityFieldDescription().getRelationshipToEntity();
-		if (EntityRelationship.ONE_TO_MANY.equals(rel) || EntityRelationship.MANY_TO_MANY.equals(rel)) {
+		if (EntityRelationship.ONE_TO_MANY.equals(rel) || EntityRelationship.MANY_TO_MANY.equals(rel)
+				|| EntityRelationship.EMBEDDED.equals(rel)) {
 			entityFieldWrapper.setExternalForm(rel);
 			List<String> fieldNames = new ArrayList<String>();
 			fieldNames.add(HIDE);
@@ -72,7 +73,8 @@ public class ColumnEditingSupport extends EditingSupport {
 
 		EntityRelationship rel = entityFieldWrapper.getEntityFieldDescription().getRelationshipToEntity();
 		if (entityFieldWrapper.isShown()
-				&& (EntityRelationship.ONE_TO_MANY.equals(rel) || EntityRelationship.MANY_TO_MANY.equals(rel))) {
+				&& (EntityRelationship.ONE_TO_MANY.equals(rel) || EntityRelationship.MANY_TO_MANY.equals(rel) || EntityRelationship.EMBEDDED
+						.equals(rel))) {
 			return entityFieldWrapper.getFieldName();
 		} else if (entityFieldWrapper.isShown()) {
 			return SHOW;
@@ -95,7 +97,8 @@ public class ColumnEditingSupport extends EditingSupport {
 			entityFieldWrapper.setShown(true);
 			entityFieldWrapper.setExternalForm(null);
 			entityFieldWrapper.setFieldName(null);
-		} else if (EntityRelationship.ONE_TO_MANY.equals(rel) || EntityRelationship.MANY_TO_MANY.equals(rel)) {
+		} else if (EntityRelationship.ONE_TO_MANY.equals(rel) || EntityRelationship.MANY_TO_MANY.equals(rel)
+				|| EntityRelationship.EMBEDDED.equals(rel)) {
 			entityFieldWrapper.setShown(true);
 			entityFieldWrapper.setFieldName(selectedValue);
 			entityFieldWrapper.setExternalForm(null);

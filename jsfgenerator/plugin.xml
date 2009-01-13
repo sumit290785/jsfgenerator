@@ -29,17 +29,6 @@
           
    </extension>
    <extension
-         point="org.eclipse.ui.editors">
-         <editor
-         		class=""
-         		contributorClass=""
-         		default="true"
-         		icon=""
-         		id=""
-         		name="TagFactoryEditor">
-         </editor>
-   </extension>
-   <extension
          point="org.eclipse.wst.common.project.facet.core.facets">
       <project-facet
             id="jsfgenerator-project-facet">

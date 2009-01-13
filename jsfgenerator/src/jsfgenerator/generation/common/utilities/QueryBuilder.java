@@ -59,7 +59,7 @@ public class QueryBuilder {
 		}
 		
 		for (String ref : collectionReferences) {
-			buffer.append(" LEFT JOIN ");
+			buffer.append(" LEFT JOIN FETCH ");
 			buffer.append(entityRef);
 			buffer.append(".");
 			buffer.append(ref);

@@ -25,7 +25,8 @@ public class EntityDescriptionListPageWrapper extends AbstractEntityDescriptionW
 		List<EntityDescriptionListPageWrapper> wrappers = new ArrayList<EntityDescriptionListPageWrapper>();
 
 		for (EntityDescription desc : descriptions) {
-			wrappers.add(new EntityDescriptionListPageWrapper(desc));
+			if (!desc.isEmbeddable())
+				wrappers.add(new EntityDescriptionListPageWrapper(desc));
 		}
 		return wrappers;
 	}

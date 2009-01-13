@@ -219,7 +219,12 @@ public final class BlockImplementationFactory {
 
 			MethodInvocation parameter = ast.newMethodInvocation();
 			parameter.setExpression(ast.newSimpleName(wrapper.getFieldName()));
-			parameter.setName(ast.newSimpleName("getInstances"));
+
+			if (EditorType.EDIT_HELPER.equals(wrapper.getEditorType())) {
+				parameter.setName(ast.newSimpleName("getInstance"));
+			} else {
+				parameter.setName(ast.newSimpleName("getInstances"));
+			}
 
 			innerInvocation.arguments().add(parameter);
 
@@ -248,11 +253,11 @@ public final class BlockImplementationFactory {
 
 		StringLiteral literal = ast.newStringLiteral();
 		literal.setLiteralValue(queryString);
-		
+
 		ReturnStatement returnStatement = ast.newReturnStatement();
 		returnStatement.setExpression(literal);
 		block.statements().add(returnStatement);
-		
+
 		return block;
 	}
 

@@ -41,10 +41,10 @@ public class EntityListPageFieldSelectionWizardPage extends AbstractFieldSelecti
 				EntityFieldDescriptionListPageWrapper fieldWrapper = (EntityFieldDescriptionListPageWrapper) element;
 				EntityRelationship rel = fieldWrapper.getEntityFieldDescription().getRelationshipToEntity();
 				if (fieldWrapper.isShown() && !rel.equals(EntityRelationship.ONE_TO_MANY)
-						&& !rel.equals(EntityRelationship.MANY_TO_MANY)) {
+						&& !rel.equals(EntityRelationship.MANY_TO_MANY) && !rel.equals(EntityRelationship.EMBEDDED)) {
 					return ColumnEditingSupport.SHOW;
 				} else if (fieldWrapper.isShown()
-						&& (rel.equals(EntityRelationship.ONE_TO_MANY) || rel.equals(EntityRelationship.MANY_TO_MANY))) {
+						&& (rel.equals(EntityRelationship.ONE_TO_MANY) || rel.equals(EntityRelationship.MANY_TO_MANY) || rel.equals(EntityRelationship.EMBEDDED))) {
 					return fieldWrapper.getFieldName();
 				} else {
 					return ColumnEditingSupport.HIDE;
