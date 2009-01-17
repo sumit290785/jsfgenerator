@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editmodel:ClassDiagramEditModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editmodel="editmodel.xmi" xmlns:options="options.xmi" name="entityPageClassDiagram" foregroundRGB="255,255,255" description="" id="{UMLID=_AcyEsLiDEd2lNKnauyfdmw,JavaID=jsfgenerator.entitymodel}" metadata="uml2-1.0" initialized="true" tag="10" key="3230303730363239206A736667656E657261746F72">
+  <children xsi:type="editmodel:ClassEditModel" name="EntityModel" location="50,50" size="114,63" timstampe="23" stereotype="" id="{UMLID=_FA3pALiFEd2g2KL-J2Th2A,JavaID=jsfgenerator.entitymodel/EntityModel}" runTimeClassModel="pageModels">
+    <children xsi:type="editmodel:CompartmentEditModel">
+      <children xsi:type="editmodel:AttributeEditModel" name="pageModels" size="93,21" id="{UMLID=_FBCoILiFEd2g2KL-J2Th2A}"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="120,64"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:UseCaseAssociationEditModel" size="2,1" stereotype="" autoLocated="true" id="{UMLID=_ZdnCUOGrEd256bKHE7pNfQ}" source="//@children.0" target="//@children.1" targetEnd="//@children.0/@sourceConnections.0/@children.1" label="//@children.0/@sourceConnections.0/@children.2" sourceEnd="//@children.0/@sourceConnections.0/@children.0" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:AssociationEndEditModel" name="EntityModel" location="66,63" id="{UMLID=_ahv_4OGrEd256bKHE7pNfQ}" attachSource="true" multiplicityLabel="//@children.0/@sourceConnections.0/@children.0/@children.0" roleLabel="//@children.0/@sourceConnections.0/@children.0/@children.1" navigable="true" flags="1">
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="103,120" size="6,15" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="+ EntityModel" foregroundRGB="96,96,96" location="123,120" size="64,15" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+      </children>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="AbstractPageModel" location="46,0" id="{UMLID=_ahx1EOGrEd256bKHE7pNfQ}" multiplicityLabel="//@children.0/@sourceConnections.0/@children.1/@children.0" roleLabel="//@children.0/@sourceConnections.0/@children.1/@children.1" navigable="true" flags="1">
+        <children xsi:type="editmodel:LabelEditModel" name="1..*" location="93,202" size="16,15" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="+ AbstractPageModel" foregroundRGB="96,96,96" location="123,202" size="102,15" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+      </children>
+      <children xsi:type="editmodel:WireLabelEditModel" foregroundRGB="96,96,96" size="0,15" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPrivateAttributes="true" showProtectedAttributes="true" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showMethods="true" showAttributes="true" showLiterals="true" ShowInnerEntity="true" showMethodAssociationMember="false" showAccessorsMember="false"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.0/@sourceConnections.0 //@children.2/@sourceConnections.1" name="AbstractPageModel" location="70,224" size="206,94" timstampe="339" stereotype="" id="{UMLID=_FGtaoOGrEd256bKHE7pNfQ,JavaID=jsfgenerator.entitymodel.pages/AbstractPageModel}" runTimeClassModel="entityClassName,relatedPageViewId,viewId">
+    <children xsi:type="editmodel:CompartmentEditModel" size="119,54">
+      <children xsi:type="editmodel:AttributeEditModel" name="viewId" size="59,16" id="{UMLID=_MbkvYOGrEd256bKHE7pNfQ}"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="entityClassName" size="109,16" id="{UMLID=_MbiTIOGrEd256bKHE7pNfQ}"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="relatedPageViewId" size="119,16" id="{UMLID=_MbjhQeGrEd256bKHE7pNfQ}"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPrivateAttributes="true" showProtectedAttributes="true" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showMethods="true" showAttributes="true" showLiterals="true" ShowInnerEntity="true" showMethodAssociationMember="false" showAccessorsMember="false"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="EntityPageModel" location="238,50" size="190,63" timstampe="68" stereotype="" id="{UMLID=_boHtQLiGEd2g2KL-J2Th2A,JavaID=jsfgenerator.entitymodel.pages/EntityPageModel}" runTimeClassModel="forms">
+    <children xsi:type="editmodel:CompartmentEditModel">
+      <children xsi:type="editmodel:AttributeEditModel" name="forms" size="62,21" id="{UMLID=_byhmcLiGEd2g2KL-J2Th2A}"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:UseCaseAssociationEditModel" size="2,1" stereotype="" autoLocated="true" id="{UMLID=_dQQ0kOGrEd256bKHE7pNfQ}" source="//@children.2" target="//@children.3" targetEnd="//@children.2/@sourceConnections.0/@children.1" label="//@children.2/@sourceConnections.0/@children.2" sourceEnd="//@children.2/@sourceConnections.0/@children.0" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:AssociationEndEditModel" name="EntityPageModel" location="190,31" id="{UMLID=_d3EV4OGrEd256bKHE7pNfQ}" attachSource="true" multiplicityLabel="//@children.2/@sourceConnections.0/@children.0/@children.0" roleLabel="//@children.2/@sourceConnections.0/@children.0/@children.1" navigable="true" flags="1">
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="435,88" size="6,15" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="+ EntityPageModel" foregroundRGB="96,96,96" location="435,59" size="89,15" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+      </children>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="AbstractEntityForm" location="0,31" id="{UMLID=_d3GLEOGrEd256bKHE7pNfQ}" multiplicityLabel="//@children.2/@sourceConnections.0/@children.1/@children.0" roleLabel="//@children.2/@sourceConnections.0/@children.1/@children.1" navigable="true" flags="1">
+        <children xsi:type="editmodel:LabelEditModel" name="1..*" location="677,88" size="16,15" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="+ AbstractEntityForm" foregroundRGB="96,96,96" location="593,59" size="100,15" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+      </children>
+      <children xsi:type="editmodel:WireLabelEditModel" foregroundRGB="96,96,96" size="0,15" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" size="2,1" description="Generalization" id="{UMLID=_byct8LiGEd2g2KL-J2Th2A}" source="//@children.2" target="//@children.1" targetEnd="//@children.2/@sourceConnections.1/@children.1" sourceEnd="//@children.2/@sourceConnections.1/@children.0" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="98,62" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="168,0"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPrivateAttributes="true" showProtectedAttributes="true" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showMethods="true" showAttributes="true" showLiterals="true" ShowInnerEntity="true" showMethodAssociationMember="false" showAccessorsMember="false"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.2/@sourceConnections.0 //@children.4/@sourceConnections.0 //@children.5/@sourceConnections.0" name="AbstractEntityForm" location="700,50" size="255,104" timstampe="3" stereotype="" id="{UMLID=_PEBYUOGrEd256bKHE7pNfQ,JavaID=jsfgenerator.entitymodel.pageelements/AbstractEntityForm}" runTimeClassModel="relationshipToEntity,entityName,fields">
+    <children xsi:type="editmodel:CompartmentEditModel" size="83,18">
+      <children xsi:type="editmodel:AttributeEditModel" name="entityName" size="83,16" id="{UMLID=_RIBQYOGrEd256bKHE7pNfQ}"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="fields" size="59,21" id="{UMLID=_RH-0IOGrEd256bKHE7pNfQ}"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="relationshipToEntity" size="128,21" id="{UMLID=_RH6isOGrEd256bKHE7pNfQ}"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPrivateAttributes="true" showProtectedAttributes="true" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showMethods="true" showAttributes="true" showLiterals="true" ShowInnerEntity="true" showMethodAssociationMember="false" showAccessorsMember="false"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="EntityForm" location="432,224" size="203,58" timstampe="5" stereotype="" id="{UMLID=_VGtTgOGrEd256bKHE7pNfQ,JavaID=jsfgenerator.entitymodel.pageelements/EntityForm}" runTimeClassModel="entityClassName">
+    <children xsi:type="editmodel:CompartmentEditModel" size="109,18">
+      <children xsi:type="editmodel:AttributeEditModel" name="entityClassName" size="109,16" id="{UMLID=_VG0oQOGrEd256bKHE7pNfQ}"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" size="2,1" description="Generalization" id="{UMLID=_VGxk8OGrEd256bKHE7pNfQ}" source="//@children.4" target="//@children.3" targetEnd="//@children.4/@sourceConnections.0/@children.1" sourceEnd="//@children.4/@sourceConnections.0/@children.0" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="157,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="124,104"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:UseCaseAssociationEditModel" size="2,1" autoLocated="true" id="{UMLID=_HLI7EOGsEd256bKHE7pNfQ}" source="//@children.4" target="//@children.6" targetEnd="//@children.4/@sourceConnections.1/@children.1" label="//@children.4/@sourceConnections.1/@children.2" sourceEnd="//@children.4/@sourceConnections.1/@children.0" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" name="EntityForm" location="158,58" id="{UMLID=_IThfcOGsEd256bKHE7pNfQ}" attachSource="true" multiplicityLabel="//@children.4/@sourceConnections.1/@children.0/@children.0" roleLabel="//@children.4/@sourceConnections.1/@children.0/@children.1" navigable="true" flags="1">
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="577,289" size="6,15" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="+ EntityForm" foregroundRGB="96,96,96" location="597,289" size="61,15" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+      </children>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="EntityField" location="44,0" id="{UMLID=_ITjUoOGsEd256bKHE7pNfQ}" multiplicityLabel="//@children.4/@sourceConnections.1/@children.1/@children.0" roleLabel="//@children.4/@sourceConnections.1/@children.1/@children.1" navigable="true" flags="1">
+        <children xsi:type="editmodel:LabelEditModel" name="1..*" location="567,328" size="16,15" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="+ EntityField" foregroundRGB="96,96,96" location="597,328" size="58,15" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+      </children>
+      <children xsi:type="editmodel:WireLabelEditModel" foregroundRGB="96,96,96" size="0,15" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPrivateAttributes="true" showProtectedAttributes="true" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showMethods="true" showAttributes="true" showLiterals="true" ShowInnerEntity="true" showMethodAssociationMember="false" showAccessorsMember="false"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="EntityListForm" location="708,221" size="226,63" timstampe="3" stereotype="" id="{UMLID=_V3ugwOGrEd256bKHE7pNfQ,JavaID=jsfgenerator.entitymodel.pageelements/EntityListForm}" runTimeClassModel="entityForm">
+    <children xsi:type="editmodel:CompartmentEditModel">
+      <children xsi:type="editmodel:AttributeEditModel" name="entityForm" size="86,21" id="{UMLID=_V311gOGrEd256bKHE7pNfQ}"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" size="2,1" description="Generalization" id="{UMLID=_V3yyMOGrEd256bKHE7pNfQ}" source="//@children.5" target="//@children.3" targetEnd="//@children.5/@sourceConnections.0/@children.1" sourceEnd="//@children.5/@sourceConnections.0/@children.0" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="108,-1" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="124,104"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:UseCaseAssociationEditModel" size="2,1" stereotype="" autoLocated="true" id="{UMLID=_DlgRIOGsEd256bKHE7pNfQ}" source="//@children.5" target="//@children.6" targetEnd="//@children.5/@sourceConnections.1/@children.1" label="//@children.5/@sourceConnections.1/@children.2" sourceEnd="//@children.5/@sourceConnections.1/@children.0" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:AssociationEndEditModel" name="EntityListForm" location="19,63" id="{UMLID=_ENW7UOGsEd256bKHE7pNfQ}" attachSource="true" multiplicityLabel="//@children.5/@sourceConnections.1/@children.0/@children.0" roleLabel="//@children.5/@sourceConnections.1/@children.0/@children.1" navigable="true" flags="1">
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="714,291" size="6,15" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="+ EntityListForm" foregroundRGB="96,96,96" location="734,291" size="77,15" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+      </children>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="EntityField" location="181,0" id="{UMLID=_ENYJceGsEd256bKHE7pNfQ}" multiplicityLabel="//@children.5/@sourceConnections.1/@children.1/@children.0" roleLabel="//@children.5/@sourceConnections.1/@children.1/@children.1" navigable="true" flags="1">
+        <children xsi:type="editmodel:LabelEditModel" name="1..*" location="704,328" size="16,15" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="+ EntityField" foregroundRGB="96,96,96" location="734,328" size="58,15" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+      </children>
+      <children xsi:type="editmodel:WireLabelEditModel" foregroundRGB="96,96,96" size="0,15" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPrivateAttributes="true" showProtectedAttributes="true" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showMethods="true" showAttributes="true" showLiterals="true" ShowInnerEntity="true" showMethodAssociationMember="false" showAccessorsMember="false"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.5/@sourceConnections.1 //@children.4/@sourceConnections.1" name="EntityField" location="546,350" size="201,76" timstampe="4" stereotype="" id="{UMLID=_RIACQOGrEd256bKHE7pNfQ,JavaID=jsfgenerator.entitymodel.pageelements/EntityField}" runTimeClassModel="inputTagName,fieldName">
+    <children xsi:type="editmodel:CompartmentEditModel" size="100,36">
+      <children xsi:type="editmodel:AttributeEditModel" name="fieldName" size="77,16" id="{UMLID=_WUeHIOGrEd256bKHE7pNfQ}"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="inputTagName" size="100,16" id="{UMLID=_WUc5AOGrEd256bKHE7pNfQ}"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPrivateAttributes="true" showProtectedAttributes="true" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showMethods="true" showAttributes="true" showLiterals="true" ShowInnerEntity="true" showMethodAssociationMember="false" showAccessorsMember="false"/>
+  </children>
+  <diagramOptions xsi:type="options:ClassDiagramOptions" properties="wireOptions=0" autoName="false"/>
+  <boardSetting snapToGeometry="true" gridSpacing="14,14" gridOrigin="42,0" rulerUnit="cm">
+    <leftRuler>
+      <guides position="433"/>
+    </leftRuler>
+    <topRuler>
+      <guides position="959"/>
+    </topRuler>
+  </boardSetting>
+  <classDiagramPreferences xsi:type="editmodel:UMLClassDiagramPreference" attributeSorter="Natural" methodSorter="Natural" shortPackageNameFormat="true" showClassStereotype="true" innerClassSorter="Natural" showPrivateAttributes="true" showProtectedAttributes="true" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" packageIndication="1" showInterfaceStereotype="true" showMethods="true" showAttributes="true" showLiterlas="true" showInnerEntity="true" showMethodAssociationMember="false" showAccessorsMember="false"/>
+</editmodel:ClassDiagramEditModel>
